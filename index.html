@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saeed — Contract Automotive Technician | Bradford & Yorkshire</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --black: #0D0D0D;
+            --charcoal: #1A1A1A;
+            --steel: #2A2A2A;
+            --gunmetal: #3D3D3D;
+            --mid-grey: #6B6B6B;
+            --light-grey: #9A9A9A;
+            --off-white: #E8E4DD;
+            --warm-white: #F5F2EB;
+            --amber: #D4922A;
+            --amber-light: #E8A838;
+            --amber-glow: #F0C060;
+            --red: #B8352A;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background: var(--charcoal);
+            color: var(--off-white);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- NOISE TEXTURE OVERLAY --- */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            opacity: 0.035;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-size: 256px 256px;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* --- NAV --- */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.4s, backdrop-filter 0.4s;
+        }
+
+        nav.scrolled {
+            background: rgba(13, 13, 13, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .nav-logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.6rem;
+            letter-spacing: 0.15em;
+            color: var(--off-white);
+            text-decoration: none;
+        }
+
+        .nav-logo span {
+            color: var(--amber);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--amber-light);
+        }
+
+        .nav-cta {
+            background: var(--amber);
+            color: var(--black);
+            padding: 0.6rem 1.4rem;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .nav-cta:hover {
+            background: var(--amber-light);
+            transform: translateY(-1px);
+        }
+
+        /* --- HERO --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 8rem 3rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(212, 146, 42, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gunmetal), transparent);
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            border: 1px solid var(--gunmetal);
+            padding: 0.5rem 1.2rem;
+            margin-bottom: 2.5rem;
+            width: fit-content;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.8s 0.3s forwards;
+        }
+
+        .hero-badge-dot {
+            width: 6px;
+            height: 6px;
+            background: #4CAF50;
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .hero-badge span {
+            font-size: 0.72rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--light-grey);
+            font-weight: 500;
+        }
+
+        .hero-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(4rem, 10vw, 9rem);
+            line-height: 0.9;
+            letter-spacing: -0.01em;
+            color: var(--warm-white);
+            margin-bottom: 0.3em;
+            opacity: 0;
+            transform: translateY(40px);
+            animation: fadeUp 0.8s 0.5s forwards;
+        }
+
+        .hero-title .accent {
+            color: var(--amber);
+            display: block;
+        }
+
+        .hero-sub {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: var(--light-grey);
+            font-weight: 300;
+            max-width: 540px;
+            line-height: 1.7;
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 0.8s 0.7s forwards;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.8s 0.9s forwards;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--amber);
+            color: var(--black);
+            padding: 1rem 2rem;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: var(--amber-light);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(212, 146, 42, 0.25);
+        }
+
+        .btn-primary svg {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.3s;
+        }
+
+        .btn-primary:hover svg {
+            transform: translateX(3px);
+        }
+
+        .btn-secondary {
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--gunmetal);
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            color: var(--off-white);
+            border-color: var(--off-white);
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- STATS BAR --- */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border-top: 1px solid var(--steel);
+            border-bottom: 1px solid var(--steel);
+        }
+
+        .stat {
+            padding: 3rem;
+            text-align: center;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .stat:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 20%;
+            height: 60%;
+            width: 1px;
+            background: var(--steel);
+        }
+
+        .stat-number {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(2.5rem, 4vw, 3.5rem);
+            color: var(--amber);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.72rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--mid-grey);
+            font-weight: 500;
+        }
+
+        /* --- SECTION SHARED --- */
+        .section {
+            padding: 7rem 3rem;
+            position: relative;
+        }
+
+        .section-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--amber);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-label::before {
+            content: '';
+            width: 30px;
+            height: 1px;
+            background: var(--amber);
+        }
+
+        .section-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            line-height: 1;
+            color: var(--warm-white);
+            margin-bottom: 1.5rem;
+        }
+
+        .section-desc {
+            font-size: 1rem;
+            color: var(--light-grey);
+            font-weight: 300;
+            line-height: 1.8;
+            max-width: 560px;
+            margin-bottom: 3.5rem;
+        }
+
+        /* --- SERVICES --- */
+        .services {
+            background: var(--black);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1px;
+            background: var(--steel);
+            border: 1px solid var(--steel);
+            margin-top: 1rem;
+        }
+
+        .service-card {
+            background: var(--charcoal);
+            padding: 2.5rem;
+            position: relative;
+            transition: background 0.4s;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--amber);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s;
+        }
+
+        .service-card:hover {
+            background: var(--steel);
+        }
+
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .service-icon {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--gunmetal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: var(--amber);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            transition: border-color 0.3s, color 0.3s;
+        }
+
+        .service-card:hover .service-icon {
+            border-color: var(--amber);
+        }
+
+        .service-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 0.05em;
+            color: var(--warm-white);
+            margin-bottom: 0.75rem;
+        }
+
+        .service-desc {
+            font-size: 0.85rem;
+            color: var(--mid-grey);
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        /* --- WHY SAEED --- */
+        .why {
+            background: var(--charcoal);
+            position: relative;
+        }
+
+        .why::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gunmetal), transparent);
+        }
+
+        .why-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .why-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .why-item {
+            display: grid;
+            grid-template-columns: 48px 1fr;
+            gap: 1.25rem;
+            align-items: start;
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .why-number {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            color: var(--amber);
+            line-height: 1;
+            padding-top: 2px;
+        }
+
+        .why-item-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--warm-white);
+            margin-bottom: 0.4rem;
+            letter-spacing: 0.02em;
+        }
+
+        .why-item-text {
+            font-size: 0.85rem;
+            color: var(--mid-grey);
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        .why-highlight {
+            background: var(--steel);
+            border-left: 3px solid var(--amber);
+            padding: 2.5rem;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .why-highlight-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--amber);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .why-highlight blockquote {
+            font-size: 1.1rem;
+            font-weight: 300;
+            font-style: italic;
+            color: var(--off-white);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .why-highlight cite {
+            font-size: 0.8rem;
+            color: var(--mid-grey);
+            font-style: normal;
+            font-weight: 500;
+        }
+
+        .why-certs {
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--gunmetal);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        .cert-tag {
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.45rem 0.9rem;
+            border: 1px solid var(--gunmetal);
+            color: var(--light-grey);
+            font-weight: 500;
+        }
+
+        .cert-tag.highlight {
+            border-color: var(--amber);
+            color: var(--amber);
+        }
+
+        /* --- CTA --- */
+        .cta {
+            background: var(--black);
+            text-align: center;
+            padding: 8rem 3rem;
+            position: relative;
+        }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--gunmetal), transparent);
+        }
+
+        .cta-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(3rem, 7vw, 5.5rem);
+            line-height: 0.95;
+            color: var(--warm-white);
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .cta-title .amber {
+            color: var(--amber);
+        }
+
+        .cta-sub {
+            font-size: 1rem;
+            color: var(--mid-grey);
+            font-weight: 300;
+            max-width: 480px;
+            margin: 0 auto 3rem;
+            line-height: 1.7;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .btn-phone {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: transparent;
+            border: 1px solid var(--gunmetal);
+            color: var(--off-white);
+            padding: 1rem 2rem;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-family: 'IBM Plex Sans', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .btn-phone:hover {
+            border-color: var(--off-white);
+            background: rgba(255,255,255,0.03);
+        }
+
+        .btn-phone svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            padding: 2.5rem 3rem;
+            border-top: 1px solid var(--steel);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left {
+            font-size: 0.75rem;
+            color: var(--mid-grey);
+            font-weight: 300;
+        }
+
+        .footer-right {
+            font-size: 0.7rem;
+            color: var(--gunmetal);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* --- SCROLL ANIMATIONS --- */
+        .animate-in {
+            opacity: 1 !important;
+            transform: translateY(0) translateX(0) !important;
+            transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 900px) {
+            nav {
+                padding: 1.2rem 1.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 7rem 1.5rem 3rem;
+            }
+
+            .section {
+                padding: 5rem 1.5rem;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat:nth-child(2)::after {
+                display: none;
+            }
+
+            .stat:nth-child(1)::after,
+            .stat:nth-child(3)::after {
+                display: block;
+            }
+
+            .stat:nth-child(1),
+            .stat:nth-child(2) {
+                border-bottom: 1px solid var(--steel);
+            }
+
+            .why-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .cta {
+                padding: 5rem 1.5rem;
+            }
+
+            footer {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+                padding: 2rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stat {
+                padding: 2rem 1.5rem;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAV -->
+    <nav id="nav">
+        <a href="#" class="nav-logo">SAEED<span>.</span></a>
+        <ul class="nav-links">
+            <li><a href="#services">Services</a></li>
+            <li><a href="#why">Why Me</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <a href="#contact" class="nav-cta">Book Saeed</a>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-badge">
+            <div class="hero-badge-dot"></div>
+            <span>Available for Contract Work — Yorkshire</span>
+        </div>
+
+        <h1 class="hero-title">
+            YOUR WORKSHOP<br>
+            <span class="accent">RUNS BETTER<br>WITH SAEED.</span>
+        </h1>
+
+        <p class="hero-sub">
+            Contract MOT tester & diagnostic technician. Class&nbsp;4&nbsp;&&nbsp;7 licensed. IMI&nbsp;Hybrid&nbsp;&amp;&nbsp;EV qualified. Bradford&nbsp;based, serving garages across&nbsp;Yorkshire.
+        </p>
+
+        <div class="hero-actions">
+            <a href="#contact" class="btn-primary">
+                Get in Touch
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 8h10M9 4l4 4-4 4"/>
+                </svg>
+            </a>
+            <a href="#services" class="btn-secondary">View Services</a>
+        </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats">
+        <div class="stat" data-animate>
+            <div class="stat-number">4&7</div>
+            <div class="stat-label">MOT Class Licensed</div>
+        </div>
+        <div class="stat" data-animate>
+            <div class="stat-number">EV</div>
+            <div class="stat-label">IMI Level 2 & 3</div>
+        </div>
+        <div class="stat" data-animate>
+            <div class="stat-number">7+</div>
+            <div class="stat-label">Years Experience</div>
+        </div>
+        <div class="stat" data-animate>
+            <div class="stat-number">All</div>
+            <div class="stat-label">Makes & Models</div>
+        </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section class="services section" id="services">
+        <div class="section-label">What I Do</div>
+        <h2 class="section-title">SERVICES</h2>
+        <p class="section-desc">
+            Reliable, skilled hands when you need them most. Whether it's holiday cover, overflow capacity, or specialist EV work — I slot into your team and deliver from day one.
+        </p>
+
+        <div class="services-grid">
+            <div class="service-card" data-animate>
+                <div class="service-icon">01</div>
+                <h3 class="service-name">MOT TESTING</h3>
+                <p class="service-desc">Class 4 & 7 — cars up to 3,000kg and vans up to 3,500kg. Fast, thorough, compliant. Keep your bays turning over.</p>
+            </div>
+            <div class="service-card" data-animate>
+                <div class="service-icon">02</div>
+                <h3 class="service-name">DIAGNOSTICS</h3>
+                <p class="service-desc">Systematic fault-finding across all makes. Modern tooling, methodical approach. Fix it right the first time.</p>
+            </div>
+            <div class="service-card" data-animate>
+                <div class="service-icon">03</div>
+                <h3 class="service-name">HYBRID & EV</h3>
+                <p class="service-desc">IMI Level 2 & 3 qualified. High-voltage systems, battery diagnostics, EV servicing. The work your team can't always cover.</p>
+            </div>
+            <div class="service-card" data-animate>
+                <div class="service-icon">04</div>
+                <h3 class="service-name">SERVICING</h3>
+                <p class="service-desc">Routine maintenance and interim services. Manufacturer schedules followed. Your customers stay looked after.</p>
+            </div>
+            <div class="service-card" data-animate>
+                <div class="service-icon">05</div>
+                <h3 class="service-name">CONTRACT COVER</h3>
+                <p class="service-desc">Holiday, sickness, or overflow — I fill the gap. Flexible terms, no agency markup. Direct and straightforward.</p>
+            </div>
+            <div class="service-card" data-animate>
+                <div class="service-icon">06</div>
+                <h3 class="service-name">MECHANICAL REPAIR</h3>
+                <p class="service-desc">Brakes, suspension, clutches, timing belts — the bread-and-butter work that keeps your bays productive and customers coming back.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- WHY SAEED -->
+    <section class="why section" id="why">
+        <div class="why-grid">
+            <div>
+                <div class="section-label">The Difference</div>
+                <h2 class="section-title">WHY GARAGES<br>BOOK ME BACK</h2>
+                <p class="section-desc">
+                    I'm not an agency temp. I'm a qualified technician who understands workshop flow and gets the job done right first time.
+                </p>
+
+                <ul class="why-list">
+                    <li class="why-item" data-animate>
+                        <div class="why-number">01</div>
+                        <div>
+                            <div class="why-item-title">Qualified MOT Tester</div>
+                            <p class="why-item-text">Class 4 & 7 licensed. Cars and vans up to 3,500kg. I keep your MOT bay running so you don't lose a day's revenue to staff gaps.</p>
+                        </div>
+                    </li>
+                    <li class="why-item" data-animate>
+                        <div class="why-number">02</div>
+                        <div>
+                            <div class="why-item-title">EV-Ready When You're Not</div>
+                            <p class="why-item-text">IMI Level 2 & 3 in Hybrid/EV. Most contract techs can't touch high-voltage systems. I can — which means you don't turn that work away.</p>
+                        </div>
+                    </li>
+                    <li class="why-item" data-animate>
+                        <div class="why-number">03</div>
+                        <div>
+                            <div class="why-item-title">Productive From Day One</div>
+                            <p class="why-item-text">7+ years hands-on across independents and dealerships. I don't need hand-holding — point me to a bay and I'll get on with it.</p>
+                        </div>
+                    </li>
+                    <li class="why-item" data-animate>
+                        <div class="why-number">04</div>
+                        <div>
+                            <div class="why-item-title">No Agency, No Hassle</div>
+                            <p class="why-item-text">Deal with me directly. Flexible on terms, reliable on delivery. I turn up, I work, your workshop runs smoother.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div>
+                <div class="why-highlight" data-animate>
+                    <div class="why-highlight-label">How I Work</div>
+                    <blockquote>
+                        "I treat every workshop like it's my own. I come in, I get the work done properly, and your bays stay productive. No callbacks, no corners cut — just solid technician work you can rely on."
+                    </blockquote>
+                    <cite>— Saeed, Contract Technician</cite>
+
+                    <div class="why-certs">
+                        <span class="cert-tag highlight">MOT Class 4 & 7</span>
+                        <span class="cert-tag highlight">IMI EV Level 2 & 3</span>
+                        <span class="cert-tag">Diagnostics</span>
+                        <span class="cert-tag">All Makes & Models</span>
+                        <span class="cert-tag">Bradford Based</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta" id="contact">
+        <h2 class="cta-title" data-animate>
+            NEED A TECH<br><span class="amber">WHO DELIVERS?</span>
+        </h2>
+        <p class="cta-sub" data-animate>
+            Whether it's a week's cover or an ongoing contract, let's talk. No agencies, no fuss — just a skilled technician ready to work.
+        </p>
+        <div class="cta-buttons" data-animate>
+            <a href="mailto:saeed@example.com" class="btn-primary">
+                Email Saeed
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 8h10M9 4l4 4-4 4"/>
+                </svg>
+            </a>
+            <a href="tel:+447000000000" class="btn-phone">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M6 3H3a1 1 0 00-1 1v1a10 10 0 0010 10h1a1 1 0 001-1v-3l-3-2-1.5 1.5A7 7 0 016.5 6.5L8 5 6 3z"/>
+                </svg>
+                Call to Discuss
+            </a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-left">
+            Saeed — Contract Automotive Technician &middot; Bradford, West Yorkshire
+        </div>
+        <div class="footer-right">
+            MOT Licensed &middot; Class 4 & 7
+        </div>
+    </footer>
+
+    <script>
+        // Nav scroll effect
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 60);
+        });
+
+        // Scroll-triggered animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const siblings = el.parentElement.querySelectorAll('[data-animate]');
+                    let index = Array.from(siblings).indexOf(el);
+                    if (index < 0) index = 0;
+
+                    setTimeout(() => {
+                        el.classList.add('animate-in');
+                    }, index * 100);
+
+                    observer.unobserve(el);
+                }
+            });
+        }, {
+            threshold: 0.15,
+            rootMargin: '0px 0px -40px 0px'
+        });
+
+        document.querySelectorAll('[data-animate]').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+
+</body>
+</html>
