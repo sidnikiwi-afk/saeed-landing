@@ -9,6 +9,30 @@
     <meta property="og:description" content="Fill your pipeline with qualified leads without hiring a sales team. AI-personalised outreach for UK B2B businesses.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://brackstonedigital.co.uk">
+    <meta property="og:image" content="https://brackstonedigital.co.uk/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Brackstone Digital — AI-Powered Lead Generation">
+    <meta name="twitter:description" content="Fill your pipeline with qualified leads without hiring a sales team.">
+    <meta name="twitter:image" content="https://brackstonedigital.co.uk/og-image.png">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231A2332'/><circle cx='72' cy='70' r='12' fill='%2316A085'/><text x='14' y='72' font-family='sans-serif' font-weight='bold' font-size='68' fill='white'>B</text></svg>">
+
+    <!-- Meta Pixel -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', 'YOUR_PIXEL_ID_HERE');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/></noscript>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -128,6 +152,8 @@
             gap: 5px;
             cursor: pointer;
             padding: 4px;
+            background: none;
+            border: none;
         }
 
         .nav-hamburger span {
@@ -789,6 +815,36 @@
             transform: translateY(-1px);
         }
 
+        .form-consent label {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            cursor: pointer;
+        }
+
+        .form-consent input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            flex-shrink: 0;
+            accent-color: var(--teal);
+        }
+
+        .form-consent span {
+            font-size: 0.78rem;
+            color: var(--mid-grey);
+            line-height: 1.5;
+        }
+
+        .form-consent a {
+            color: var(--teal);
+            text-decoration: none;
+        }
+
+        .form-consent a:hover {
+            text-decoration: underline;
+        }
+
         .form-small {
             font-size: 0.78rem;
             color: var(--light-grey);
@@ -898,6 +954,54 @@
         .footer-location {
             font-size: 0.78rem;
             color: var(--slate);
+        }
+
+        /* --- FOCUS STYLES --- */
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+            outline: 2px solid var(--teal);
+            outline-offset: 2px;
+        }
+
+        .nav-cta:focus-visible, .btn-primary:focus-visible {
+            outline-color: var(--white);
+        }
+
+        /* --- STICKY MOBILE CTA --- */
+        .sticky-cta {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 98;
+            padding: 0.75rem 1.5rem;
+            background: var(--white);
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+
+        .sticky-cta.visible {
+            transform: translateY(0);
+        }
+
+        .sticky-cta a {
+            display: block;
+            text-align: center;
+            background: var(--teal);
+            color: var(--white);
+            padding: 0.85rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .sticky-cta {
+                display: block;
+            }
         }
 
         /* --- SCROLL ANIMATIONS --- */
@@ -1030,11 +1134,11 @@
             <li><a href="#contact">Contact</a></li>
         </ul>
         <a href="#contact" class="nav-cta">Get Free Report</a>
-        <div class="nav-hamburger" id="hamburger" aria-label="Open menu">
+        <button class="nav-hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
             <span></span>
             <span></span>
             <span></span>
-        </div>
+        </button>
     </nav>
 
     <!-- MOBILE MENU -->
@@ -1266,24 +1370,14 @@
                             <input type="text" id="name" name="name" placeholder="John Smith" required>
                         </div>
                         <div class="form-group">
-                            <label for="email">Email</label>
+                            <label for="email">Work Email</label>
                             <input type="email" id="email" name="email" placeholder="john@company.co.uk" required>
                         </div>
-                        <div class="form-group">
-                            <label for="company">Company Name</label>
-                            <input type="text" id="company" name="company" placeholder="Your company" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="industry">Industry</label>
-                            <select id="industry" name="industry" required>
-                                <option value="" disabled selected>Select your industry</option>
-                                <option value="recruitment">Recruitment</option>
-                                <option value="estate_agents">Estate Agents</option>
-                                <option value="accountancy">Accountancy</option>
-                                <option value="dental">Dental</option>
-                                <option value="automotive">Automotive</option>
-                                <option value="other">Other</option>
-                            </select>
+                        <div class="form-group form-consent">
+                            <label>
+                                <input type="checkbox" id="consent" name="consent" required>
+                                <span>I agree to receive my free report and occasional follow-ups. See our <a href="privacy.html" target="_blank">privacy policy</a>.</span>
+                            </label>
                         </div>
                         <button type="submit" class="form-submit">Send My Free Report</button>
                     </form>
@@ -1318,6 +1412,7 @@
                 <h4>Company</h4>
                 <a href="mailto:hello@brackstonedigital.co.uk">hello@brackstonedigital.co.uk</a>
                 <a href="#">brackstonedigital.co.uk</a>
+                <a href="privacy.html">Privacy Policy</a>
             </div>
         </div>
         <div class="footer-bottom">
@@ -1326,11 +1421,21 @@
         </div>
     </footer>
 
+    <!-- Sticky Mobile CTA -->
+    <div class="sticky-cta" id="stickyCta">
+        <a href="#contact">Get Your Free Report</a>
+    </div>
+
     <script>
-        // Nav scroll effect
+        // Nav scroll effect + sticky mobile CTA
         const nav = document.getElementById('nav');
+        const stickyCta = document.getElementById('stickyCta');
+        const heroSection = document.querySelector('.hero');
+
         window.addEventListener('scroll', () => {
             nav.classList.toggle('scrolled', window.scrollY > 60);
+            const pastHero = window.scrollY > heroSection.offsetHeight;
+            stickyCta.classList.toggle('visible', pastHero);
         });
 
         // Mobile menu
@@ -1338,11 +1443,13 @@
         const mobileMenu = document.getElementById('mobileMenu');
 
         hamburger.addEventListener('click', () => {
-            mobileMenu.classList.toggle('open');
+            const isOpen = mobileMenu.classList.toggle('open');
+            hamburger.setAttribute('aria-expanded', isOpen);
         });
 
         function closeMobile() {
             mobileMenu.classList.remove('open');
+            hamburger.setAttribute('aria-expanded', 'false');
         }
 
         // Scroll-triggered animations
@@ -1370,10 +1477,8 @@
             observer.observe(el);
         });
 
-        // Form submission
+        // Form submission — redirect to thank-you page
         const form = document.getElementById('leadForm');
-        const formContent = document.getElementById('formContent');
-        const formSuccess = document.getElementById('formSuccess');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1381,8 +1486,6 @@
             const data = {
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
-                company: document.getElementById('company').value,
-                industry: document.getElementById('industry').value,
                 source: 'brackstonedigital.co.uk',
                 submitted_at: new Date().toISOString()
             };
@@ -1398,11 +1501,10 @@
                     body: JSON.stringify(data)
                 });
             } catch (err) {
-                // Silently handle - we still show success to the user
+                // Webhook failed — still redirect so the user isn't stuck
             }
 
-            formContent.style.display = 'none';
-            formSuccess.style.display = 'block';
+            window.location.href = 'thank-you.html';
         });
     </script>
 

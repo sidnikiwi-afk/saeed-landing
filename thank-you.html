@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Requested — Brackstone Digital</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Meta Pixel — fires Lead event on page load -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', 'YOUR_PIXEL_ID_HERE');
+    fbq('track', 'PageView');
+    fbq('track', 'Lead');
+    </script>
+    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=Lead&noscript=1"/></noscript>
+
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --navy: #1A2332;
+            --navy-deep: #141C28;
+            --charcoal: #2C3E50;
+            --mid-grey: #718096;
+            --light-grey: #A0AEC0;
+            --off-white: #F8F9FA;
+            --white: #FFFFFF;
+            --teal: #16A085;
+            --teal-light: #1ABC9C;
+            --teal-glow: rgba(22, 160, 133, 0.15);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--off-white);
+            color: var(--charcoal);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3 { font-family: 'DM Sans', sans-serif; }
+
+        nav {
+            background: var(--navy);
+            padding: 1.25rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            color: var(--white);
+            text-decoration: none;
+        }
+
+        .nav-logo .dot { color: var(--teal); }
+
+        .main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 1.5rem;
+        }
+
+        .card {
+            text-align: center;
+            max-width: 520px;
+        }
+
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            background: var(--teal-glow);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+        }
+
+        .checkmark svg {
+            width: 36px;
+            height: 36px;
+            color: var(--teal);
+        }
+
+        .card h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 1rem;
+        }
+
+        .card p {
+            font-size: 1.05rem;
+            color: var(--mid-grey);
+            line-height: 1.75;
+            margin-bottom: 1.5rem;
+        }
+
+        .steps-list {
+            text-align: left;
+            background: var(--white);
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .steps-list h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 1rem;
+        }
+
+        .steps-list ol {
+            list-style: none;
+            counter-reset: steps;
+        }
+
+        .steps-list li {
+            counter-increment: steps;
+            font-size: 0.92rem;
+            color: var(--charcoal);
+            line-height: 1.6;
+            padding: 0.5rem 0;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .steps-list li::before {
+            content: counter(steps);
+            position: absolute;
+            left: 0;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 700;
+            color: var(--teal);
+            font-size: 0.88rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--teal);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.92rem;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover { color: var(--teal-light); }
+
+        footer {
+            background: var(--navy-deep);
+            padding: 1.5rem 3rem;
+            text-align: center;
+        }
+
+        footer p {
+            font-size: 0.78rem;
+            color: #4A5568;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="nav-logo">BRACKSTONE<span class="dot">.</span></a>
+    </nav>
+
+    <main class="main">
+        <div class="card">
+            <div class="checkmark">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <h1>Your Report Is On Its Way</h1>
+            <p>We've received your request. Our team will put together a tailored competitor report for your market and send it to your inbox within 24 hours.</p>
+
+            <div class="steps-list">
+                <h3>What happens next</h3>
+                <ol>
+                    <li>We research your local market using live data sources</li>
+                    <li>We compile a personalised competitor report</li>
+                    <li>You receive the report by email within 24 hours</li>
+                </ol>
+            </div>
+
+            <a href="index.html" class="back-link">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 8H3M7 4l-4 4 4 4"/></svg>
+                Back to Brackstone Digital
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Brackstone Digital. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
