@@ -1119,6 +1119,228 @@
             .form-card {
                 padding: 1.75rem;
             }
+
+            .quiz-cards {
+                grid-template-columns: 1fr 1fr !important;
+            }
+        }
+
+        /* --- QUIZ FUNNEL --- */
+        .quiz-progress {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-progress-segment {
+            flex: 1;
+            height: 4px;
+            background: #E2E8F0;
+            border-radius: 2px;
+            transition: background 0.4s;
+        }
+
+        .quiz-progress-segment.active {
+            background: var(--teal);
+        }
+
+        .quiz-step-label {
+            font-size: 0.78rem;
+            color: var(--mid-grey);
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .quiz-step {
+            display: none;
+        }
+
+        .quiz-step.active {
+            display: block;
+            animation: quizFadeIn 0.35s ease;
+        }
+
+        @keyframes quizFadeIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .quiz-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .quiz-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 1rem 0.5rem;
+            border: 2px solid #E2E8F0;
+            border-radius: 10px;
+            background: var(--off-white);
+            cursor: pointer;
+            transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+            text-align: center;
+        }
+
+        .quiz-card:hover {
+            border-color: var(--teal-light);
+            transform: translateY(-1px);
+        }
+
+        .quiz-card.selected {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px var(--teal-glow);
+            background: rgba(22, 160, 133, 0.04);
+        }
+
+        .quiz-card-icon {
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        .quiz-card-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .quiz-option {
+            padding: 0.85rem 1rem;
+            border: 2px solid #E2E8F0;
+            border-radius: 10px;
+            background: var(--off-white);
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--charcoal);
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--teal-light);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px var(--teal-glow);
+            background: rgba(22, 160, 133, 0.04);
+            color: var(--navy);
+        }
+
+        .quiz-pills {
+            display: flex;
+            gap: 0.6rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .quiz-pill {
+            flex: 1;
+            padding: 0.7rem 0.5rem;
+            border: 2px solid #E2E8F0;
+            border-radius: 50px;
+            background: var(--off-white);
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--charcoal);
+            text-align: center;
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+
+        .quiz-pill:hover {
+            border-color: var(--teal-light);
+        }
+
+        .quiz-pill.selected {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px var(--teal-glow);
+            background: rgba(22, 160, 133, 0.04);
+            color: var(--navy);
+        }
+
+        .quiz-nav {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .quiz-back {
+            flex: 0 0 auto;
+            padding: 0.8rem 1.4rem;
+            border: 2px solid #E2E8F0;
+            border-radius: 8px;
+            background: var(--white);
+            color: var(--charcoal);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: border-color 0.3s, color 0.3s;
+        }
+
+        .quiz-back:hover {
+            border-color: var(--charcoal);
+            color: var(--navy);
+        }
+
+        .quiz-next {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            background: var(--teal);
+            color: var(--white);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s, opacity 0.3s;
+        }
+
+        .quiz-next:hover:not(:disabled) {
+            background: var(--teal-dark);
+            transform: translateY(-1px);
+        }
+
+        .quiz-next:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .quiz-field-label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--charcoal);
+            margin-bottom: 0.4rem;
+        }
+
+        .quiz-small {
+            font-size: 0.78rem;
+            color: var(--light-grey);
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .quiz-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .quiz-pills {
+                flex-wrap: wrap;
+            }
         }
     </style>
 </head>
@@ -1167,7 +1389,7 @@
 
             <div class="hero-actions">
                 <a href="#contact" class="btn-primary">
-                    Get Your Free Industry Report
+                    Get Your Free Report — 60 Seconds
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M3 8h10M9 4l4 4-4 4"/>
                     </svg>
@@ -1351,44 +1573,114 @@
         </div>
     </section>
 
-    <!-- CTA + FORM -->
+    <!-- CTA + QUIZ FUNNEL -->
     <section class="cta-form section" id="contact">
         <div class="section-inner">
             <div class="cta-text">
                 <div class="section-label">Free Report</div>
-                <h2>Get Your Free Competitor Report</h2>
-                <p>See what we can uncover about your market. No commitment, no sales pitch. We'll send a tailored report within 24 hours.</p>
+                <h2>See How You Stack Up Against Your Competitors</h2>
+                <p>Answer 3 quick questions and we'll send you a personalised report based on live data from your area. Takes 60 seconds.</p>
             </div>
 
             <div class="form-card" data-animate>
-                <div id="formContent">
-                    <h3>Request Your Report</h3>
-                    <p class="form-subtitle">Takes 30 seconds. We'll do the rest.</p>
-                    <form id="leadForm">
+                <!-- Progress bar -->
+                <div class="quiz-progress">
+                    <div class="quiz-progress-segment active"></div>
+                    <div class="quiz-progress-segment"></div>
+                    <div class="quiz-progress-segment"></div>
+                </div>
+                <div class="quiz-step-label" id="quizStepLabel">Step 1 of 3</div>
+
+                <!-- Step 1: About Your Business -->
+                <div class="quiz-step active" id="quizStep1">
+                    <h3>About Your Business</h3>
+                    <p class="form-subtitle">What industry are you in?</p>
+                    <div class="quiz-cards" id="industryCards">
+                        <div class="quiz-card" data-value="recruitment">
+                            <span class="quiz-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16A085" stroke-width="1.5"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg></span>
+                            <span class="quiz-card-label">Recruitment</span>
+                        </div>
+                        <div class="quiz-card" data-value="estate_agents">
+                            <span class="quiz-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16A085" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+                            <span class="quiz-card-label">Estate Agents</span>
+                        </div>
+                        <div class="quiz-card" data-value="accountancy">
+                            <span class="quiz-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16A085" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span>
+                            <span class="quiz-card-label">Accountancy</span>
+                        </div>
+                        <div class="quiz-card" data-value="dental">
+                            <span class="quiz-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16A085" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
+                            <span class="quiz-card-label">Dental</span>
+                        </div>
+                        <div class="quiz-card" data-value="automotive">
+                            <span class="quiz-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16A085" stroke-width="1.5"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 010 8.49m-8.48-.01a6 6 0 010-8.49"/></svg></span>
+                            <span class="quiz-card-label">Automotive</span>
+                        </div>
+                        <div class="quiz-card" data-value="other">
+                            <span class="quiz-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16A085" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></span>
+                            <span class="quiz-card-label">Other</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="quiz-field-label" for="quizPostcode">Your area (so we can localise your report)</label>
+                        <input type="text" id="quizPostcode" placeholder="e.g. BD1, LS1, RG14">
+                    </div>
+
+                    <div class="quiz-nav">
+                        <button class="quiz-next" id="quizNext1" disabled>Next</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Your Situation -->
+                <div class="quiz-step" id="quizStep2">
+                    <h3>Your Situation</h3>
+                    <p class="form-subtitle">What's your biggest challenge right now?</p>
+                    <div class="quiz-options" id="challengeOptions">
+                        <div class="quiz-option" data-value="Not enough leads coming in">Not enough leads coming in</div>
+                        <div class="quiz-option" data-value="Website not bringing in enquiries">Website not bringing in enquiries</div>
+                        <div class="quiz-option" data-value="No time for marketing">No time for marketing</div>
+                        <div class="quiz-option" data-value="Competitors seem to be growing faster">Competitors seem to be growing faster</div>
+                    </div>
+
+                    <p class="form-subtitle" style="margin-top:0.5rem">How big is your team?</p>
+                    <div class="quiz-pills" id="teamPills">
+                        <div class="quiz-pill" data-value="Just me">Just me</div>
+                        <div class="quiz-pill" data-value="2-10 staff">2-10 staff</div>
+                        <div class="quiz-pill" data-value="10+">10+</div>
+                    </div>
+
+                    <div class="quiz-nav">
+                        <button class="quiz-back" id="quizBack2">Back</button>
+                        <button class="quiz-next" id="quizNext2" disabled>Next</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Get Your Report -->
+                <div class="quiz-step" id="quizStep3">
+                    <h3>Get Your Report</h3>
+                    <p class="form-subtitle">Where should we send it?</p>
+                    <form id="quizForm">
                         <div class="form-group">
-                            <label for="name">Full Name</label>
-                            <input type="text" id="name" name="name" placeholder="John Smith" required>
+                            <label class="quiz-field-label" for="quizName">First name</label>
+                            <input type="text" id="quizName" name="name" placeholder="John" required>
                         </div>
                         <div class="form-group">
-                            <label for="email">Work Email</label>
-                            <input type="email" id="email" name="email" placeholder="john@company.co.uk" required>
+                            <label class="quiz-field-label" for="quizEmail">Work email</label>
+                            <input type="email" id="quizEmail" name="email" placeholder="john@company.co.uk" required>
                         </div>
                         <div class="form-group form-consent">
                             <label>
-                                <input type="checkbox" id="consent" name="consent" required>
+                                <input type="checkbox" id="quizConsent" name="consent" required>
                                 <span>I agree to receive my free report and occasional follow-ups. See our <a href="privacy.html" target="_blank">privacy policy</a>.</span>
                             </label>
                         </div>
-                        <button type="submit" class="form-submit">Send My Free Report</button>
+                        <div class="quiz-nav">
+                            <button type="button" class="quiz-back" id="quizBack3">Back</button>
+                            <button type="submit" class="quiz-next" id="quizSubmit">Send My Free Report</button>
+                        </div>
                     </form>
-                    <p class="form-small">We'll send your report within 24 hours. No spam, ever.</p>
-                </div>
-                <div class="form-success" id="formSuccess">
-                    <div class="checkmark">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                    </div>
-                    <h3>Report Requested!</h3>
-                    <p>We'll have your free competitor report in your inbox within 24 hours. Keep an eye out.</p>
+                    <p class="quiz-small">Your personalised report will arrive within 24 hours.</p>
                 </div>
             </div>
         </div>
@@ -1423,7 +1715,7 @@
 
     <!-- Sticky Mobile CTA -->
     <div class="sticky-cta" id="stickyCta">
-        <a href="#contact">Get Your Free Report</a>
+        <a href="#contact">Get Your Free Report — 60 Seconds</a>
     </div>
 
     <script>
@@ -1477,20 +1769,87 @@
             observer.observe(el);
         });
 
-        // Form submission — redirect to thank-you page
-        const form = document.getElementById('leadForm');
+        // Quiz funnel logic
+        const quizState = { industry: null, postcode: '', challenge: null, team_size: null };
+        const steps = [document.getElementById('quizStep1'), document.getElementById('quizStep2'), document.getElementById('quizStep3')];
+        const progressSegments = document.querySelectorAll('.quiz-progress-segment');
+        const stepLabel = document.getElementById('quizStepLabel');
+        let currentStep = 0;
 
-        form.addEventListener('submit', async (e) => {
+        function goToStep(n) {
+            steps[currentStep].classList.remove('active');
+            steps[n].classList.add('active');
+            currentStep = n;
+            progressSegments.forEach((seg, i) => seg.classList.toggle('active', i <= n));
+            stepLabel.textContent = 'Step ' + (n + 1) + ' of 3';
+        }
+
+        // Step 1: Industry cards (single-select)
+        document.querySelectorAll('#industryCards .quiz-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('#industryCards .quiz-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                quizState.industry = card.dataset.value;
+                validateStep1();
+            });
+        });
+
+        const postcodeInput = document.getElementById('quizPostcode');
+        postcodeInput.addEventListener('input', () => {
+            quizState.postcode = postcodeInput.value.trim();
+            validateStep1();
+        });
+
+        function validateStep1() {
+            document.getElementById('quizNext1').disabled = !(quizState.industry && quizState.postcode.length > 0);
+        }
+
+        document.getElementById('quizNext1').addEventListener('click', () => goToStep(1));
+        document.getElementById('quizBack2').addEventListener('click', () => goToStep(0));
+
+        // Step 2: Challenge options (single-select)
+        document.querySelectorAll('#challengeOptions .quiz-option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                document.querySelectorAll('#challengeOptions .quiz-option').forEach(o => o.classList.remove('selected'));
+                opt.classList.add('selected');
+                quizState.challenge = opt.dataset.value;
+                validateStep2();
+            });
+        });
+
+        // Step 2: Team size pills (single-select)
+        document.querySelectorAll('#teamPills .quiz-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                document.querySelectorAll('#teamPills .quiz-pill').forEach(p => p.classList.remove('selected'));
+                pill.classList.add('selected');
+                quizState.team_size = pill.dataset.value;
+                validateStep2();
+            });
+        });
+
+        function validateStep2() {
+            document.getElementById('quizNext2').disabled = !(quizState.challenge && quizState.team_size);
+        }
+
+        document.getElementById('quizNext2').addEventListener('click', () => goToStep(2));
+        document.getElementById('quizBack3').addEventListener('click', () => goToStep(1));
+
+        // Step 3: Form submission
+        document.getElementById('quizForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const data = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
+                name: document.getElementById('quizName').value,
+                email: document.getElementById('quizEmail').value,
+                industry: quizState.industry,
+                postcode: quizState.postcode,
+                challenge: quizState.challenge,
+                team_size: quizState.team_size,
                 source: 'brackstonedigital.co.uk',
                 submitted_at: new Date().toISOString()
             };
 
-            const submitBtn = form.querySelector('.form-submit');
+            const submitBtn = document.getElementById('quizSubmit');
             submitBtn.textContent = 'Sending...';
             submitBtn.disabled = true;
 
