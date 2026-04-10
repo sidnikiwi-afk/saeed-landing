@@ -1,0 +1,92 @@
+{
+  "directions": [
+    {
+      "id": 1,
+      "slug": "direction-1-friendly-ground",
+      "name": "Friendly Ground",
+      "description": "Spacious, rounded, organic. Terracotta CTAs, sage accents, cream background. Typographic hero with large friendly headline. Pill buttons, soft card corners, SVG curve section breaks. Feels like talking to a smart friend who happens to be good at marketing.",
+      "rationale": "SMB owners are tired of slick agency sites that feel intimidating. This feels warm and trustworthy without trying too hard.",
+      "palette": {
+        "primary": "#C4724E",
+        "secondary": "#7A9E7E",
+        "accent": "#D4A574",
+        "bg": "#FBF8F4",
+        "surface": "#F5F0EA",
+        "text": "#2C2418",
+        "muted": "#8A7E72"
+      },
+      "fonts": {
+        "heading": { "family": "Quicksand", "package": "quicksand", "fallback": "system-ui, sans-serif" },
+        "body": { "family": "Outfit", "package": "outfit", "fallback": "system-ui, sans-serif" }
+      },
+      "contrast_axes": {
+        "density": "spacious",
+        "typography": "rounded-geometric + clean-sans",
+        "hero": "typographic",
+        "visual_metaphor": "organic",
+        "shape_language": "pill-shapes",
+        "elevation": "subtle-shadows",
+        "section_rhythm": "curved-dividers"
+      }
+    },
+    {
+      "id": 2,
+      "slug": "direction-2-neon-pulse",
+      "name": "Neon Pulse",
+      "description": "Dark, bold, tech-forward. Near-black background with electric lime accents. Extreme weight contrast in typography. Sharp edges, angled section dividers, bento grid capabilities section with glowing hover states. Feels like a growth engine.",
+      "rationale": "Voice AI + ads + outreach is a tech-heavy stack. This positions you as the modern operator bringing firepower to small businesses.",
+      "palette": {
+        "primary": "#BFFF00",
+        "secondary": "#16213E",
+        "accent": "#00D4AA",
+        "bg": "#0F0F1A",
+        "surface": "#1A1A2E",
+        "text": "#F0F0F0",
+        "muted": "#8888AA"
+      },
+      "fonts": {
+        "heading": { "family": "Sora", "package": "sora", "fallback": "system-ui, sans-serif" },
+        "body": { "family": "Manrope", "package": "manrope", "fallback": "system-ui, sans-serif" }
+      },
+      "contrast_axes": {
+        "density": "dense",
+        "typography": "extreme-size-contrast",
+        "hero": "typographic-gradient",
+        "visual_metaphor": "spatial",
+        "shape_language": "sharp-edges",
+        "elevation": "dramatic-shadows-glow",
+        "section_rhythm": "angled-dividers"
+      }
+    },
+    {
+      "id": 3,
+      "slug": "direction-3-open-book",
+      "name": "Open Book",
+      "description": "Editorial, storytelling-driven. Split-screen hero with narrative copy. Serif headings for authority, sans body for approachability. Alternating section layouts, warm coral CTAs, soft gold accents. Process reads like a story.",
+      "rationale": "Selling a complex stack to non-technical SMB owners. The editorial approach lets you explain rather than just list. Serif/sans pairing says knowledgeable but not intimidating.",
+      "palette": {
+        "primary": "#E8725A",
+        "secondary": "#2C3E50",
+        "accent": "#E8C87A",
+        "bg": "#FEFCFA",
+        "surface": "#F7F3EE",
+        "text": "#2C3E50",
+        "muted": "#7F8C8D"
+      },
+      "fonts": {
+        "heading": { "family": "Fraunces", "package": "fraunces", "fallback": "Georgia, serif" },
+        "body": { "family": "Nunito Sans", "package": "nunito-sans", "fallback": "system-ui, sans-serif" }
+      },
+      "contrast_axes": {
+        "density": "balanced",
+        "typography": "transitional-serif + humanist-sans",
+        "hero": "split-screen",
+        "visual_metaphor": "editorial",
+        "shape_language": "rounded-corners",
+        "elevation": "subtle-shadows",
+        "section_rhythm": "alternating-layouts"
+      }
+    }
+  ],
+  "total": 3
+}

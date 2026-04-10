@@ -1,0 +1,13 @@
+@layer base {
+  body {
+    @apply bg-brand-bg text-brand-text font-body;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+}
