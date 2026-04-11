@@ -1,12 +1,12 @@
 @theme {
-  --color-brand-primary:   #C4724E;
-  --color-brand-secondary: #7A9E7E;
-  --color-brand-accent:    #D4A574;
-  --color-brand-bg:        #FBF8F4;
-  --color-brand-surface:   #F5F0EA;
-  --color-brand-text:      #2C2418;
-  --color-brand-muted:     #8A7E72;
+  --color-brand-primary:   #BFFF00;
+  --color-brand-secondary: #16213E;
+  --color-brand-accent:    #00D4AA;
+  --color-brand-bg:        #0F0F1A;
+  --color-brand-surface:   #1A1A2E;
+  --color-brand-text:      #F0F0F0;
+  --color-brand-muted:     #8888AA;
 
-  --font-heading: 'Quicksand Variable', system-ui, sans-serif;
-  --font-body:    'Outfit Variable', system-ui, sans-serif;
+  --font-heading: 'Sora Variable', system-ui, sans-serif;
+  --font-body:    'Manrope Variable', system-ui, sans-serif;
 }

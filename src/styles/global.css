@@ -1,9 +1,5 @@
-@import '@fontsource-variable/quicksand';
-@import '@fontsource-variable/outfit';
 @import '@fontsource-variable/sora';
 @import '@fontsource-variable/manrope';
-@import '@fontsource-variable/fraunces';
-@import '@fontsource-variable/nunito-sans';
 
 @import "tailwindcss";
 @import "./theme.css";

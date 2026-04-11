@@ -1,0 +1,150 @@
+---
+---
+<footer class="footer">
+  <div class="footer-glow-line"></div>
+  <div class="footer-inner">
+    <div class="footer-left">
+      <a href="#" class="footer-logo">
+        <span class="f-logo-mark">B</span>
+        <span class="f-logo-text">Brackstone Digital</span>
+      </a>
+      <p class="footer-tagline">Full-stack growth for UK small businesses.</p>
+    </div>
+    <div class="footer-right">
+      <div class="footer-col">
+        <span class="footer-col-label">Services</span>
+        <a href="#capabilities">Outreach</a>
+        <a href="#capabilities">Voice AI</a>
+        <a href="#capabilities">Websites</a>
+        <a href="#capabilities">Paid Ads</a>
+      </div>
+      <div class="footer-col">
+        <span class="footer-col-label">Company</span>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="#cta">Get in touch</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Brackstone Digital. All rights reserved.</span>
+  </div>
+</footer>
+
+<style>
+  @reference "../../styles/global.css";
+
+  .footer {
+    position: relative;
+    background: var(--color-brand-bg);
+    padding: 4rem 2rem 2rem;
+  }
+
+  .footer-glow-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(191, 255, 0, 0.3), rgba(0, 212, 170, 0.2), transparent);
+  }
+
+  .footer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 3rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid rgba(191, 255, 0, 0.06);
+  }
+
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    margin-bottom: 0.75rem;
+  }
+
+  .f-logo-mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: var(--color-brand-primary);
+    color: var(--color-brand-bg);
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 0.85rem;
+    clip-path: polygon(0 0, 100% 0, 100% 70%, 70% 100%, 0 100%);
+  }
+
+  .f-logo-text {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-brand-text);
+  }
+
+  .footer-tagline {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--color-brand-muted);
+    margin: 0;
+    max-width: 280px;
+  }
+
+  .footer-right {
+    display: flex;
+    gap: 4rem;
+  }
+
+  .footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .footer-col-label {
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: var(--color-brand-primary);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    opacity: 0.6;
+  }
+
+  .footer-col a {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--color-brand-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-col a:hover {
+    color: var(--color-brand-primary);
+  }
+
+  .footer-bottom {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding-top: 1.5rem;
+  }
+
+  .footer-bottom span {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: var(--color-brand-muted);
+    opacity: 0.5;
+  }
+
+  @media (max-width: 768px) {
+    .footer-inner { flex-direction: column; gap: 2rem; }
+    .footer-right { gap: 2.5rem; }
+    .footer { padding: 3rem 1.25rem 1.5rem; }
+  }
+</style>

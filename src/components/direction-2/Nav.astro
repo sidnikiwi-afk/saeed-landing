@@ -1,0 +1,221 @@
+---
+---
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <span class="logo-mark">B</span>
+      <span class="logo-text">Brackstone</span>
+    </a>
+    <div class="nav-links">
+      <a href="#how">Process</a>
+      <a href="#capabilities">Services</a>
+      <a href="#cta" class="nav-cta">Book a free call</a>
+    </div>
+    <button class="mobile-toggle" id="mobile-toggle" aria-label="Menu">
+      <span></span><span></span>
+    </button>
+  </div>
+  <div class="nav-glow"></div>
+</nav>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#how" class="mobile-link">Process</a>
+  <a href="#capabilities" class="mobile-link">Services</a>
+  <a href="#cta" class="mobile-cta">Book a free call</a>
+</div>
+
+<style>
+  @reference "../../styles/global.css";
+
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 0 2rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-bottom: 1px solid transparent;
+  }
+
+  .nav.scrolled {
+    background: rgba(15, 15, 26, 0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(191, 255, 0, 0.1);
+  }
+
+  .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+  }
+
+  .logo-mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--color-brand-primary);
+    color: var(--color-brand-bg);
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 1.1rem;
+    clip-path: polygon(0 0, 100% 0, 100% 70%, 70% 100%, 0 100%);
+  }
+
+  .logo-text {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--color-brand-text);
+    letter-spacing: -0.02em;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+  }
+
+  .nav-links a {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--color-brand-muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover {
+    color: var(--color-brand-primary);
+  }
+
+  .nav-cta {
+    padding: 0.6rem 1.5rem !important;
+    background: var(--color-brand-primary) !important;
+    color: var(--color-brand-bg) !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.05em !important;
+    clip-path: polygon(0 0, 100% 0, 100% 70%, 85% 100%, 0 100%);
+    transition: box-shadow 0.3s, transform 0.2s !important;
+  }
+
+  .nav-cta:hover {
+    box-shadow: 0 0 20px rgba(191, 255, 0, 0.4);
+    transform: translateY(-1px);
+  }
+
+  .nav-glow {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(191, 255, 0, 0.3), rgba(0, 212, 170, 0.2), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .nav.scrolled .nav-glow {
+    opacity: 1;
+  }
+
+  .mobile-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .mobile-toggle span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--color-brand-primary);
+    transition: all 0.3s;
+  }
+
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    top: 72px;
+    left: 0;
+    right: 0;
+    background: rgba(15, 15, 26, 0.98);
+    backdrop-filter: blur(20px);
+    padding: 2rem;
+    flex-direction: column;
+    gap: 1.5rem;
+    z-index: 99;
+    border-bottom: 1px solid rgba(191, 255, 0, 0.1);
+  }
+
+  .mobile-menu.open {
+    display: flex;
+  }
+
+  .mobile-link {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-brand-muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .mobile-cta {
+    display: inline-block;
+    padding: 0.8rem 2rem;
+    background: var(--color-brand-primary);
+    color: var(--color-brand-bg);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.9rem;
+    clip-path: polygon(0 0, 100% 0, 100% 70%, 90% 100%, 0 100%);
+    text-align: center;
+  }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .mobile-toggle { display: flex; }
+    .nav { padding: 0 1.25rem; }
+  }
+</style>
+
+<script>
+  const nav = document.getElementById('nav');
+  const toggle = document.getElementById('mobile-toggle');
+  const menu = document.getElementById('mobile-menu');
+
+  window.addEventListener('scroll', () => {
+    nav?.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  toggle?.addEventListener('click', () => {
+    menu?.classList.toggle('open');
+  });
+
+  menu?.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => menu?.classList.remove('open'));
+  });
+</script>

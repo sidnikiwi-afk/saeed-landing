@@ -1,0 +1,176 @@
+---
+const steps = [
+  {
+    num: "01",
+    title: "We audit your growth",
+    desc: "A 15-minute call to understand your business, customers, and where leads are leaking. No fluff, no deck, just a straight conversation.",
+    icon: `<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M4 28V8l12-4 12 4v20" stroke="currentColor" stroke-width="2"/><path d="M12 16h8M12 20h5" stroke="currentColor" stroke-width="2" stroke-linecap="square"/><circle cx="16" cy="11" r="2" stroke="currentColor" stroke-width="2"/></svg>`,
+  },
+  {
+    num: "02",
+    title: "We build the machine",
+    desc: "Outreach campaigns, AI phone handling, a site that converts, ads that target. All wired together into one system that feeds itself.",
+    icon: `<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect x="4" y="4" width="10" height="10" stroke="currentColor" stroke-width="2"/><rect x="18" y="4" width="10" height="10" stroke="currentColor" stroke-width="2"/><rect x="4" y="18" width="10" height="10" stroke="currentColor" stroke-width="2"/><rect x="18" y="18" width="10" height="10" stroke="currentColor" stroke-width="2"/><path d="M14 9h4M9 14v4M23 14v4M14 23h4" stroke="currentColor" stroke-width="2"/></svg>`,
+  },
+  {
+    num: "03",
+    title: "You get customers",
+    desc: "Qualified leads land in your inbox. Calls get answered. Your pipeline fills up. You focus on doing the work you're actually good at.",
+    icon: `<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M6 18l6 6L26 8" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></svg>`,
+  },
+];
+---
+
+<section class="how" id="how">
+  <div class="how-inner">
+    <span class="section-label">HOW IT WORKS</span>
+    <h2 class="how-title">Three steps. No mystery.</h2>
+
+    <div class="steps">
+      {steps.map((step, i) => (
+        <div class="step" style={`--i: ${i}`}>
+          <div class="step-line-wrap">
+            <div class="step-icon" set:html={step.icon} />
+            {i < 2 && <div class="connector" />}
+          </div>
+          <div class="step-content">
+            <span class="step-num">{step.num}</span>
+            <h3 class="step-title">{step.title}</h3>
+            <p class="step-desc">{step.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div class="how-angle"></div>
+</section>
+
+<style>
+  @reference "../../styles/global.css";
+
+  .how {
+    position: relative;
+    background: #16213E;
+    padding: 6rem 2rem 8rem;
+  }
+
+  .how-inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    color: var(--color-brand-primary);
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+    padding: 0.35rem 1rem;
+    border: 1px solid rgba(191, 255, 0, 0.25);
+  }
+
+  .how-title {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    letter-spacing: -0.03em;
+    color: var(--color-brand-text);
+    margin: 0 0 4rem;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 2rem;
+    position: relative;
+  }
+
+  .step-line-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .step-icon {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(191, 255, 0, 0.3);
+    color: var(--color-brand-primary);
+    flex-shrink: 0;
+    position: relative;
+    background: rgba(191, 255, 0, 0.03);
+  }
+
+  .step:hover .step-icon {
+    box-shadow: 0 0 20px rgba(191, 255, 0, 0.15);
+    border-color: rgba(191, 255, 0, 0.5);
+  }
+
+  .connector {
+    width: 1px;
+    flex: 1;
+    min-height: 40px;
+    background: linear-gradient(180deg, rgba(191, 255, 0, 0.3), rgba(191, 255, 0, 0.05));
+  }
+
+  .step-content {
+    padding-bottom: 3rem;
+  }
+
+  .step-num {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 0.75rem;
+    color: var(--color-brand-primary);
+    letter-spacing: 0.15em;
+    opacity: 0.5;
+  }
+
+  .step-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--color-brand-text);
+    margin: 0.5rem 0 0.75rem;
+    letter-spacing: -0.02em;
+  }
+
+  .step-desc {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--color-brand-muted);
+    margin: 0;
+    max-width: 500px;
+  }
+
+  .how-angle {
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: var(--color-brand-bg);
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  }
+
+  @media (max-width: 768px) {
+    .how { padding: 4rem 1.25rem 6rem; }
+    .step { grid-template-columns: 56px 1fr; gap: 1rem; }
+    .step-icon { width: 48px; height: 48px; }
+    .step-content { padding-bottom: 2rem; }
+  }
+</style>
