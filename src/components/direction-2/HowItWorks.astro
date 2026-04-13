@@ -4,40 +4,40 @@ const steps = [
     num: "01",
     title: "We audit your growth",
     desc: "A 15-minute call to understand your business, customers, and where leads are leaking. No fluff, no deck, just a straight conversation.",
-    icon: `<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M4 28V8l12-4 12 4v20" stroke="currentColor" stroke-width="2"/><path d="M12 16h8M12 20h5" stroke="currentColor" stroke-width="2" stroke-linecap="square"/><circle cx="16" cy="11" r="2" stroke="currentColor" stroke-width="2"/></svg>`,
+    icon: `<svg width="36" height="36" viewBox="0 0 32 32" fill="none"><path d="M4 28V8l12-4 12 4v20" stroke="currentColor" stroke-width="1.5"/><path d="M12 16h8M12 20h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/><circle cx="16" cy="11" r="2" stroke="currentColor" stroke-width="1.5"/></svg>`,
   },
   {
     num: "02",
     title: "We build the machine",
     desc: "Outreach campaigns, AI phone handling, a site that converts, ads that target. All wired together into one system that feeds itself.",
-    icon: `<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect x="4" y="4" width="10" height="10" stroke="currentColor" stroke-width="2"/><rect x="18" y="4" width="10" height="10" stroke="currentColor" stroke-width="2"/><rect x="4" y="18" width="10" height="10" stroke="currentColor" stroke-width="2"/><rect x="18" y="18" width="10" height="10" stroke="currentColor" stroke-width="2"/><path d="M14 9h4M9 14v4M23 14v4M14 23h4" stroke="currentColor" stroke-width="2"/></svg>`,
+    icon: `<svg width="36" height="36" viewBox="0 0 32 32" fill="none"><rect x="4" y="4" width="10" height="10" stroke="currentColor" stroke-width="1.5"/><rect x="18" y="4" width="10" height="10" stroke="currentColor" stroke-width="1.5"/><rect x="4" y="18" width="10" height="10" stroke="currentColor" stroke-width="1.5"/><rect x="18" y="18" width="10" height="10" stroke="currentColor" stroke-width="1.5"/><path d="M14 9h4M9 14v4M23 14v4M14 23h4" stroke="currentColor" stroke-width="1.5"/></svg>`,
   },
   {
     num: "03",
     title: "You get customers",
     desc: "Qualified leads land in your inbox. Calls get answered. Your pipeline fills up. You focus on doing the work you're actually good at.",
-    icon: `<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M6 18l6 6L26 8" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></svg>`,
+    icon: `<svg width="36" height="36" viewBox="0 0 32 32" fill="none"><path d="M6 18l6 6L26 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"/></svg>`,
   },
 ];
 ---
 
 <section class="how" id="how">
+  <div class="how-circuit-bg"></div>
   <div class="how-inner">
     <span class="section-label">HOW IT WORKS</span>
     <h2 class="how-title">Three steps. No mystery.</h2>
 
-    <div class="steps">
+    <div class="steps-row">
       {steps.map((step, i) => (
-        <div class="step" style={`--i: ${i}`}>
-          <div class="step-line-wrap">
+        <div class={`step-card ${i === 1 ? 'step-card--peak' : ''}`} style={`--i: ${i}`}>
+          <span class="step-bg-num">{step.num}</span>
+          <div class="step-icon-wrap">
             <div class="step-icon" set:html={step.icon} />
-            {i < 2 && <div class="connector" />}
           </div>
-          <div class="step-content">
-            <span class="step-num">{step.num}</span>
-            <h3 class="step-title">{step.title}</h3>
-            <p class="step-desc">{step.desc}</p>
-          </div>
+          <span class="step-num-label">{step.num}</span>
+          <h3 class="step-title">{step.title}</h3>
+          <p class="step-desc">{step.desc}</p>
+          {i < 2 && <div class="step-connector"><div class="connector-line"></div><div class="connector-dot"></div></div>}
         </div>
       ))}
     </div>
@@ -52,12 +52,25 @@ const steps = [
   .how {
     position: relative;
     background: #16213E;
-    padding: 6rem 2rem 8rem;
+    padding: 7rem 2rem 9rem;
+    overflow: hidden;
+  }
+
+  .how-circuit-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(191, 255, 0, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(191, 255, 0, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
   }
 
   .how-inner {
-    max-width: 900px;
+    max-width: 1100px;
     margin: 0 auto;
+    position: relative;
+    z-index: 2;
   }
 
   .section-label {
@@ -82,79 +95,131 @@ const steps = [
     margin: 0 0 4rem;
   }
 
-  .steps {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-  }
-
-  .step {
+  .steps-row {
     display: grid;
-    grid-template-columns: 80px 1fr;
-    gap: 2rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .step-card {
     position: relative;
+    background: rgba(15, 15, 26, 0.6);
+    border: 1px solid rgba(191, 255, 0, 0.12);
+    padding: 3rem 2rem 2.5rem;
+    overflow: hidden;
+    transition: border-color 0.4s, box-shadow 0.4s, transform 0.4s;
   }
 
-  .step-line-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  .step-card:hover {
+    border-color: rgba(191, 255, 0, 0.3);
+    box-shadow: 0 0 40px rgba(191, 255, 0, 0.08), inset 0 0 30px rgba(191, 255, 0, 0.02);
+    transform: translateY(-4px);
   }
 
-  .step-icon {
+  .step-card--peak {
+    margin-top: -1.5rem;
+    padding-top: 3.5rem;
+    padding-bottom: 3rem;
+  }
+
+  .step-bg-num {
+    position: absolute;
+    top: -0.25rem;
+    right: 0.5rem;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 8rem;
+    line-height: 1;
+    color: var(--color-brand-primary);
+    opacity: 0.06;
+    pointer-events: none;
+    letter-spacing: -0.05em;
+  }
+
+  .step-card:hover .step-bg-num {
+    opacity: 0.1;
+  }
+
+  .step-icon-wrap {
     width: 64px;
     height: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(191, 255, 0, 0.3);
-    color: var(--color-brand-primary);
-    flex-shrink: 0;
+    border: 1px solid rgba(191, 255, 0, 0.2);
+    background: rgba(191, 255, 0, 0.04);
+    margin-bottom: 1.5rem;
     position: relative;
-    background: rgba(191, 255, 0, 0.03);
+    z-index: 2;
+    transition: border-color 0.3s, box-shadow 0.3s;
   }
 
-  .step:hover .step-icon {
-    box-shadow: 0 0 20px rgba(191, 255, 0, 0.15);
+  .step-card:hover .step-icon-wrap {
     border-color: rgba(191, 255, 0, 0.5);
+    box-shadow: 0 0 20px rgba(191, 255, 0, 0.15);
   }
 
-  .connector {
-    width: 1px;
-    flex: 1;
-    min-height: 40px;
-    background: linear-gradient(180deg, rgba(191, 255, 0, 0.3), rgba(191, 255, 0, 0.05));
+  .step-icon {
+    color: var(--color-brand-primary);
   }
 
-  .step-content {
-    padding-bottom: 3rem;
-  }
-
-  .step-num {
+  .step-num-label {
     font-family: var(--font-heading);
     font-weight: 800;
-    font-size: 0.75rem;
-    color: var(--color-brand-primary);
-    letter-spacing: 0.15em;
-    opacity: 0.5;
+    font-size: 0.7rem;
+    color: var(--color-brand-accent);
+    letter-spacing: 0.2em;
+    display: block;
+    margin-bottom: 0.5rem;
   }
 
   .step-title {
     font-family: var(--font-heading);
     font-weight: 700;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     color: var(--color-brand-text);
-    margin: 0.5rem 0 0.75rem;
+    margin: 0 0 0.75rem;
     letter-spacing: -0.02em;
+    line-height: 1.25;
+    position: relative;
+    z-index: 2;
   }
 
   .step-desc {
     font-family: var(--font-body);
-    font-size: 1rem;
+    font-size: 0.95rem;
     line-height: 1.7;
     color: var(--color-brand-muted);
     margin: 0;
-    max-width: 500px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Connector between cards */
+  .step-connector {
+    position: absolute;
+    top: 50%;
+    right: -1.5rem;
+    width: 1.5rem;
+    height: 2px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+  }
+
+  .connector-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(191, 255, 0, 0.3), rgba(0, 212, 170, 0.3));
+  }
+
+  .connector-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--color-brand-accent);
+    box-shadow: 0 0 8px rgba(0, 212, 170, 0.5);
+    flex-shrink: 0;
   }
 
   .how-angle {
@@ -169,8 +234,17 @@ const steps = [
 
   @media (max-width: 768px) {
     .how { padding: 4rem 1.25rem 6rem; }
-    .step { grid-template-columns: 56px 1fr; gap: 1rem; }
-    .step-icon { width: 48px; height: 48px; }
-    .step-content { padding-bottom: 2rem; }
+    .steps-row {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+    .step-card--peak {
+      margin-top: 0;
+      padding-top: 3rem;
+      padding-bottom: 2.5rem;
+    }
+    .step-connector { display: none; }
+    .step-bg-num { font-size: 5rem; }
+    .step-card { padding: 2.5rem 1.5rem 2rem; }
   }
 </style>
