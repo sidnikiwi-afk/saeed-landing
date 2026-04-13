@@ -1,0 +1,407 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Get in Touch — Brackstone Digital" description="Book a free 15-minute discovery call or send us a message. We help UK small businesses grow with cold email, voice AI, websites, and paid ads.">
+  <style is:global>
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--color-brand-bg) !important;
+      color: var(--color-brand-text) !important;
+      font-family: var(--font-body) !important;
+      overflow-x: hidden;
+    }
+    h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading) !important; }
+    ::selection { background: var(--color-brand-primary); color: var(--color-brand-bg); }
+  </style>
+
+  <!-- Nav (reuse) -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <span class="logo-mark">B</span>
+        <span class="logo-text">Brackstone</span>
+      </a>
+      <div class="nav-links">
+        <a href="/#how">Process</a>
+        <a href="/#capabilities">Services</a>
+        <a href="/contact" class="nav-cta">Get in touch</a>
+      </div>
+      <button class="mobile-toggle" id="mobile-toggle" aria-label="Menu">
+        <span></span><span></span>
+      </button>
+    </div>
+    <div class="nav-glow"></div>
+  </nav>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="/#how" class="mobile-link">Process</a>
+    <a href="/#capabilities" class="mobile-link">Services</a>
+    <a href="/contact" class="mobile-cta">Get in touch</a>
+  </div>
+
+  <main class="contact-page">
+    <div class="grid-bg"></div>
+
+    <div class="contact-inner">
+      <div class="contact-content">
+        <span class="section-label">GET IN TOUCH</span>
+        <h1 class="contact-headline">Let's talk about<br/><span class="gradient-text">your growth.</span></h1>
+        <p class="contact-sub">15 minutes. No pitch. We'll look at your business, find where leads are leaking, and tell you exactly what we'd do. If we're not the right fit, we'll say so.</p>
+
+        <div class="contact-details">
+          <div class="detail-item">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5l7 5 7-5M3 5v10h14V5H3z" stroke="currentColor" stroke-width="1.5"/></svg>
+            <a href="mailto:hello@brackstonedigital.co.uk">hello@brackstonedigital.co.uk</a>
+          </div>
+          <div class="detail-item">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2C6.13 2 3 5.13 3 9c0 5.25 7 9 7 9s7-3.75 7-9c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="9" r="2" stroke="currentColor" stroke-width="1.5"/></svg>
+            <span>United Kingdom</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-form-wrap">
+        <form class="contact-form" id="contact-form">
+          <div class="form-group">
+            <label for="name">Your name</label>
+            <input type="text" id="name" name="name" required placeholder="e.g. Sarah Johnson" />
+          </div>
+          <div class="form-group">
+            <label for="email">Work email</label>
+            <input type="email" id="email" name="email" required placeholder="sarah@company.co.uk" />
+          </div>
+          <div class="form-group">
+            <label for="message">What can we help with?</label>
+            <textarea id="message" name="message" rows="4" placeholder="Tell us about your business and what you're looking for..."></textarea>
+          </div>
+          <button type="submit" class="form-btn" id="submit-btn">
+            <span>Send message</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
+          </button>
+          <p class="form-note">We'll get back to you within 24 hours.</p>
+          <div class="form-success" id="form-success">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"/></svg>
+            <span>Message sent. We'll be in touch soon.</span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-glow-line"></div>
+    <div class="footer-inner">
+      <div class="footer-left">
+        <a href="/" class="footer-logo">
+          <span class="f-logo-mark">B</span>
+          <span class="f-logo-text">Brackstone Digital</span>
+        </a>
+        <p class="footer-tagline">Full-stack growth for UK small businesses.</p>
+      </div>
+      <div class="footer-right">
+        <div class="footer-col">
+          <span class="footer-col-label">Services</span>
+          <a href="/#capabilities">Outreach</a>
+          <a href="/#capabilities">Voice AI</a>
+          <a href="/#capabilities">Websites</a>
+          <a href="/#capabilities">Paid Ads</a>
+        </div>
+        <div class="footer-col">
+          <span class="footer-col-label">Company</span>
+          <a href="/privacy">Privacy Policy</a>
+          <a href="/contact">Get in touch</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Brackstone Digital. All rights reserved.</span>
+    </div>
+  </footer>
+</Layout>
+
+<style>
+  @reference "../styles/global.css";
+
+  /* Nav styles (duplicated from Nav component for standalone page) */
+  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 2rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-bottom: 1px solid transparent; background: rgba(15, 15, 26, 0.95); backdrop-filter: blur(20px); }
+  .nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 72px; }
+  .nav-logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+  .logo-mark { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: var(--color-brand-primary); color: var(--color-brand-bg); font-family: var(--font-heading); font-weight: 800; font-size: 1.1rem; clip-path: polygon(0 0, 100% 0, 100% 70%, 70% 100%, 0 100%); }
+  .logo-text { font-family: var(--font-heading); font-weight: 700; font-size: 1.15rem; color: var(--color-brand-text); letter-spacing: -0.02em; }
+  .nav-links { display: flex; align-items: center; gap: 2.5rem; }
+  .nav-links a { font-family: var(--font-body); font-size: 0.85rem; color: var(--color-brand-muted); text-decoration: none; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 500; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--color-brand-primary); }
+  .nav-cta { padding: 0.6rem 1.5rem !important; background: var(--color-brand-primary) !important; color: var(--color-brand-bg) !important; font-weight: 700 !important; letter-spacing: 0.05em !important; clip-path: polygon(0 0, 100% 0, 100% 70%, 85% 100%, 0 100%); transition: box-shadow 0.3s, transform 0.2s !important; }
+  .nav-cta:hover { box-shadow: 0 0 20px rgba(191, 255, 0, 0.4); transform: translateY(-1px); }
+  .nav-glow { position: absolute; bottom: -1px; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(191, 255, 0, 0.3), rgba(0, 212, 170, 0.2), transparent); }
+  .mobile-toggle { display: none; flex-direction: column; gap: 6px; background: none; border: none; cursor: pointer; padding: 4px; }
+  .mobile-toggle span { display: block; width: 24px; height: 2px; background: var(--color-brand-primary); transition: all 0.3s; }
+  .mobile-menu { display: none; position: fixed; top: 72px; left: 0; right: 0; background: rgba(15, 15, 26, 0.98); backdrop-filter: blur(20px); padding: 2rem; flex-direction: column; gap: 1.5rem; z-index: 99; border-bottom: 1px solid rgba(191, 255, 0, 0.1); }
+  .mobile-menu.open { display: flex; }
+  .mobile-link { font-family: var(--font-body); font-size: 1rem; color: var(--color-brand-muted); text-decoration: none; text-transform: uppercase; letter-spacing: 0.1em; }
+  .mobile-cta { display: inline-block; padding: 0.8rem 2rem; background: var(--color-brand-primary); color: var(--color-brand-bg); font-family: var(--font-heading); font-weight: 700; text-decoration: none; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.9rem; clip-path: polygon(0 0, 100% 0, 100% 70%, 90% 100%, 0 100%); text-align: center; }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .mobile-toggle { display: flex; }
+    .nav { padding: 0 1.25rem; }
+  }
+
+  /* Page content */
+  .contact-page {
+    position: relative;
+    min-height: 100vh;
+    padding: 10rem 2rem 6rem;
+    overflow: hidden;
+  }
+
+  .grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(191, 255, 0, 0.05) 1px, transparent 0);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  .contact-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: start;
+    position: relative;
+    z-index: 2;
+  }
+
+  .section-label {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    color: var(--color-brand-primary);
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+    padding: 0.35rem 1rem;
+    border: 1px solid rgba(191, 255, 0, 0.25);
+  }
+
+  .contact-headline {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    color: var(--color-brand-text);
+    margin: 0 0 1.5rem;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .contact-sub {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--color-brand-muted);
+    margin: 0 0 3rem;
+    max-width: 420px;
+  }
+
+  .contact-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .detail-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--color-brand-muted);
+    font-size: 0.9rem;
+  }
+
+  .detail-item svg { color: var(--color-brand-primary); flex-shrink: 0; }
+  .detail-item a { color: var(--color-brand-muted); text-decoration: none; transition: color 0.2s; }
+  .detail-item a:hover { color: var(--color-brand-primary); }
+
+  /* Form */
+  .contact-form-wrap {
+    background: var(--color-brand-surface);
+    border: 1px solid rgba(191, 255, 0, 0.12);
+    padding: 2.5rem;
+    position: relative;
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form-group label {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-brand-muted);
+  }
+
+  .form-group input,
+  .form-group textarea {
+    background: var(--color-brand-bg);
+    border: 1px solid rgba(191, 255, 0, 0.12);
+    padding: 0.85rem 1rem;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--color-brand-text);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  .form-group input::placeholder,
+  .form-group textarea::placeholder {
+    color: rgba(136, 136, 170, 0.5);
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus {
+    border-color: rgba(191, 255, 0, 0.4);
+    box-shadow: 0 0 12px rgba(191, 255, 0, 0.08);
+  }
+
+  .form-group textarea { resize: vertical; min-height: 100px; }
+
+  .form-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    background: var(--color-brand-primary);
+    color: var(--color-brand-bg);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border: none;
+    cursor: pointer;
+    clip-path: polygon(0 0, 100% 0, 100% 65%, 88% 100%, 0 100%);
+    transition: box-shadow 0.3s, transform 0.2s;
+    align-self: flex-start;
+  }
+
+  .form-btn:hover {
+    box-shadow: 0 0 30px rgba(191, 255, 0, 0.5);
+    transform: translateY(-2px);
+  }
+
+  .form-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .form-note {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--color-brand-muted);
+    margin: 0;
+    opacity: 0.6;
+  }
+
+  .form-success {
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(0, 212, 170, 0.1);
+    border: 1px solid rgba(0, 212, 170, 0.25);
+    color: var(--color-brand-accent);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+  }
+
+  .form-success.show { display: flex; }
+
+  @media (max-width: 768px) {
+    .contact-page { padding: 7rem 1.25rem 4rem; }
+    .contact-inner { grid-template-columns: 1fr; gap: 3rem; }
+    .contact-form-wrap { padding: 2rem 1.5rem; }
+  }
+
+  /* Footer (duplicated for standalone page) */
+  .footer { position: relative; background: var(--color-brand-bg); padding: 4rem 2rem 2rem; }
+  .footer-glow-line { position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(191, 255, 0, 0.3), rgba(0, 212, 170, 0.2), transparent); }
+  .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; gap: 3rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(191, 255, 0, 0.06); }
+  .footer-logo { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; margin-bottom: 0.75rem; }
+  .f-logo-mark { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: var(--color-brand-primary); color: var(--color-brand-bg); font-family: var(--font-heading); font-weight: 800; font-size: 0.85rem; clip-path: polygon(0 0, 100% 0, 100% 70%, 70% 100%, 0 100%); }
+  .f-logo-text { font-family: var(--font-heading); font-weight: 600; font-size: 0.95rem; color: var(--color-brand-text); }
+  .footer-tagline { font-family: var(--font-body); font-size: 0.85rem; color: var(--color-brand-muted); margin: 0; max-width: 280px; }
+  .footer-right { display: flex; gap: 4rem; }
+  .footer-col { display: flex; flex-direction: column; gap: 0.6rem; }
+  .footer-col-label { font-family: var(--font-body); font-size: 0.65rem; font-weight: 600; letter-spacing: 0.2em; color: var(--color-brand-primary); text-transform: uppercase; margin-bottom: 0.5rem; opacity: 0.6; }
+  .footer-col a { font-family: var(--font-body); font-size: 0.85rem; color: var(--color-brand-muted); text-decoration: none; transition: color 0.2s; }
+  .footer-col a:hover { color: var(--color-brand-primary); }
+  .footer-bottom { max-width: 1100px; margin: 0 auto; padding-top: 1.5rem; }
+  .footer-bottom span { font-family: var(--font-body); font-size: 0.75rem; color: var(--color-brand-muted); opacity: 0.5; }
+  @media (max-width: 768px) {
+    .footer-inner { flex-direction: column; gap: 2rem; }
+    .footer-right { gap: 2.5rem; }
+    .footer { padding: 3rem 1.25rem 1.5rem; }
+  }
+</style>
+
+<script>
+  // Mobile menu
+  const toggle = document.getElementById('mobile-toggle');
+  const menu = document.getElementById('mobile-menu');
+  toggle?.addEventListener('click', () => menu?.classList.toggle('open'));
+  menu?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => menu?.classList.remove('open')));
+
+  // Form submission
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const btn = document.getElementById('submit-btn') as HTMLButtonElement;
+  const success = document.getElementById('form-success');
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    btn.disabled = true;
+    btn.querySelector('span')!.textContent = 'Sending...';
+
+    const data = {
+      name: (form.querySelector('#name') as HTMLInputElement).value,
+      email: (form.querySelector('#email') as HTMLInputElement).value,
+      message: (form.querySelector('#message') as HTMLTextAreaElement).value,
+      source: 'brackstonedigital.co.uk/contact',
+    };
+
+    try {
+      await fetch('https://primary-production-64370.up.railway.app/webhook/brackstone-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+    } catch (_) {
+      // Still show success — webhook may not respond
+    }
+
+    form.style.display = 'none';
+    success?.classList.add('show');
+  });
+</script>
