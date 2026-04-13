@@ -12,14 +12,17 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^6.1.5",
     "@astrojs/react": "^5.0.0",
+    "@astrojs/sitemap": "^3.7.2",
+    "@fontsource-variable/manrope": "*",
+    "@fontsource-variable/sora": "*",
     "@tailwindcss/vite": "^4.0.0",
+    "astro": "^6.1.5",
+    "astro-seo": "^1.1.0",
+    "astro-seo-schema": "^6.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "tailwindcss": "^4.0.0",
-    "@fontsource-variable/sora": "*",
-    "@fontsource-variable/manrope": "*"
+    "tailwindcss": "^4.0.0"
   },
   "devDependencies": {
     "wrangler": "^4.0.0"

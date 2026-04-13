@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://brackstonedigital.co.uk/sitemap-index.xml

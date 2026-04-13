@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { Schema } from 'astro-seo-schema';
 import Nav from '../components/direction-2/Nav.astro';
 import Hero from '../components/direction-2/Hero.astro';
 import Problem from '../components/direction-2/Problem.astro';
@@ -78,4 +79,25 @@ import Footer from '../components/direction-2/Footer.astro';
       (el as HTMLElement).style.transitionDelay = `${i * 0.1}s`;
     });
   </script>
+
+  <Schema
+    item={{
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "name": "Brackstone Digital",
+      "url": "https://brackstonedigital.co.uk",
+      "description": "Full-stack digital growth for UK small businesses. Cold email outreach, AI voice agents, websites, and paid ads.",
+      "areaServed": {
+        "@type": "Country",
+        "name": "United Kingdom"
+      },
+      "serviceType": ["Digital Marketing", "Cold Email Outreach", "AI Voice Agents", "Website Development", "Paid Advertising"],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "sales",
+        "email": "hello@brackstonedigital.co.uk",
+        "url": "https://brackstonedigital.co.uk/contact"
+      }
+    }}
+  />
 </Layout>
