@@ -7,7 +7,7 @@ Research wiki at `../wikis/`. Check before making changes:
 - `../wikis/domains/cold-email/pages/` — Campaign strategy, lead sourcing, personalisation
 - `../wikis/domains/data-infrastructure/pages/` — Webhook security, n8n patterns, Postgres
 
-## Detail (moved from Work/CLAUDE.md 2026-04-11)
+## Detail
 
 Public-facing website for the lead generation business. Static HTML, hosted via GitHub Pages.
 
@@ -43,11 +43,9 @@ Public-facing website for the lead generation business. Static HTML, hosted via 
 - Pricing: £200-500/month retainer for done-with-you outreach
 
 **Not yet done:**
-- GitHub Pages deployment + DNS setup
 - Meta Pixel ID (placeholder `YOUR_PIXEL_ID_HERE` in code)
 - OG image (1200x630, placeholder in meta tags)
 - `hello@brackstonedigital.co.uk` email setup
 - Social proof (testimonials, sample report screenshots)
-- `/meta-campaign` skill for accountancy vertical (skill didn't load in session, run in fresh session)
 - Instantly follow-up campaign setup (3 emails drafted, not yet configured)
 - Calendly/Cal.com booking link for sales calls
