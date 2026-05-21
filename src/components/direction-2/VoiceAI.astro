@@ -1,0 +1,357 @@
+---
+---
+<section class="va" id="voice-ai">
+  <div class="va-inner">
+    <div class="va-copy">
+      <span class="va-eyebrow">Voice AI</span>
+      <h2 class="va-title">Sounds like a person. Works like a team.</h2>
+      <p class="va-lede">
+        Brackstone is a UK-tuned voice agent that takes the pressure off your front desk,
+        answering on the first ring, asking the questions you would, and writing it all down so
+        nothing slips through.
+      </p>
+
+      <ul class="va-list">
+        <li>
+          <span class="check" aria-hidden="true">
+            <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3 3 7-7"/></svg>
+          </span>
+          <div>
+            <strong>Trained on your business.</strong>
+            <span>Services, service details, opening hours, the way your team actually speaks.</span>
+          </div>
+        </li>
+        <li>
+          <span class="check" aria-hidden="true">
+            <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3 3 7-7"/></svg>
+          </span>
+          <div>
+            <strong>Decides what is urgent.</strong>
+            <span>Sorts genuine bookings from cold callers and one-off questions before they hit your team.</span>
+          </div>
+        </li>
+        <li>
+          <span class="check" aria-hidden="true">
+            <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3 3 7-7"/></svg>
+          </span>
+          <div>
+            <strong>Hands over cleanly.</strong>
+            <span>When a human is needed, the caller is briefed and the team gets the context first.</span>
+          </div>
+        </li>
+      </ul>
+
+      <a href="/contact" class="va-cta">
+        Ask for a sample call
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+
+    <aside class="va-card" aria-label="Sample call">
+      <div class="card-head">
+        <span class="badge"><span class="badge-dot"></span> Live call</span>
+        <span class="card-time">00:42</span>
+      </div>
+
+      <div class="msg msg--bot">
+        <span class="who">Brackstone</span>
+        <p>Hi, you've reached the clinic, how can I help today?</p>
+      </div>
+      <div class="msg msg--user">
+        <span class="who">Caller</span>
+        <p>Hi, I'd like to book a consultation for laser, ideally next week.</p>
+      </div>
+      <div class="msg msg--bot">
+        <span class="who">Brackstone</span>
+        <p>Of course. Could I take your full name and the best number to reach you on?</p>
+      </div>
+
+      <div class="card-foot">
+        <div class="foot-item">
+          <span class="foot-k">Intent</span>
+          <span class="foot-v">New booking</span>
+        </div>
+        <div class="foot-item">
+          <span class="foot-k">Priority</span>
+          <span class="foot-v foot-v--accent">High</span>
+        </div>
+        <div class="foot-item">
+          <span class="foot-k">Next step</span>
+          <span class="foot-v">Confirm slot</span>
+        </div>
+      </div>
+
+      <div class="va-waveform" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<style>
+  @reference "../../styles/global.css";
+
+  .va {
+    background: var(--color-brand-bg);
+    padding: 5rem 1.5rem 5rem;
+  }
+
+  .va-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .va-eyebrow {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-brand-primary);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.85rem;
+  }
+
+  .va-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(1.85rem, 3.6vw, 2.6rem);
+    line-height: 1.1;
+    letter-spacing: 0;
+    color: var(--color-brand-ink);
+    margin: 0 0 1rem;
+  }
+
+  .va-lede {
+    font-family: var(--font-body);
+    font-size: 1.02rem;
+    line-height: 1.6;
+    color: var(--color-brand-muted);
+    margin: 0 0 1.75rem;
+    max-width: 520px;
+  }
+
+  .va-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .va-list li {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+
+  .va-list strong {
+    display: block;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--color-brand-ink);
+    font-size: 0.98rem;
+    margin-bottom: 0.2rem;
+    letter-spacing: 0;
+  }
+
+  .va-list span {
+    color: var(--color-brand-muted);
+    font-size: 0.93rem;
+    line-height: 1.5;
+  }
+
+  .check {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(110, 72, 240, 0.1);
+    color: var(--color-brand-primary);
+    margin-top: 2px;
+  }
+
+  .va-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-brand-ink);
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-brand-ink);
+    padding-bottom: 2px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .va-cta:hover {
+    color: var(--color-brand-primary);
+    border-color: var(--color-brand-primary);
+  }
+
+  /* Sample call card */
+  .va-card {
+    position: relative;
+    background: #fff;
+    border: 1px solid var(--color-brand-line);
+    border-radius: 20px;
+    padding: 1.4rem;
+    box-shadow:
+      0 1px 0 #fff inset,
+      0 30px 60px -30px rgba(10,10,11,0.2),
+      0 12px 30px -18px rgba(110, 72, 240, 0.25);
+  }
+
+  .card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(0, 200, 150, 0.1);
+    color: #0A8F6C;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .badge-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-brand-accent);
+    animation: badge-pulse 1.6s ease-in-out infinite;
+  }
+
+  @keyframes badge-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0, 200, 150, 0.45); }
+    50% { box-shadow: 0 0 0 6px rgba(0, 200, 150, 0); }
+  }
+
+  .card-time {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--color-brand-muted);
+  }
+
+  .msg {
+    display: block;
+    margin-bottom: 0.6rem;
+  }
+
+  .who {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-brand-muted);
+    margin-bottom: 0.25rem;
+  }
+
+  .msg p {
+    margin: 0;
+    padding: 0.65rem 0.85rem;
+    border-radius: 12px;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: var(--color-brand-ink);
+    max-width: 92%;
+  }
+
+  .msg--bot p {
+    background: rgba(110, 72, 240, 0.08);
+    border: 1px solid rgba(110, 72, 240, 0.15);
+  }
+
+  .msg--user {
+    text-align: right;
+  }
+
+  .msg--user .who { text-align: right; }
+
+  .msg--user p {
+    background: #F0F0F3;
+    border: 1px solid var(--color-brand-line);
+    margin-left: auto;
+  }
+
+  .card-foot {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-top: 1.1rem;
+    padding-top: 1.1rem;
+    border-top: 1px dashed var(--color-brand-line);
+  }
+
+  .foot-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .foot-k {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-brand-muted);
+    font-weight: 600;
+  }
+
+  .foot-v {
+    font-family: var(--font-heading);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--color-brand-ink);
+  }
+
+  .foot-v--accent {
+    color: var(--color-brand-primary);
+  }
+
+  .va-waveform {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    height: 32px;
+    margin-top: 1rem;
+  }
+
+  .va-waveform span {
+    width: 3px;
+    background: linear-gradient(180deg, var(--color-brand-primary), var(--color-brand-accent));
+    border-radius: 2px;
+    animation: wave 1.2s ease-in-out infinite;
+  }
+
+  .va-waveform span:nth-child(odd) { animation-delay: -0.4s; }
+  .va-waveform span:nth-child(3n)  { animation-delay: -0.8s; }
+  .va-waveform span:nth-child(5n)  { animation-delay: -0.2s; }
+
+  @keyframes wave {
+    0%, 100% { height: 8px; opacity: 0.5; }
+    50%      { height: 28px; opacity: 1; }
+  }
+
+  @media (max-width: 900px) {
+    .va-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+    .va { padding: 4rem 1.1rem; }
+  }
+</style>

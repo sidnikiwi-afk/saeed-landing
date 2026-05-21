@@ -1,27 +1,30 @@
 ---
 ---
 <footer class="footer">
-  <div class="footer-glow-line"></div>
   <div class="footer-inner">
     <div class="footer-left">
-      <a href="#" class="footer-logo">
-        <span class="f-logo-mark">B</span>
-        <span class="f-logo-text">Brackstone Digital</span>
+      <a href="/" class="footer-logo" aria-label="Brackstone home">
+        <span class="f-logo-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="20" height="20" rx="6" fill="currentColor"/>
+            <path d="M8 7.5h5.2c1.7 0 2.9 1 2.9 2.4 0 1-.6 1.7-1.5 2 1.1.3 1.8 1.2 1.8 2.4 0 1.6-1.2 2.7-3.1 2.7H8V7.5Zm2.1 3.6h2.7c.8 0 1.3-.4 1.3-1s-.5-1-1.3-1h-2.7v2Zm0 4h2.9c.9 0 1.4-.4 1.4-1.1 0-.7-.5-1.1-1.4-1.1h-2.9v2.2Z" fill="#fff"/>
+          </svg>
+        </span>
+        <span class="f-logo-text">Brackstone</span>
       </a>
-      <p class="footer-tagline">Full-stack growth for UK small businesses.</p>
+      <p class="footer-tagline">A calmer phone line for small UK teams.</p>
     </div>
     <div class="footer-right">
       <div class="footer-col">
-        <span class="footer-col-label">Services</span>
-        <a href="#capabilities">Outreach</a>
-        <a href="#capabilities">Voice AI</a>
-        <a href="#capabilities">Websites</a>
-        <a href="#capabilities">Paid Ads</a>
+        <span class="footer-col-label">Product</span>
+        <a href="#voice-ai">Voice AI</a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#how">How it works</a>
       </div>
       <div class="footer-col">
         <span class="footer-col-label">Company</span>
-        <a href="/privacy">Privacy Policy</a>
         <a href="/contact">Get in touch</a>
+        <a href="/privacy">Privacy</a>
       </div>
     </div>
   </div>
@@ -34,18 +37,9 @@
   @reference "../../styles/global.css";
 
   .footer {
-    position: relative;
     background: var(--color-brand-bg);
-    padding: 4rem 2rem 2rem;
-  }
-
-  .footer-glow-line {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(191, 255, 0, 0.3), rgba(0, 212, 170, 0.2), transparent);
+    padding: 3rem 1.5rem 1.75rem;
+    border-top: 1px solid var(--color-brand-line);
   }
 
   .footer-inner {
@@ -54,42 +48,34 @@
     display: flex;
     justify-content: space-between;
     gap: 3rem;
-    padding-bottom: 3rem;
-    border-bottom: 1px solid rgba(191, 255, 0, 0.06);
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--color-brand-line);
   }
 
   .footer-logo {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.5rem;
     text-decoration: none;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
   }
 
   .f-logo-mark {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    background: var(--color-brand-primary);
-    color: var(--color-brand-bg);
-    font-family: var(--font-heading);
-    font-weight: 800;
-    font-size: 0.85rem;
-    clip-path: polygon(0 0, 100% 0, 100% 70%, 70% 100%, 0 100%);
+    display: inline-flex;
+    color: var(--color-brand-primary);
   }
 
   .f-logo-text {
     font-family: var(--font-heading);
     font-weight: 600;
-    font-size: 0.95rem;
-    color: var(--color-brand-text);
+    font-size: 0.98rem;
+    color: var(--color-brand-ink);
+    letter-spacing: 0;
   }
 
   .footer-tagline {
     font-family: var(--font-body);
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     color: var(--color-brand-muted);
     margin: 0;
     max-width: 280px;
@@ -97,54 +83,52 @@
 
   .footer-right {
     display: flex;
-    gap: 4rem;
+    gap: 3rem;
   }
 
   .footer-col {
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.55rem;
   }
 
   .footer-col-label {
     font-family: var(--font-body);
-    font-size: 0.65rem;
+    font-size: 0.72rem;
     font-weight: 600;
-    letter-spacing: 0.2em;
-    color: var(--color-brand-primary);
+    letter-spacing: 0.1em;
+    color: var(--color-brand-ink);
     text-transform: uppercase;
-    margin-bottom: 0.5rem;
-    opacity: 0.6;
+    margin-bottom: 0.35rem;
   }
 
   .footer-col a {
     font-family: var(--font-body);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: var(--color-brand-muted);
     text-decoration: none;
-    transition: color 0.2s;
+    transition: color 0.18s ease;
   }
 
   .footer-col a:hover {
-    color: var(--color-brand-primary);
+    color: var(--color-brand-ink);
   }
 
   .footer-bottom {
     max-width: 1100px;
     margin: 0 auto;
-    padding-top: 1.5rem;
+    padding-top: 1.25rem;
   }
 
   .footer-bottom span {
     font-family: var(--font-body);
-    font-size: 0.75rem;
+    font-size: 0.78rem;
     color: var(--color-brand-muted);
-    opacity: 0.5;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 720px) {
     .footer-inner { flex-direction: column; gap: 2rem; }
-    .footer-right { gap: 2.5rem; }
-    .footer { padding: 3rem 1.25rem 1.5rem; }
+    .footer-right { gap: 2rem; }
+    .footer { padding: 2.5rem 1.1rem 1.5rem; }
   }
 </style>

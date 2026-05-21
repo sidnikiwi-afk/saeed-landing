@@ -1,12 +1,16 @@
 @theme {
-  --color-brand-primary:   #BFFF00;
-  --color-brand-secondary: #16213E;
-  --color-brand-accent:    #00D4AA;
-  --color-brand-bg:        #0F0F1A;
-  --color-brand-surface:   #1C1C30;
-  --color-brand-text:      #F0F0F0;
-  --color-brand-muted:     #8888AA;
+  /* Dashboard brand */
+  --color-brand-primary:   #6E48F0;
+  --color-brand-primary-2: #5A36D8;
+  --color-brand-accent:    #00C896;
+  --color-brand-bg:        #F7F7F8;
+  --color-brand-surface:   #FFFFFF;
+  --color-brand-ink:       #0A0A0B;
+  --color-brand-text:      #0A0A0B;
+  --color-brand-muted:     #5B5B66;
+  --color-brand-line:      #E6E6EA;
 
-  --font-heading: 'Sora Variable', system-ui, sans-serif;
-  --font-body:    'Manrope Variable', system-ui, sans-serif;
+  --font-heading: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body:    'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono:    'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 }
