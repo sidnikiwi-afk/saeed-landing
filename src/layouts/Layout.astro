@@ -8,7 +8,7 @@ interface Props {
   canonical?: string;
 }
 
-const { title, description = 'Full-stack digital growth for UK small businesses. Cold email outreach, AI voice agents, high-converting websites, and paid ads — one partner, one system.', canonical } = Astro.props;
+const { title, description = 'Voice AI receptionist for UK small teams. Brackstone answers, qualifies and organises enquiries so follow-ups stay visible without extra admin.', canonical } = Astro.props;
 const siteUrl = 'https://brackstonedigital.co.uk';
 const canonicalUrl = canonical || new URL(Astro.url.pathname, siteUrl).toString();
 ---
@@ -43,6 +43,9 @@ const canonicalUrl = canonical || new URL(Astro.url.pathname, siteUrl).toString(
     />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" />
   </head>
   <body>
     <slot />

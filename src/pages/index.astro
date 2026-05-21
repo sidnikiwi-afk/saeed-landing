@@ -3,24 +3,29 @@ import Layout from '../layouts/Layout.astro';
 import { Schema } from 'astro-seo-schema';
 import Nav from '../components/direction-2/Nav.astro';
 import Hero from '../components/direction-2/Hero.astro';
-import Problem from '../components/direction-2/Problem.astro';
+import Trust from '../components/direction-2/Trust.astro';
 import HowItWorks from '../components/direction-2/HowItWorks.astro';
-import Capabilities from '../components/direction-2/Capabilities.astro';
+import VoiceAI from '../components/direction-2/VoiceAI.astro';
+import DashboardProof from '../components/direction-2/DashboardProof.astro';
+import Testimonial from '../components/direction-2/Testimonial.astro';
 import Cta from '../components/direction-2/Cta.astro';
 import Footer from '../components/direction-2/Footer.astro';
 ---
 
-<Layout title="Brackstone Digital — Full-Stack Growth for UK Businesses" description="Cold email, voice AI, websites, paid ads — one partner, one system. We help small businesses get more customers.">
+<Layout
+  title="Brackstone - Voice AI receptionist for UK small teams"
+  description="Brackstone answers, qualifies and organises enquiries for small teams, so urgent follow-ups and bookings stay visible without extra admin."
+>
   <style is:global>
-    html {
-      scroll-behavior: smooth;
-    }
+    html { scroll-behavior: smooth; }
 
     body {
       background: var(--color-brand-bg) !important;
       color: var(--color-brand-text) !important;
       font-family: var(--font-body) !important;
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -29,14 +34,14 @@ import Footer from '../components/direction-2/Footer.astro';
 
     ::selection {
       background: var(--color-brand-primary);
-      color: var(--color-brand-bg);
+      color: #fff;
     }
 
     .sr {
       opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-                  transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateY(20px);
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .sr.visible {
       opacity: 1;
@@ -46,9 +51,11 @@ import Footer from '../components/direction-2/Footer.astro';
 
   <Nav />
   <Hero />
-  <Problem />
+  <Trust />
   <HowItWorks />
-  <Capabilities />
+  <VoiceAI />
+  <DashboardProof />
+  <Testimonial />
   <Cta />
   <Footer />
 
@@ -58,25 +65,23 @@ import Footer from '../components/direction-2/Footer.astro';
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
           }
         });
       },
       { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
     );
 
-    document.querySelectorAll('.problem-card, .step, .bento-card, .cap-title, .cap-sub').forEach((el) => {
+    document.querySelectorAll('.step, .panel, .va-card, .va-list li, .trust-item, .quote-body').forEach((el) => {
       el.classList.add('sr');
       observer.observe(el);
     });
 
-    document.querySelectorAll('.problem-card').forEach((el, i) => {
-      (el as HTMLElement).style.transitionDelay = `${i * 0.1}s`;
-    });
     document.querySelectorAll('.step').forEach((el, i) => {
-      (el as HTMLElement).style.transitionDelay = `${i * 0.15}s`;
+      (el as HTMLElement).style.transitionDelay = `${i * 0.08}s`;
     });
-    document.querySelectorAll('.bento-card').forEach((el, i) => {
-      (el as HTMLElement).style.transitionDelay = `${i * 0.1}s`;
+    document.querySelectorAll('.trust-item').forEach((el, i) => {
+      (el as HTMLElement).style.transitionDelay = `${i * 0.05}s`;
     });
   </script>
 
@@ -86,12 +91,12 @@ import Footer from '../components/direction-2/Footer.astro';
       "@type": "ProfessionalService",
       "name": "Brackstone Digital",
       "url": "https://brackstonedigital.co.uk",
-      "description": "Full-stack digital growth for UK small businesses. Cold email outreach, AI voice agents, websites, and paid ads.",
+      "description": "Voice AI receptionist that answers, qualifies and organises enquiries for small UK teams.",
       "areaServed": {
         "@type": "Country",
         "name": "United Kingdom"
       },
-      "serviceType": ["Digital Marketing", "Cold Email Outreach", "AI Voice Agents", "Website Development", "Paid Advertising"],
+      "serviceType": ["Voice AI", "AI Receptionist", "Call Handling", "Lead Qualification"],
       "contactPoint": {
         "@type": "ContactPoint",
         "contactType": "sales",

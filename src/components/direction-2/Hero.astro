@@ -1,61 +1,55 @@
 ---
 ---
 <section class="hero">
-  <div class="grid-bg"></div>
-  <div class="scan-line"></div>
+  <div class="hero-bg" aria-hidden="true"></div>
 
   <div class="hero-inner">
-    <div class="hero-content">
-      <div class="hero-label">
-        <span class="label-dot"></span>
-        <span>FULL-STACK GROWTH PARTNER</span>
-      </div>
-
-      <h1 class="hero-headline">
-        <span class="line line-1">Your business</span>
-        <span class="line line-2">deserves a</span>
-        <span class="line line-3 gradient-text">growth engine.</span>
-      </h1>
-
-      <p class="hero-sub">
-        Cold email outreach. AI voice agents. High-converting websites. Paid ads.
-        One team, one system, one partner who actually gives a damn.
-      </p>
-
-      <div class="hero-cta-row">
-        <a href="#cta" class="hero-btn">
-          <span>Book a free call</span>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
-        </a>
-        <span class="hero-note">15 minutes. No pitch. Just a plan.</span>
-      </div>
+    <div class="hero-eyebrow">
+      <span class="dot" aria-hidden="true"></span>
+      <span>Voice AI for small UK teams</span>
     </div>
 
-    <!-- Right-side decorative visualization -->
-    <div class="hero-visual" aria-hidden="true">
-      <div class="vis-grid">
-        <div class="vis-cell vis-cell--active" style="--row:1;--col:3;"></div>
-        <div class="vis-cell vis-cell--active" style="--row:2;--col:2;"></div>
-        <div class="vis-cell vis-cell--accent" style="--row:2;--col:4;"></div>
-        <div class="vis-cell vis-cell--active" style="--row:3;--col:1;"></div>
-        <div class="vis-cell vis-cell--active" style="--row:3;--col:3;"></div>
-        <div class="vis-cell vis-cell--accent" style="--row:4;--col:2;"></div>
-        <div class="vis-cell vis-cell--active" style="--row:4;--col:4;"></div>
-        <div class="vis-cell vis-cell--active" style="--row:5;--col:3;"></div>
-      </div>
-      <div class="vis-lines">
-        <div class="vis-hline" style="top: 25%"></div>
-        <div class="vis-hline" style="top: 50%"></div>
-        <div class="vis-hline" style="top: 75%"></div>
-        <div class="vis-vline" style="left: 25%"></div>
-        <div class="vis-vline" style="left: 50%"></div>
-        <div class="vis-vline" style="left: 75%"></div>
-      </div>
-      <div class="vis-glow"></div>
+    <h1 class="hero-headline">
+      Every caller gets a
+      <span class="grad">calm first response.</span>
+    </h1>
+
+    <p class="hero-sub">
+      Brackstone answers, qualifies and organises enquiries for small teams, so urgent
+      follow-ups and bookings stay visible without extra admin.
+    </p>
+
+    <div class="hero-cta-row">
+      <a href="/contact" class="btn-primary">
+        Book a walkthrough
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="/contact" class="btn-ghost">Talk to us</a>
+    </div>
+
+    <div class="hero-meta">
+      <span class="meta-pill"><span class="meta-dot"></span> Answers in under 2 seconds</span>
+      <span class="meta-sep" aria-hidden="true">·</span>
+      <span class="meta-pill">UK timezones &amp; phone numbers</span>
+      <span class="meta-sep" aria-hidden="true">·</span>
+      <span class="meta-pill">Hands off after setup</span>
     </div>
   </div>
 
-  <div class="hero-angle"></div>
+  <div class="hero-shot" aria-hidden="true">
+    <div class="shot-frame">
+      <div class="shot-chrome">
+        <span class="chrome-dot"></span>
+        <span class="chrome-dot"></span>
+        <span class="chrome-dot"></span>
+        <span class="chrome-url">brackstone.app</span>
+      </div>
+      <img src="/images/homepage/dashboard-overview-1440x900.png" alt="" loading="eager" decoding="async" />
+    </div>
+    <div class="shot-glow"></div>
+  </div>
 </section>
 
 <style>
@@ -63,270 +57,234 @@
 
   .hero {
     position: relative;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    padding: 8rem 2rem 6rem;
+    padding: 9rem 1.5rem 4rem;
     overflow: hidden;
     background: var(--color-brand-bg);
   }
 
-  .grid-bg {
+  .hero-bg {
+    position: absolute;
+    inset: -10% -5% 0 -5%;
+    background:
+      radial-gradient(60% 50% at 50% 0%, rgba(110, 72, 240, 0.16), transparent 70%),
+      radial-gradient(45% 40% at 85% 30%, rgba(0, 200, 150, 0.08), transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-bg::after {
+    content: '';
     position: absolute;
     inset: 0;
-    background-image:
-      radial-gradient(circle at 1px 1px, rgba(191, 255, 0, 0.07) 1px, transparent 0);
-    background-size: 40px 40px;
-    pointer-events: none;
-  }
-
-  .scan-line {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--color-brand-primary), var(--color-brand-accent), transparent);
+    background-image: linear-gradient(var(--color-brand-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-brand-line) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(70% 60% at 50% 30%, #000 0%, transparent 75%);
+    -webkit-mask-image: radial-gradient(70% 60% at 50% 30%, #000 0%, transparent 75%);
     opacity: 0.5;
-    animation: scanDown 4s ease-in-out infinite;
-    pointer-events: none;
-  }
-
-  @keyframes scanDown {
-    0% { top: 0; opacity: 0; }
-    10% { opacity: 0.5; }
-    90% { opacity: 0.5; }
-    100% { top: 100%; opacity: 0; }
   }
 
   .hero-inner {
-    max-width: 1200px;
-    margin: 0 auto;
     position: relative;
     z-index: 2;
-    display: grid;
-    grid-template-columns: 1fr 0.5fr;
-    gap: 4rem;
-    align-items: center;
-    width: 100%;
+    max-width: 880px;
+    margin: 0 auto;
+    text-align: center;
   }
 
-  .hero-label {
+  .hero-eyebrow {
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
-    font-family: var(--font-body);
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 0.2em;
+    gap: 0.5rem;
+    padding: 0.4rem 0.85rem;
+    background: rgba(110, 72, 240, 0.08);
     color: var(--color-brand-primary);
-    text-transform: uppercase;
-    margin-bottom: 2rem;
-    opacity: 0;
-    animation: fadeUp 0.6s 0.2s forwards;
+    border: 1px solid rgba(110, 72, 240, 0.18);
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    margin-bottom: 1.5rem;
   }
 
-  .label-dot {
-    width: 8px;
-    height: 8px;
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
     background: var(--color-brand-primary);
-    box-shadow: 0 0 12px rgba(191, 255, 0, 0.6), 0 0 24px rgba(191, 255, 0, 0.3);
-    animation: dotPulse 2s infinite;
-  }
-
-  @keyframes dotPulse {
-    0%, 100% { box-shadow: 0 0 12px rgba(191, 255, 0, 0.6), 0 0 24px rgba(191, 255, 0, 0.3); }
-    50% { box-shadow: 0 0 6px rgba(191, 255, 0, 0.3), 0 0 12px rgba(191, 255, 0, 0.1); }
+    box-shadow: 0 0 0 3px rgba(110, 72, 240, 0.18);
   }
 
   .hero-headline {
     font-family: var(--font-heading);
-    font-weight: 800;
-    font-size: clamp(3rem, 7vw, 6rem);
-    line-height: 0.95;
-    letter-spacing: -0.04em;
-    color: var(--color-brand-text);
-    margin: 0 0 2rem;
+    font-weight: 600;
+    font-size: clamp(2.4rem, 6vw, 4.4rem);
+    line-height: 1.04;
+    letter-spacing: 0;
+    color: var(--color-brand-ink);
+    margin: 0 auto 1.25rem;
+    max-width: 780px;
   }
 
-  .line {
-    display: block;
-    opacity: 0;
-    transform: translateY(40px);
-  }
-
-  .line-1 { animation: lineReveal 0.7s 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-  .line-2 { animation: lineReveal 0.7s 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-  .line-3 { animation: lineReveal 0.7s 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
-  @keyframes lineReveal {
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .gradient-text {
-    background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-accent) 100%);
+  .grad {
+    background: linear-gradient(120deg, var(--color-brand-primary) 0%, #8C6BFF 60%, var(--color-brand-accent) 100%);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
+    color: transparent;
   }
 
   .hero-sub {
     font-family: var(--font-body);
-    font-size: clamp(1rem, 1.8vw, 1.15rem);
-    line-height: 1.7;
+    font-size: clamp(1.02rem, 1.5vw, 1.18rem);
+    line-height: 1.6;
     color: var(--color-brand-muted);
-    max-width: 520px;
-    margin: 0 0 2.5rem;
-    opacity: 0;
-    animation: fadeUp 0.6s 0.8s forwards;
+    max-width: 620px;
+    margin: 0 auto 2rem;
   }
 
   .hero-cta-row {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-    opacity: 0;
-    animation: fadeUp 0.6s 1s forwards;
-  }
-
-  .hero-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 1rem 2rem;
-    background: var(--color-brand-primary);
-    color: var(--color-brand-bg);
-    font-family: var(--font-heading);
-    font-weight: 700;
-    font-size: 0.95rem;
-    text-decoration: none;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    clip-path: polygon(0 0, 100% 0, 100% 65%, 88% 100%, 0 100%);
-    transition: box-shadow 0.3s, transform 0.2s;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 1.75rem;
   }
 
-  .hero-btn:hover {
-    box-shadow: 0 0 30px rgba(191, 255, 0, 0.5), 0 0 60px rgba(191, 255, 0, 0.2);
-    transform: translateY(-2px);
-  }
-
-  .hero-note {
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.4rem;
+    background: var(--color-brand-ink);
+    color: #fff;
+    border-radius: 999px;
     font-family: var(--font-body);
-    font-size: 0.85rem;
+    font-weight: 600;
+    font-size: 0.98rem;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 8px 24px -10px rgba(10,10,11,0.4);
+  }
+
+  .btn-primary:hover {
+    background: var(--color-brand-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 12px 30px -10px rgba(110, 72, 240, 0.5);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.4rem;
+    background: transparent;
+    color: var(--color-brand-ink);
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.98rem;
+    text-decoration: none;
+    border: 1px solid var(--color-brand-line);
+    background: #fff;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--color-brand-ink);
+  }
+
+  .hero-meta {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
     color: var(--color-brand-muted);
-    font-style: italic;
+    font-size: 0.82rem;
   }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+  .meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
   }
 
-  /* Right-side visualization */
-  .hero-visual {
+  .meta-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-brand-accent);
+  }
+
+  .meta-sep { opacity: 0.5; }
+
+  .hero-shot {
     position: relative;
+    max-width: 1100px;
+    margin: 3.5rem auto 0;
+    padding: 0 1rem;
+    z-index: 2;
+  }
+
+  .shot-frame {
+    position: relative;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid var(--color-brand-line);
+    overflow: hidden;
+    box-shadow:
+      0 1px 0 #fff inset,
+      0 30px 60px -25px rgba(10, 10, 11, 0.25),
+      0 12px 30px -15px rgba(110, 72, 240, 0.25);
+  }
+
+  .shot-chrome {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.85rem;
+    border-bottom: 1px solid var(--color-brand-line);
+    background: #FAFAFB;
+  }
+
+  .chrome-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #E0E0E5;
+  }
+
+  .chrome-dot:nth-child(1) { background: #FF6058; }
+  .chrome-dot:nth-child(2) { background: #FFBD2D; }
+  .chrome-dot:nth-child(3) { background: #28C940; }
+
+  .chrome-url {
+    margin-left: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--color-brand-muted);
+  }
+
+  .shot-frame img {
+    display: block;
     width: 100%;
-    aspect-ratio: 1;
-    max-width: 360px;
-    justify-self: center;
-    opacity: 0;
-    animation: fadeUp 1s 0.6s forwards;
+    height: auto;
   }
 
-  .vis-grid {
+  .shot-glow {
     position: absolute;
-    inset: 10%;
-  }
-
-  .vis-cell {
-    position: absolute;
-    width: 48px;
-    height: 48px;
-    border: 1px solid rgba(191, 255, 0, 0.08);
-    top: calc((var(--row) - 1) * 22%);
-    left: calc((var(--col) - 1) * 25%);
-    transition: all 0.5s ease;
-  }
-
-  .vis-cell--active {
-    border-color: rgba(191, 255, 0, 0.2);
-    background: rgba(191, 255, 0, 0.04);
-    animation: cellPulse 3s ease-in-out infinite;
-    animation-delay: calc(var(--row) * 0.3s + var(--col) * 0.2s);
-  }
-
-  .vis-cell--accent {
-    border-color: rgba(0, 212, 170, 0.3);
-    background: rgba(0, 212, 170, 0.06);
-    animation: cellPulse 3s ease-in-out infinite;
-    animation-delay: calc(var(--row) * 0.4s);
-  }
-
-  @keyframes cellPulse {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; box-shadow: 0 0 12px rgba(191, 255, 0, 0.1); }
-  }
-
-  .vis-lines {
-    position: absolute;
-    inset: 0;
+    inset: -10% -5% -20%;
+    background: radial-gradient(50% 40% at 50% 0%, rgba(110, 72, 240, 0.18), transparent 70%);
+    z-index: -1;
     pointer-events: none;
   }
 
-  .vis-hline {
-    position: absolute;
-    left: 5%;
-    right: 5%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(191, 255, 0, 0.08), transparent);
-  }
-
-  .vis-vline {
-    position: absolute;
-    top: 5%;
-    bottom: 5%;
-    width: 1px;
-    background: linear-gradient(180deg, transparent, rgba(191, 255, 0, 0.08), transparent);
-  }
-
-  .vis-glow {
-    position: absolute;
-    top: 30%;
-    left: 30%;
-    width: 40%;
-    height: 40%;
-    background: radial-gradient(circle, rgba(191, 255, 0, 0.06) 0%, transparent 70%);
-    animation: glowPulse 4s ease-in-out infinite;
-  }
-
-  @keyframes glowPulse {
-    0%, 100% { opacity: 0.5; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.2); }
-  }
-
-  .hero-angle {
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    right: 0;
-    height: 80px;
-    background: var(--color-brand-surface);
-    clip-path: polygon(0 100%, 100% 40%, 100% 100%);
-  }
-
-  @media (max-width: 768px) {
-    .hero { padding: 7rem 1.25rem 5rem; }
-    .hero-inner {
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-    .hero-visual {
-      max-width: 240px;
-      opacity: 0.5;
-    }
-    .hero-headline { letter-spacing: -0.03em; }
-    .hero-cta-row { flex-direction: column; align-items: flex-start; }
+  @media (max-width: 720px) {
+    .hero { padding: 7rem 1.1rem 3rem; }
+    .hero-cta-row { width: 100%; }
+    .btn-primary, .btn-ghost { width: 100%; justify-content: center; }
+    .hero-meta { font-size: 0.78rem; }
+    .meta-sep { display: none; }
+    .hero-shot { margin-top: 2.5rem; }
+    .chrome-url { display: none; }
   }
 </style>

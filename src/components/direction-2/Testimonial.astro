@@ -1,0 +1,114 @@
+---
+---
+<section class="quote" aria-label="Alpha testimonial">
+  <div class="quote-inner">
+    <span class="quote-eyebrow">Alpha programme</span>
+    <svg class="quote-mark" viewBox="0 0 48 48" width="48" height="48" aria-hidden="true">
+      <path d="M14 30c0-7 5-12 12-13l1 4c-5 1-8 4-8 9h5v10H10V30h4Zm22 0c0-7 5-12 12-13l1 4c-5 1-8 4-8 9h5v10H32V30h4Z" transform="translate(-4 -4)" fill="currentColor" />
+    </svg>
+    <blockquote class="quote-body">
+      Brackstone gives our team a clearer picture of which enquiries need attention first.
+      It keeps follow-ups organised, helps us respond calmly, and means fewer important
+      calls get lost during busy clinic days.
+    </blockquote>
+    <figcaption class="quote-attr">
+      <span class="attr-avatar" aria-hidden="true">AL</span>
+      <span class="attr-text">
+        <strong>Alpha Laser Clinic team</strong>
+        <span>Alpha testing partner</span>
+      </span>
+    </figcaption>
+  </div>
+</section>
+
+<style>
+  @reference "../../styles/global.css";
+
+  .quote {
+    background: #fff;
+    padding: 5rem 1.5rem;
+    border-top: 1px solid var(--color-brand-line);
+    border-bottom: 1px solid var(--color-brand-line);
+  }
+
+  .quote-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+  }
+
+  .quote-eyebrow {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-brand-primary);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.85rem;
+  }
+
+  .quote-mark {
+    color: rgba(110, 72, 240, 0.18);
+    margin-bottom: 0.5rem;
+  }
+
+  .quote-body {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: clamp(1.2rem, 2.4vw, 1.7rem);
+    line-height: 1.45;
+    letter-spacing: 0;
+    color: var(--color-brand-ink);
+    margin: 0 0 1.75rem;
+    quotes: "\201C" "\201D";
+  }
+
+  .quote-body::before { content: open-quote; }
+  .quote-body::after  { content: close-quote; }
+
+  .quote-attr {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: left;
+  }
+
+  .attr-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-brand-primary), var(--color-brand-accent));
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+  }
+
+  .attr-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+
+  .attr-text strong {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--color-brand-ink);
+    font-size: 0.95rem;
+  }
+
+  .attr-text span {
+    color: var(--color-brand-muted);
+    font-size: 0.82rem;
+    margin-top: 2px;
+  }
+
+  @media (max-width: 720px) {
+    .quote { padding: 3.5rem 1.1rem; }
+  }
+</style>

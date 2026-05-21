@@ -1,0 +1,258 @@
+---
+const views = [
+  {
+    id: 'overview',
+    label: 'Overview',
+    title: 'See the day at a glance',
+    body: 'Today’s calls, what was booked, and what still needs a human reply.',
+    img: '/images/homepage/dashboard-overview-1440x900.png',
+  },
+  {
+    id: 'calls',
+    label: 'Calls',
+    title: 'Every call, transcribed',
+    body: 'Searchable transcripts and recordings with the summary already done for you.',
+    img: '/images/homepage/dashboard-calls-1440x900.png',
+  },
+  {
+    id: 'queue',
+    label: 'Follow-up queue',
+    title: 'Nothing falls through',
+    body: 'Urgent enquiries sit at the top until your team marks them handled.',
+    img: '/images/homepage/dashboard-queue-1440x900.png',
+  },
+  {
+    id: 'analytics',
+    label: 'Analytics',
+    title: 'Patterns you can act on',
+    body: 'When calls peak, what people are asking for, where bookings come from.',
+    img: '/images/homepage/dashboard-analytics-1440x900.png',
+  },
+];
+---
+<section class="proof" id="dashboard">
+  <div class="proof-inner">
+    <header class="proof-head">
+      <span class="proof-eyebrow">The dashboard</span>
+      <h2 class="proof-title">A clear picture of every enquiry, without the admin.</h2>
+      <p class="proof-sub">Brackstone organises calls in one place so the right things get attention first and the rest stops piling up.</p>
+    </header>
+
+    <div class="tabs" role="tablist" aria-label="Dashboard views">
+      {views.map((v, i) => (
+        <button
+          class={`tab${i === 0 ? ' is-active' : ''}`}
+          role="tab"
+          aria-selected={i === 0 ? 'true' : 'false'}
+          aria-controls={`panel-${v.id}`}
+          id={`tab-${v.id}`}
+          data-target={v.id}
+          type="button"
+        >
+          {v.label}
+        </button>
+      ))}
+    </div>
+
+    <div class="panels">
+      {views.map((v, i) => (
+        <div
+          class={`panel${i === 0 ? ' is-active' : ''}`}
+          id={`panel-${v.id}`}
+          role="tabpanel"
+          aria-labelledby={`tab-${v.id}`}
+          data-panel={v.id}
+        >
+          <div class="panel-copy">
+            <h3 class="panel-title">{v.title}</h3>
+            <p class="panel-body">{v.body}</p>
+          </div>
+          <figure class="panel-shot">
+            <div class="shot-chrome">
+              <span></span><span></span><span></span>
+            </div>
+            <img src={v.img} alt={`${v.label} view of the Brackstone dashboard`} loading="lazy" decoding="async" />
+          </figure>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  @reference "../../styles/global.css";
+
+  .proof {
+    background: linear-gradient(180deg, var(--color-brand-bg) 0%, #FFFFFF 100%);
+    padding: 5rem 1.5rem 5rem;
+    border-top: 1px solid var(--color-brand-line);
+  }
+
+  .proof-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  .proof-head {
+    max-width: 720px;
+    margin: 0 auto 2.5rem;
+    text-align: center;
+  }
+
+  .proof-eyebrow {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-brand-primary);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.85rem;
+  }
+
+  .proof-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(1.85rem, 3.6vw, 2.6rem);
+    line-height: 1.1;
+    letter-spacing: 0;
+    color: var(--color-brand-ink);
+    margin: 0 0 0.85rem;
+  }
+
+  .proof-sub {
+    font-family: var(--font-body);
+    font-size: 1.02rem;
+    line-height: 1.6;
+    color: var(--color-brand-muted);
+    margin: 0;
+  }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-bottom: 1.75rem;
+    padding: 0.35rem;
+    background: #fff;
+    border: 1px solid var(--color-brand-line);
+    border-radius: 999px;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .tab {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 0.55rem 1.05rem;
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--color-brand-muted);
+    cursor: pointer;
+    border-radius: 999px;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .tab:hover { color: var(--color-brand-ink); }
+
+  .tab.is-active {
+    background: var(--color-brand-ink);
+    color: #fff;
+  }
+
+  .panels { position: relative; }
+
+  .panel {
+    display: none;
+    grid-template-columns: 0.65fr 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .panel.is-active { display: grid; }
+
+  .panel-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    letter-spacing: 0;
+    color: var(--color-brand-ink);
+    margin: 0 0 0.5rem;
+  }
+
+  .panel-body {
+    font-family: var(--font-body);
+    color: var(--color-brand-muted);
+    font-size: 1rem;
+    line-height: 1.55;
+    margin: 0;
+    max-width: 360px;
+  }
+
+  .panel-shot {
+    margin: 0;
+    background: #fff;
+    border: 1px solid var(--color-brand-line);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow:
+      0 1px 0 #fff inset,
+      0 30px 60px -30px rgba(10,10,11,0.2),
+      0 12px 30px -18px rgba(110, 72, 240, 0.2);
+  }
+
+  .shot-chrome {
+    display: flex;
+    gap: 6px;
+    padding: 0.5rem 0.7rem;
+    background: #FAFAFB;
+    border-bottom: 1px solid var(--color-brand-line);
+  }
+
+  .shot-chrome span {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #E0E0E5;
+  }
+
+  .shot-chrome span:nth-child(1) { background: #FF6058; }
+  .shot-chrome span:nth-child(2) { background: #FFBD2D; }
+  .shot-chrome span:nth-child(3) { background: #28C940; }
+
+  .panel-shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 820px) {
+    .panel { grid-template-columns: 1fr; gap: 1.25rem; }
+    .panel-body { max-width: none; }
+    .proof { padding: 4rem 1.1rem; }
+    .tabs { width: 100%; justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; border-radius: 14px; }
+    .tab { white-space: nowrap; }
+  }
+</style>
+
+<script>
+  const root = document.currentScript?.parentElement;
+  const tabs = document.querySelectorAll('.proof .tab');
+  const panels = document.querySelectorAll('.proof .panel');
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const target = (tab as HTMLElement).dataset.target;
+      tabs.forEach((t) => {
+        t.classList.toggle('is-active', t === tab);
+        t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+      });
+      panels.forEach((p) => {
+        p.classList.toggle('is-active', (p as HTMLElement).dataset.panel === target);
+      });
+    });
+  });
+</script>
