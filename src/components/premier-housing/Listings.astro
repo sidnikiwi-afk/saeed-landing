@@ -1,0 +1,183 @@
+---
+// Brick & Mortar — featured listings grid (all 10 real listings).
+import listings from '../../data/premier-housing-listings.json';
+const items = listings.listings;
+const cityOf = (loc) => {
+  if (/Leeds|LS\d/.test(loc)) return 'Leeds';
+  if (/Liverpool|L\d/.test(loc)) return 'Liverpool';
+  return 'Bradford';
+};
+---
+<section class="bm-listings" id="listings">
+  <div class="bm-listings__inner">
+    <header class="bm-listings__head bm-obs">
+      <div>
+        <p class="bm-eyebrow3">
+          <span class="bm-eyebrow3__rule" aria-hidden="true"></span>
+          Available now
+        </p>
+        <h2 class="bm-listings__title">Homes ready for <em>viewing</em></h2>
+      </div>
+      <p class="bm-listings__sub">
+        Nine quality rentals across Bradford, Leeds and Liverpool, from £500&nbsp;pcm.
+        Every one managed in-house by the family.
+      </p>
+    </header>
+
+    <div class="bm-listings__grid">
+      {items.map((p, i) => {
+        const beds = p.beds === 0 ? 'Studio' : `${p.beds} bed`;
+        return (
+          <article class="bm-card bm-obs" style={`--i:${i % 3}`}>
+            <a href={p.url} target="_blank" rel="noopener" class="bm-card__link" aria-label={`View ${p.type} on ${p.location} on Zoopla`}>
+              <div class="bm-card__imgwrap">
+                <img src={p.local_image} alt={`${p.type} on ${p.location}`} loading="lazy" />
+                <span class="bm-card__city">{cityOf(p.location)}</span>
+                <span class="bm-card__price">£{p.price_pcm}<small>pcm</small></span>
+              </div>
+            </a>
+            <div class="bm-card__body">
+              <a href={p.url} target="_blank" rel="noopener" class="bm-card__titlelink">
+                <h3 class="bm-card__type">{p.type}</h3>
+              </a>
+              <p class="bm-card__loc">{p.location}</p>
+              <div class="bm-card__foot">
+                <span class="bm-card__spec">
+                  {beds}
+                  <span class="bm-card__dot" aria-hidden="true"></span>
+                  {p.baths} bath
+                </span>
+                <button
+                  type="button"
+                  class="bm-card__enquire"
+                  data-enquire
+                  data-property={`${p.type}, ${p.location}`}
+                  data-listing-url={p.url}
+                >
+                  Enquire now <span class="bm-card__arrow" aria-hidden="true">&rarr;</span>
+                </button>
+              </div>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  </div>
+</section>
+
+<style>
+  .bm-listings { background: #F6F2EA; padding: clamp(4.5rem, 8vw, 7rem) 2.25rem; }
+  .bm-listings__inner { max-width: 1320px; margin: 0 auto; }
+  .bm-listings__head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    padding-bottom: 1.6rem;
+    border-bottom: 1px solid rgba(176,141,87,0.4);
+  }
+  .bm-eyebrow3 {
+    display: flex; align-items: center; gap: 0.8rem;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.26em;
+    color: #7C766B; margin: 0 0 0.7rem;
+  }
+  .bm-eyebrow3__rule { width: 42px; height: 1px; background: #B08D57; }
+  .bm-listings__title {
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: clamp(2.4rem, 5vw, 4rem); font-weight: 600;
+    color: #1F3A2E; margin: 0; letter-spacing: -0.015em; line-height: 0.98;
+  }
+  .bm-listings__title em { font-style: italic; color: #B08D57; font-weight: 500; }
+  .bm-listings__sub {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.92rem; line-height: 1.6; color: #4A4640;
+    max-width: 24rem; margin: 0; text-align: right;
+  }
+
+  .bm-listings__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.6rem;
+  }
+  .bm-card {
+    background: #FFFDF8;
+    border: 1px solid rgba(176,141,87,0.3);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), box-shadow 0.5s ease, border-color 0.5s ease;
+  }
+  .bm-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 34px 60px -42px rgba(31,58,46,0.7);
+    border-color: rgba(176,141,87,0.65);
+  }
+  .bm-card__link { text-decoration: none; display: block; color: inherit; }
+  .bm-card__imgwrap { position: relative; overflow: hidden; }
+  .bm-card__imgwrap img {
+    width: 100%; height: 220px; object-fit: cover; display: block;
+    transition: transform 0.7s cubic-bezier(0.22,1,0.36,1);
+  }
+  .bm-card:hover .bm-card__imgwrap img { transform: scale(1.06); }
+  .bm-card__city {
+    position: absolute; top: 12px; left: 12px;
+    background: rgba(246,242,234,0.92);
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.18em;
+    color: #1F3A2E; padding: 0.32rem 0.6rem; border-radius: 2px;
+  }
+  .bm-card__price {
+    position: absolute; bottom: 12px; right: 12px;
+    background: #1F3A2E; color: #F6F2EA;
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: 1.3rem; font-weight: 600;
+    padding: 0.15rem 0.6rem; border-radius: 2px;
+    display: flex; align-items: baseline; gap: 0.25rem;
+  }
+  .bm-card__price small {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.12em; opacity: 0.85;
+  }
+  .bm-card__body { padding: 1.1rem 1.2rem 1.3rem; }
+  .bm-card__type {
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: 1.5rem; font-weight: 600; color: #20211C; margin: 0; line-height: 1.05;
+  }
+  .bm-card__loc {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.82rem; color: #7C766B; margin: 0.3rem 0 1rem;
+  }
+  .bm-card__foot {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 0.9rem; border-top: 1px solid rgba(176,141,87,0.25);
+  }
+  .bm-card__spec {
+    display: flex; align-items: center; gap: 0.55rem;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.8rem; color: #4A4640;
+  }
+  .bm-card__dot { width: 4px; height: 4px; background: #B08D57; transform: rotate(45deg); }
+  .bm-card__titlelink { text-decoration: none; color: inherit; display: inline-block; }
+  .bm-card__titlelink:hover .bm-card__type { color: #B08D57; }
+  .bm-card__enquire {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em; color: #1F3A2E;
+    background: none; border: none; padding: 0; cursor: pointer;
+  }
+  .bm-card__enquire:hover { color: #B08D57; }
+  .bm-card__arrow { color: #B08D57; transition: transform 0.4s cubic-bezier(0.22,1,0.36,1); }
+  .bm-card:hover .bm-card__arrow { transform: translateX(5px); }
+
+  :global(html.bm-anim) .bm-obs { opacity: 0; transform: translateY(28px); transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.22,1,0.36,1); transition-delay: calc(var(--i, 0) * 0.09s); }
+  :global(html.bm-anim) .bm-obs.is-in { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 980px) { .bm-listings__grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 720px) {
+    .bm-listings__head { grid-template-columns: 1fr; }
+    .bm-listings__sub { text-align: left; }
+  }
+  @media (max-width: 560px) { .bm-listings__grid { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { :global(html.bm-anim) .bm-obs { opacity: 1 !important; transform: none !important; } .bm-card__imgwrap img { transition: none; } }
+</style>

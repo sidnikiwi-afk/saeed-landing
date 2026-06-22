@@ -1,0 +1,192 @@
+---
+// Brick & Mortar — heritage / why PH. Inverted deep-green section with animated stats.
+const reasons = [
+  { title: 'Family-run, not a call centre', body: 'The same people who answer the phone manage your home. No scripts, no ticket numbers — just neighbours who have done this for decades.' },
+  { title: 'Nearly thirty years, one standard', body: 'Since the mid-90s we have let and managed homes to a "Premier" standard. Longevity that tenants and landlords can both lean on.' },
+  { title: 'Three cities, one local team', body: 'Bradford, Leeds and Liverpool — covered by a team that knows the streets, the landlords and the right home for you.' },
+];
+const stats = [
+  { value: 30, suffix: '', label: 'Years established', pre: 'Nearly ' },
+  { value: 3, suffix: '', label: 'Cities covered' },
+  { value: 500, suffix: '+', label: 'Homes managed' },
+  { value: 7, suffix: '', label: 'Days a week for viewings' },
+];
+---
+<section class="bm-heritage" id="heritage">
+  <span class="bm-heritage__amp" aria-hidden="true">&amp;</span>
+  <div class="bm-heritage__inner">
+    <div class="bm-heritage__grid">
+      <div class="bm-heritage__copy bm-obs">
+        <p class="bm-eyebrow4">
+          <span class="bm-eyebrow4__rule" aria-hidden="true"></span>
+          Why PH Property Group
+        </p>
+        <h2 class="bm-heritage__title">
+          A name that has been<br /><em>looking after homes</em><br />since 1996.
+        </h2>
+      </div>
+
+      <div class="bm-heritage__reasons">
+        {reasons.map((r, i) => (
+          <article class="bm-reason bm-obs" style={`--i:${i}`}>
+            <span class="bm-reason__diamond" aria-hidden="true"></span>
+            <h3 class="bm-reason__title">{r.title}</h3>
+            <p class="bm-reason__body">{r.body}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+
+    <div class="bm-stats" id="bmStats">
+      {stats.map((s) => (
+        <div class="bm-stat">
+          <span class="bm-stat__value">
+            {s.pre ? <span class="bm-stat__pre">{s.pre}</span> : null}<span class="bm-stat__num" data-target={s.value}>0</span>{s.suffix}
+          </span>
+          <span class="bm-stat__label">{s.label}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .bm-heritage {
+    position: relative;
+    background:
+      radial-gradient(80% 120% at 10% 0%, rgba(176,141,87,0.14), transparent 50%),
+      #1F3A2E;
+    padding: clamp(5rem, 9vw, 8rem) 2.25rem;
+    overflow: hidden;
+    color: #F6F2EA;
+  }
+  .bm-heritage__amp {
+    position: absolute;
+    right: -4%; top: 50%; transform: translateY(-50%);
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-style: italic; font-weight: 500;
+    font-size: clamp(24rem, 42vw, 44rem); line-height: 0.7;
+    color: rgba(176,141,87,0.06);
+    pointer-events: none; user-select: none;
+  }
+  .bm-heritage__inner { position: relative; max-width: 1320px; margin: 0 auto; }
+  .bm-heritage__grid {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: clamp(2.5rem, 6vw, 6rem);
+    align-items: start;
+  }
+  .bm-eyebrow4 {
+    display: flex; align-items: center; gap: 0.8rem;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.26em;
+    color: #B08D57; margin: 0 0 1.4rem;
+  }
+  .bm-eyebrow4__rule { width: 42px; height: 1px; background: #B08D57; }
+  .bm-heritage__title {
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: clamp(2.3rem, 4.6vw, 3.8rem); font-weight: 500;
+    line-height: 1.02; letter-spacing: -0.015em; margin: 0; color: #F6F2EA;
+  }
+  .bm-heritage__title em { font-style: italic; color: #B08D57; font-weight: 500; }
+
+  .bm-heritage__reasons { display: flex; flex-direction: column; }
+  .bm-reason {
+    position: relative;
+    padding: 1.6rem 0 1.6rem 2rem;
+    border-top: 1px solid rgba(176,141,87,0.25);
+  }
+  .bm-reason:first-child { border-top: none; }
+  .bm-reason__diamond {
+    position: absolute; left: 0; top: 1.95rem;
+    width: 8px; height: 8px; background: #B08D57; transform: rotate(45deg);
+  }
+  .bm-reason__title {
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: 1.55rem; font-weight: 600; color: #F6F2EA; margin: 0 0 0.4rem;
+  }
+  .bm-reason__body {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.92rem; line-height: 1.65; color: rgba(246,242,234,0.78); margin: 0;
+  }
+
+  .bm-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin-top: clamp(3.5rem, 6vw, 5.5rem);
+    border-top: 1px solid rgba(176,141,87,0.35);
+    padding-top: 2.5rem;
+  }
+  .bm-stat {
+    text-align: center;
+    padding: 0 1rem;
+    border-right: 1px solid rgba(176,141,87,0.2);
+  }
+  .bm-stat:last-child { border-right: none; }
+  .bm-stat__value {
+    display: block;
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: clamp(2.6rem, 5vw, 4.2rem); font-weight: 600;
+    color: #F6F2EA; line-height: 1; letter-spacing: -0.02em;
+  }
+  .bm-stat__pre {
+    font-size: 0.9rem; font-style: italic; color: #B08D57; display: inline; vertical-align: middle;
+  }
+  .bm-stat__label {
+    display: block; margin-top: 0.7rem;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.18em;
+    color: rgba(246,242,234,0.62);
+  }
+
+  :global(html.bm-anim) .bm-obs { opacity: 0; transform: translateY(26px); transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.22,1,0.36,1); transition-delay: calc(var(--i, 0) * 0.1s); }
+  :global(html.bm-anim) .bm-obs.is-in { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 880px) {
+    .bm-heritage__grid { grid-template-columns: 1fr; }
+    .bm-stats { grid-template-columns: 1fr 1fr; gap: 2rem 0; }
+    .bm-stat:nth-child(2) { border-right: none; }
+  }
+  @media (max-width: 460px) {
+    .bm-stats { grid-template-columns: 1fr; }
+    .bm-stat { border-right: none; border-bottom: 1px solid rgba(176,141,87,0.2); padding-bottom: 1.5rem; }
+    .bm-stat:last-child { border-bottom: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { :global(html.bm-anim) .bm-obs { opacity: 1 !important; transform: none !important; } }
+</style>
+
+<script>
+  // Animated stat counters — fire once when the stats block scrolls in.
+  const block = document.getElementById('bmStats');
+  if (block) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const nums = () => block.querySelectorAll('.bm-stat__num');
+    const finalAll = () => nums().forEach((el) => {
+      el.textContent = el.getAttribute('data-target') || '0';
+      el.setAttribute('data-counted', 'done');
+    });
+    const run = () => {
+      nums().forEach((el) => {
+        if (el.getAttribute('data-counted') === 'done') return;
+        const target = parseInt(el.getAttribute('data-target') || '0', 10);
+        if (reduce) { el.textContent = String(target); el.setAttribute('data-counted', 'done'); return; }
+        const dur = 1600;
+        const start = performance.now();
+        const tick = (now) => {
+          const t = Math.min((now - start) / dur, 1);
+          const eased = 1 - Math.pow(1 - t, 3);
+          el.textContent = String(Math.round(target * eased));
+          if (t < 1) requestAnimationFrame(tick);
+          else el.setAttribute('data-counted', 'done');
+        };
+        requestAnimationFrame(tick);
+      });
+    };
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { run(); io.disconnect(); } });
+    }, { threshold: 0.4 });
+    io.observe(block);
+    // Safety net: if the stats are deep-linked past or rAF is throttled, force finals.
+    setTimeout(() => { nums().forEach((el) => { if (el.getAttribute('data-counted') !== 'done') { el.textContent = el.getAttribute('data-target') || '0'; el.setAttribute('data-counted', 'done'); } }); }, 2600);
+  }
+</script>

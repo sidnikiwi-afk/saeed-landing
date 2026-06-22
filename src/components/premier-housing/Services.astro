@@ -1,0 +1,106 @@
+---
+// Brick & Mortar — services strip.
+const services = [
+  { n: '01', title: 'Renting', body: 'Browse quality, affordable homes and book a viewing — often the same week.' },
+  { n: '02', title: 'Letting', body: 'List your property with a local team who find dependable, vetted tenants.' },
+  { n: '03', title: 'Property Management', body: 'Full hands-on management: rent, repairs and tenants, all looked after for you.' },
+  { n: '04', title: 'Evictions', body: 'Sensitive, by-the-book possession and eviction support when you need it.' },
+];
+---
+<section class="bm-services" id="services">
+  <div class="bm-services__inner">
+    <header class="bm-services__head bm-obs">
+      <p class="bm-eyebrow2">
+        <span class="bm-eyebrow2__rule" aria-hidden="true"></span>
+        What we do
+      </p>
+      <h2 class="bm-services__title">Four things, done <em>properly</em>.</h2>
+    </header>
+
+    <div class="bm-services__grid">
+      {services.map((s, i) => (
+        <article class="bm-svc bm-obs" style={`--i:${i}`}>
+          <span class="bm-svc__num">{s.n}</span>
+          <h3 class="bm-svc__title">{s.title}</h3>
+          <p class="bm-svc__body">{s.body}</p>
+          <span class="bm-svc__diamond" aria-hidden="true"></span>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .bm-services { background: #EDE6D8; padding: clamp(4.5rem, 8vw, 7rem) 2.25rem; }
+  .bm-services__inner { max-width: 1320px; margin: 0 auto; }
+  .bm-services__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+  .bm-eyebrow2 {
+    display: flex; align-items: center; gap: 0.8rem;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.26em;
+    color: #7C766B; margin: 0;
+  }
+  .bm-eyebrow2__rule { width: 42px; height: 1px; background: #B08D57; }
+  .bm-services__title {
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+    font-weight: 600; color: #1F3A2E; margin: 0; letter-spacing: -0.015em;
+    line-height: 1;
+  }
+  .bm-services__title em { font-style: italic; color: #B08D57; font-weight: 500; }
+
+  .bm-services__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid rgba(176,141,87,0.4);
+  }
+  .bm-svc {
+    position: relative;
+    padding: 2.2rem 1.6rem 2.6rem;
+    border-right: 1px solid rgba(176,141,87,0.28);
+    transition: background 0.45s ease, transform 0.45s ease;
+  }
+  .bm-svc:last-child { border-right: none; }
+  .bm-svc:hover { background: #F6F2EA; }
+  .bm-svc__num {
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: 1.1rem; font-style: italic; color: #B08D57; display: block;
+    margin-bottom: 1.6rem;
+  }
+  .bm-svc__title {
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: 1.65rem; font-weight: 600; color: #20211C; margin: 0 0 0.6rem;
+  }
+  .bm-svc__body {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.9rem; line-height: 1.6; color: #4A4640; margin: 0;
+  }
+  .bm-svc__diamond {
+    position: absolute; left: 1.6rem; bottom: 1.6rem;
+    width: 7px; height: 7px; background: #B08D57; transform: rotate(45deg);
+    opacity: 0; transition: opacity 0.45s ease, transform 0.45s ease;
+  }
+  .bm-svc:hover .bm-svc__diamond { opacity: 1; transform: rotate(225deg); }
+
+  /* scroll reveal */
+  :global(html.bm-anim) .bm-obs { opacity: 0; transform: translateY(26px); transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.22,1,0.36,1); transition-delay: calc(var(--i, 0) * 0.08s); }
+  :global(html.bm-anim) .bm-obs.is-in { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 860px) {
+    .bm-services__grid { grid-template-columns: 1fr 1fr; }
+    .bm-svc:nth-child(2) { border-right: none; }
+    .bm-svc:nth-child(1), .bm-svc:nth-child(2) { border-bottom: 1px solid rgba(176,141,87,0.28); }
+  }
+  @media (max-width: 480px) {
+    .bm-services__grid { grid-template-columns: 1fr; }
+    .bm-svc { border-right: none; border-bottom: 1px solid rgba(176,141,87,0.28); }
+  }
+  @media (prefers-reduced-motion: reduce) { :global(html.bm-anim) .bm-obs { opacity: 1 !important; transform: none !important; } }
+</style>

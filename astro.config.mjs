@@ -6,7 +6,12 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   site: 'https://brackstonedigital.co.uk',
   output: 'static',
-  integrations: [react(), sitemap()],
+  integrations: [
+    react(),
+    sitemap({
+      filter: (page) => !page.includes('/premier-housing-demo'),
+    }),
+  ],
   vite: {
     plugins: [tailwindcss()],
   },

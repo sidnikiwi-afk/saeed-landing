@@ -1,0 +1,38 @@
+---
+// Brick & Mortar — elegant brass-keyline section divider (the recurring motif).
+const { label = '' } = Astro.props;
+---
+<div class="bm-divider" role="separator" aria-hidden={label ? undefined : 'true'}>
+  <span class="bm-divider__line"></span>
+  <span class="bm-divider__diamond"></span>
+  {label ? <span class="bm-divider__label">{label}</span> : <span class="bm-divider__diamond"></span>}
+  <span class="bm-divider__diamond"></span>
+  <span class="bm-divider__line"></span>
+</div>
+
+<style>
+  .bm-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.85rem;
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 2.25rem;
+  }
+  .bm-divider__line {
+    height: 1px;
+    flex: 1;
+    max-width: 240px;
+    background: linear-gradient(to var(--dir, right), transparent, rgba(176,141,87,0.6));
+  }
+  .bm-divider__line:last-child { background: linear-gradient(to left, transparent, rgba(176,141,87,0.6)); }
+  .bm-divider__diamond {
+    width: 7px; height: 7px; background: #B08D57; transform: rotate(45deg); flex: none;
+  }
+  .bm-divider__label {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.3em;
+    color: #7C766B; white-space: nowrap; padding: 0 0.4rem;
+  }
+</style>

@@ -1,0 +1,133 @@
+{
+  "source": "https://www.zoopla.co.uk/find-agents/branch/ph-property-group-bradford-22013/",
+  "agent": {
+    "name": "PH Property Group",
+    "address": "2 Princeville Road, Bradford, BD7 2AR",
+    "phone": "01274 649151",
+    "facebook": "http://www.facebook.com/PremierHousing.Bradford",
+    "blurb": "Quality rental services for over 20 years. Studios, flats and houses for students and professionals \u2014 an elite, empathetic, family-run service to a Premier standard."
+  },
+  "listings": [
+    {
+      "type": "2 bed flat",
+      "price_pcm": 650,
+      "beds": 2,
+      "baths": 1,
+      "living": null,
+      "location": "Queen Street, Leeds LS27",
+      "image": "https://lid.zoocdn.com/645/430/c96d20772852fa57aa840fffba99ba0069866743.jpg",
+      "url": "https://www.zoopla.co.uk/to-rent/details/66216808/",
+      "local_image": "/images/properties/property-1.jpg"
+    },
+    {
+      "type": "2 bed maisonette",
+      "price_pcm": 750,
+      "beds": 2,
+      "baths": 1,
+      "living": 1,
+      "location": "Pasture Walk, Bradford BD14",
+      "image": "https://lid.zoocdn.com/645/430/f0d2577e6d0a23944c8acf69ef63c11364caae9c.jpg",
+      "url": "https://www.zoopla.co.uk/to-rent/details/73196230/",
+      "local_image": "/images/properties/property-2.jpg"
+    },
+    {
+      "type": "1 bed flat",
+      "price_pcm": 550,
+      "beds": 1,
+      "baths": 1,
+      "living": null,
+      "location": "Old Park Road, Bradford BD10",
+      "image": "https://lid.zoocdn.com/645/430/706224853bf8f1a44047e70f38c1172db5607a34.jpg",
+      "url": "https://www.zoopla.co.uk/to-rent/details/64829006/",
+      "local_image": "/images/properties/property-3.jpg"
+    },
+    {
+      "type": "2 bed flat",
+      "price_pcm": 750,
+      "beds": 2,
+      "baths": 1,
+      "living": null,
+      "location": "Pasture Lane, Bradford BD14",
+      "image": "https://lid.zoocdn.com/645/430/f0d2577e6d0a23944c8acf69ef63c11364caae9c.jpg",
+      "url": "https://www.zoopla.co.uk/to-rent/details/41649760/",
+      "local_image": "/images/properties/property-4.jpg"
+    },
+    {
+      "type": "2 bed flat",
+      "price_pcm": 550,
+      "beds": 2,
+      "baths": 1,
+      "living": null,
+      "location": "Knowsley Road, Liverpool L20",
+      "image": "https://lid.zoocdn.com/645/430/69501e65ef095e91a78856919e629af059fffe5e.png",
+      "url": "https://www.zoopla.co.uk/to-rent/details/38791097/",
+      "local_image": "/images/properties/property-5.png"
+    },
+    {
+      "type": "1 bed flat",
+      "price_pcm": 500,
+      "beds": 1,
+      "baths": 1,
+      "living": null,
+      "location": "56 Smithdown Road, Liverpool L7",
+      "image": "https://lid.zoocdn.com/645/430/7982b2682c57a2c7f20b21a9a73e5e36f9ed829f.jpg",
+      "url": "https://www.zoopla.co.uk/to-rent/details/39097352/",
+      "local_image": "/images/properties/property-6.jpg"
+    },
+    {
+      "type": "1 bed flat",
+      "price_pcm": 650,
+      "beds": 1,
+      "baths": 1,
+      "living": null,
+      "location": "David St, Liverpool L8",
+      "image": "https://lid.zoocdn.com/645/430/6a3eb8399531532d1e8ccce5c1a29a3759a37628.jpg",
+      "url": "https://www.zoopla.co.uk/to-rent/details/49519217/",
+      "local_image": "/images/properties/property-7.jpg"
+    },
+    {
+      "type": "2 bed flat",
+      "price_pcm": 700,
+      "beds": 2,
+      "baths": 1,
+      "living": null,
+      "location": "St Albans House, Harehills Lane, Leeds LS9",
+      "image": "https://lid.zoocdn.com/645/430/feb8aa2d674d69846eea7b124e375f90d774e16f.jpg",
+      "url": "https://www.zoopla.co.uk/to-rent/details/26723659/",
+      "local_image": "/images/properties/property-8.jpg"
+    },
+    {
+      "type": "Studio",
+      "price_pcm": 550,
+      "beds": 0,
+      "baths": 1,
+      "living": null,
+      "location": "Hesketh Avenue, Leeds LS5",
+      "image": "https://lid.zoocdn.com/645/430/c9bd2c1bd61959c50e7620ad52cd76b191962bce.jpg",
+      "url": "https://www.zoopla.co.uk/to-rent/details/47297038/",
+      "local_image": "/images/properties/property-9.jpg"
+    }
+  ],
+  "testimonials": [
+    {
+      "name": "Brian Salter",
+      "role": "Landlord",
+      "service": "Property Management"
+    },
+    {
+      "name": "Marie Emmott",
+      "role": "Landlord",
+      "service": "Property Management"
+    },
+    {
+      "name": "Rizwana Koser",
+      "role": "Landlord",
+      "service": "Eviction Services"
+    },
+    {
+      "name": "Fatima Patel",
+      "role": "Tenant",
+      "service": "Property Management"
+    }
+  ]
+}

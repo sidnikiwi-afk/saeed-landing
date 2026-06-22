@@ -1,0 +1,93 @@
+---
+import PremierHousingLayout from '../layouts/PremierHousingLayout.astro';
+import Nav from '../components/premier-housing/Nav.astro';
+import Hero from '../components/premier-housing/Hero.astro';
+import Services from '../components/premier-housing/Services.astro';
+import Divider from '../components/premier-housing/Divider.astro';
+import Listings from '../components/premier-housing/Listings.astro';
+import Heritage from '../components/premier-housing/Heritage.astro';
+import Testimonials from '../components/premier-housing/Testimonials.astro';
+import Closing from '../components/premier-housing/Closing.astro';
+import EnquireModal from '../components/premier-housing/EnquireModal.astro';
+---
+<PremierHousingLayout
+  title="PH Property Group | Quality Rentals in Bradford, Leeds and Liverpool"
+  description="Family-run lettings and property management across Bradford, Leeds and Liverpool. Quality, affordable rentals to a Premier standard since 1996. Browse homes and book a viewing."
+  image="/images/properties/property-8.jpg"
+>
+  <div class="bm-page">
+    <Nav />
+    <main>
+      <Hero />
+      <Services />
+      <div class="bm-divider-wrap"><Divider label="Available to rent" /></div>
+      <Listings />
+      <Heritage />
+      <Testimonials />
+      <Closing />
+    </main>
+    <EnquireModal />
+  </div>
+</PremierHousingLayout>
+
+<style is:global>
+  /* Direction-3 theme + base reset, scoped to this page via .bm-page. */
+  .bm-page {
+    background: #F6F2EA;
+    color: #20211C;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  .bm-page * { box-sizing: border-box; }
+  .bm-page h1, .bm-page h2, .bm-page h3, .bm-page h4,
+  .bm-page p, .bm-page figure, .bm-page blockquote { margin: 0; }
+  .bm-page a { color: inherit; }
+  .bm-page img { max-width: 100%; }
+  .bm-page ::selection { background: #B08D57; color: #1F3A2E; }
+
+  html { scroll-behavior: smooth; }
+
+  .bm-divider-wrap {
+    background: #F6F2EA;
+    padding: clamp(3rem, 6vw, 5rem) 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+</style>
+
+<script>
+  // Arm scroll-reveal ONLY once JS is confirmed running. Component .bm-obs
+  // styles are gated on html.bm-anim, so if this script never loads (e.g. the
+  // dev/build toolchain drops the module) all content stays fully visible.
+  document.documentElement.classList.add('bm-anim');
+
+  // Shared scroll-reveal system for all .bm-obs elements across components.
+  const els = Array.from(document.querySelectorAll('.bm-obs'));
+  const revealAll = () => els.forEach((el) => el.classList.add('is-in'));
+
+  if (!('IntersectionObserver' in window) || !els.length) {
+    revealAll();
+  } else {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+    els.forEach((el) => io.observe(el));
+
+    requestAnimationFrame(() => {
+      els.forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.top < window.innerHeight && r.bottom > 0) el.classList.add('is-in');
+      });
+    });
+
+    setTimeout(revealAll, 2500);
+  }
+</script>

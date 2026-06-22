@@ -1,0 +1,426 @@
+---
+// Brick & Mortar — split-screen editorial hero with a featured property.
+import listings from '../../data/premier-housing-listings.json';
+const featured = listings.listings[1]; // Pasture Walk maisonette — £750, has a living room
+const bedsLabel = featured.beds === 0 ? 'Studio' : `${featured.beds} bed`;
+---
+<section class="bm-hero" id="top">
+  <!-- decorative motif: large faint serif ampersand watermark -->
+  <span class="bm-hero__watermark" aria-hidden="true">&amp;</span>
+
+  <div class="bm-hero__grid">
+    <!-- LEFT: editorial copy -->
+    <div class="bm-hero__copy">
+      <p class="bm-eyebrow bm-reveal">
+        <span class="bm-eyebrow__rule" aria-hidden="true"></span>
+        <span class="bm-eyebrow__text">Family-run lettings &middot; Bradford &middot; Leeds &middot; Liverpool</span>
+      </p>
+
+      <h1 class="bm-hero__title">
+        <span class="bm-reveal" style="--d:0.05s">A home,</span>
+        <span class="bm-reveal" style="--d:0.15s">looked after the</span>
+        <span class="bm-reveal bm-em" style="--d:0.25s"><em>Premier</em> way</span>
+        <span class="bm-reveal" style="--d:0.35s">for nearly thirty years.</span>
+      </h1>
+
+      <p class="bm-hero__lede bm-reveal" style="--d:0.45s">
+        Quality, affordable rentals across West Yorkshire and the North West,
+        managed by one family who answer the phone themselves. Studios, flats and
+        houses from £500&nbsp;pcm.
+      </p>
+
+      <!-- search affordance -->
+      <form class="bm-search bm-reveal" style="--d:0.55s" action="#listings" aria-label="Search rentals">
+        <div class="bm-search__field">
+          <label>Location</label>
+          <select aria-label="Location">
+            <option>All areas</option>
+            <option>Bradford</option>
+            <option>Leeds</option>
+            <option>Liverpool</option>
+          </select>
+        </div>
+        <div class="bm-search__field">
+          <label>Bedrooms</label>
+          <select aria-label="Bedrooms">
+            <option>Any</option>
+            <option>Studio</option>
+            <option>1 bed</option>
+            <option>2 bed</option>
+          </select>
+        </div>
+        <div class="bm-search__field">
+          <label>Max price</label>
+          <select aria-label="Max price">
+            <option>No max</option>
+            <option>£550 pcm</option>
+            <option>£650 pcm</option>
+            <option>£750 pcm</option>
+          </select>
+        </div>
+        <button type="submit" class="bm-search__go">Browse homes</button>
+      </form>
+
+      <p class="bm-hero__meta bm-reveal" style="--d:0.65s">
+        <span><strong>9</strong> homes available now</span>
+        <span class="bm-hero__dot" aria-hidden="true"></span>
+        <span>Viewings 7 days a week</span>
+      </p>
+    </div>
+
+    <!-- RIGHT: featured property card (overlaps the divider) -->
+    <div class="bm-hero__feature">
+      <div class="bm-feature">
+        <span class="bm-feature__tag">Featured this week</span>
+        <div class="bm-feature__imgwrap">
+          <img src={featured.local_image} alt={`${featured.type} on ${featured.location}`} loading="eager" />
+          <span class="bm-feature__price">£{featured.price_pcm}<small> pcm</small></span>
+        </div>
+        <div class="bm-feature__body">
+          <h2 class="bm-feature__type">{featured.type}</h2>
+          <p class="bm-feature__loc">{featured.location}</p>
+          <div class="bm-feature__spec">
+            <span>{bedsLabel}</span>
+            <span class="bm-feature__sep" aria-hidden="true"></span>
+            <span>{featured.baths} bath</span>
+            {featured.living ? (<><span class="bm-feature__sep" aria-hidden="true"></span><span>Living room</span></>) : null}
+          </div>
+          <button
+            type="button"
+            class="bm-feature__cta"
+            data-enquire
+            data-property={`${featured.type}, ${featured.location}`}
+            data-listing-url={featured.url}
+          >
+            Arrange a viewing
+            <span class="bm-feature__arrow" aria-hidden="true">&rarr;</span>
+          </button>
+        </div>
+      </div>
+      <!-- floating established seal -->
+      <div class="bm-seal" aria-hidden="true">
+        <span class="bm-seal__top">Premier</span>
+        <span class="bm-seal__big">30</span>
+        <span class="bm-seal__bot">years</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .bm-hero {
+    position: relative;
+    background:
+      radial-gradient(120% 90% at 85% -10%, rgba(176,141,87,0.10), transparent 55%),
+      #F6F2EA;
+    padding: 11rem 2.25rem 6rem;
+    overflow: hidden;
+  }
+  .bm-hero__watermark {
+    position: absolute;
+    top: 42%; left: 48%;
+    transform: translate(-50%, -50%);
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(28rem, 55vw, 52rem);
+    line-height: 0.7;
+    color: rgba(31, 58, 46, 0.035);
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+  }
+  .bm-hero__grid {
+    position: relative;
+    z-index: 1;
+    max-width: 1320px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr; /* asymmetric, not 50/50 */
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: center;
+    min-width: 0;
+  }
+  .bm-hero__copy { min-width: 0; }
+
+  /* ── eyebrow + brass keyline motif ── */
+  .bm-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.26em;
+    color: #7C766B;
+    margin: 0 0 1.6rem;
+    min-width: 0;
+  }
+  .bm-eyebrow__rule {
+    width: 46px; height: 1px;
+    background: #B08D57;
+    position: relative;
+  }
+  .bm-eyebrow__text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .bm-eyebrow__rule::after {
+    content: ''; position: absolute; right: -3px; top: -2.5px;
+    width: 6px; height: 6px; background: #B08D57; transform: rotate(45deg);
+  }
+
+  .bm-hero__title {
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(2.9rem, 6.2vw, 5.6rem);
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    color: #1F3A2E;
+    margin: 0 0 1.8rem;
+  }
+  .bm-hero__title span { display: block; }
+  .bm-hero__title .bm-em { font-weight: 500; }
+  .bm-hero__title em {
+    font-style: italic;
+    color: #B08D57;
+    font-weight: 400;
+  }
+
+  .bm-hero__lede {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: clamp(1rem, 1.2vw, 1.12rem);
+    line-height: 1.65;
+    color: #4A4640;
+    max-width: 33rem;
+    margin: 0 0 2.2rem;
+  }
+
+  /* ── search ── */
+  .bm-search {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr) auto;
+    gap: 0;
+    background: #FFFDF8;
+    border: 1px solid rgba(176,141,87,0.4);
+    border-radius: 3px;
+    box-shadow: 0 26px 60px -42px rgba(31,58,46,0.7);
+    overflow: hidden;
+    max-width: 38rem;
+  }
+  .bm-search__field {
+    display: flex;
+    flex-direction: column;
+    padding: 0.7rem 1rem;
+    border-right: 1px solid rgba(176,141,87,0.22);
+  }
+  .bm-search__field label {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: #7C766B;
+    margin-bottom: 0.2rem;
+  }
+  .bm-search__field select {
+    border: none;
+    background: transparent;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.92rem;
+    color: #20211C;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+  }
+  .bm-search__go {
+    border: none;
+    background: #1F3A2E;
+    color: #F6F2EA;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 0 1.5rem;
+    cursor: pointer;
+    transition: background 0.35s ease;
+  }
+  .bm-search__go:hover { background: #2c5141; }
+
+  .bm-hero__meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.5rem 0 0;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.85rem;
+    color: #4A4640;
+  }
+  .bm-hero__meta strong { color: #1F3A2E; }
+  .bm-hero__dot { width: 4px; height: 4px; border-radius: 50%; background: #B08D57; }
+
+  /* ── featured property ── */
+  .bm-hero__feature { position: relative; min-width: 0; }
+  .bm-feature {
+    background: #FFFDF8;
+    border: 1px solid rgba(176,141,87,0.35);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 40px 80px -50px rgba(31,58,46,0.85);
+    animation: bm-floatcard 7s ease-in-out infinite;
+    min-width: 0;
+  }
+  @keyframes bm-floatcard {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  .bm-feature__tag {
+    display: block;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.64rem;
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    color: #B08D57;
+    padding: 0.9rem 1.3rem 0.5rem;
+  }
+  .bm-feature__imgwrap { position: relative; padding: 0 1.3rem; }
+  .bm-feature__imgwrap img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 3px;
+    display: block;
+  }
+  .bm-feature__price {
+    position: absolute;
+    bottom: 14px; left: 2.1rem;
+    background: #1F3A2E;
+    color: #F6F2EA;
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    padding: 0.25rem 0.85rem;
+    border-radius: 2px;
+  }
+  .bm-feature__price small {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.85;
+  }
+  .bm-feature__body { padding: 1.2rem 1.3rem 1.5rem; }
+  .bm-feature__type {
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: 1.7rem;
+    font-weight: 600;
+    color: #1F3A2E;
+    margin: 0;
+    line-height: 1.05;
+  }
+  .bm-feature__loc {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.88rem;
+    color: #7C766B;
+    margin: 0.3rem 0 0.9rem;
+  }
+  .bm-feature__spec {
+    display: flex; align-items: center; gap: 0.7rem;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.82rem;
+    color: #4A4640;
+    padding-bottom: 1.1rem;
+    border-bottom: 1px solid rgba(176,141,87,0.25);
+  }
+  .bm-feature__sep { width: 4px; height: 4px; background: #B08D57; transform: rotate(45deg); }
+  .bm-feature__cta {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    margin-top: 1.1rem;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #1F3A2E;
+    text-decoration: none;
+    background: none; border: none; padding: 0; cursor: pointer;
+  }
+  .bm-feature__arrow { color: #B08D57; transition: transform 0.4s cubic-bezier(0.22,1,0.36,1); }
+  .bm-feature__cta:hover .bm-feature__arrow { transform: translateX(6px); }
+
+  /* established seal */
+  .bm-seal {
+    position: absolute;
+    bottom: -34px; left: -34px;
+    width: 122px; height: 122px;
+    border-radius: 50%;
+    background: #1F3A2E;
+    border: 1px solid #B08D57;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    box-shadow: 0 18px 40px -22px rgba(31,58,46,0.9);
+    animation: bm-spin-seal 26s linear infinite;
+  }
+  @keyframes bm-spin-seal { to { transform: rotate(360deg); } }
+  .bm-seal__top, .bm-seal__bot {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.26em;
+    color: #B08D57;
+  }
+  .bm-seal__big {
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: 2.6rem;
+    font-weight: 600;
+    color: #F6F2EA;
+    line-height: 1;
+    margin: 0.1rem 0;
+  }
+
+  /* entrance reveal */
+  .bm-reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    animation: bm-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: var(--d, 0s);
+  }
+  @keyframes bm-rise { to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 980px) {
+    .bm-hero__grid { grid-template-columns: 1fr; gap: 3.5rem; }
+    .bm-hero { padding: 9rem 1.5rem 5rem; }
+    .bm-feature { animation: none; }
+  }
+  @media (max-width: 560px) {
+    .bm-hero { padding-inline: 1.5rem; }
+    .bm-hero__copy,
+    .bm-hero__title,
+    .bm-hero__lede,
+    .bm-eyebrow,
+    .bm-hero__feature,
+    .bm-feature {
+      width: min(100%, 21rem);
+      max-width: 21rem;
+    }
+    .bm-hero__grid { display: block; }
+    .bm-hero__feature { margin-top: 3.5rem; }
+    .bm-eyebrow {
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      letter-spacing: 0.18em;
+      line-height: 1.8;
+    }
+    .bm-eyebrow__rule { flex: 0 0 42px; margin-top: 0.62rem; }
+    .bm-eyebrow__text { flex: 1 1 13rem; }
+    .bm-hero__lede { overflow-wrap: anywhere; }
+    .bm-search { grid-template-columns: 1fr 1fr; }
+    .bm-search__go { grid-column: 1 / -1; padding: 0.85rem; }
+    .bm-search__field:nth-child(3) { border-right: none; }
+    .bm-seal { width: 92px; height: 92px; bottom: -22px; left: -10px; }
+    .bm-seal__big { font-size: 2rem; }
+    .bm-hero__title { font-size: clamp(2.6rem, 11vw, 3.4rem); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bm-reveal, .bm-feature, .bm-seal { animation: none !important; opacity: 1; transform: none; }
+  }
+</style>

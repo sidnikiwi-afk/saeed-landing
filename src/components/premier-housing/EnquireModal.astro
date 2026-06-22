@@ -1,0 +1,277 @@
+---
+// Brick & Mortar — shared "Enquire now" modal.
+// Any element on the page with [data-enquire] opens it. The trigger may carry
+// data-property and data-listing-url to prefill the enquiry.
+//
+// On submit it POSTs JSON to `${BASE_URL}api/enquire` (a Cloudflare Pages
+// Function that Codex wires to the Brackstone estate-leads intake). Using
+// BASE_URL means it keeps working if the site is served under a sub-path such
+// as /premier-housing.
+const endpoint = `${import.meta.env.BASE_URL}api/enquire`.replace(/\/{2,}/g, '/');
+---
+<div class="bm-enq" id="bmEnq" data-endpoint={endpoint} hidden>
+  <div class="bm-enq__backdrop" data-enq-close></div>
+  <div class="bm-enq__dialog" role="dialog" aria-modal="true" aria-labelledby="bmEnqTitle">
+    <button class="bm-enq__x" type="button" aria-label="Close" data-enq-close>&times;</button>
+
+    <div class="bm-enq__panel" data-enq-view="form">
+      <p class="bm-enq__eyebrow">Book a viewing</p>
+      <h2 class="bm-enq__title" id="bmEnqTitle">Enquire about this home</h2>
+      <p class="bm-enq__prop" id="bmEnqProp">A PH Property Group rental</p>
+
+      <form class="bm-enq__form" id="bmEnqForm" novalidate>
+        <input type="hidden" name="property" id="bmEnqPropField" />
+        <input type="hidden" name="listing_url" id="bmEnqUrlField" />
+        <!-- honeypot: bots fill this, humans never see it -->
+        <input type="text" name="company" tabindex="-1" autocomplete="off" class="bm-enq__hp" aria-hidden="true" />
+
+        <label class="bm-enq__label">Your name
+          <input type="text" name="name" required autocomplete="name" />
+        </label>
+        <div class="bm-enq__row">
+          <label class="bm-enq__label">Phone
+            <input type="tel" name="phone" required autocomplete="tel" />
+          </label>
+          <label class="bm-enq__label">Email
+            <input type="email" name="email" required autocomplete="email" />
+          </label>
+        </div>
+        <label class="bm-enq__label">Message
+          <textarea name="message" rows="3"></textarea>
+        </label>
+
+        <button type="submit" class="bm-enq__submit">
+          <span class="bm-enq__submit-label">Send enquiry</span>
+          <span class="bm-enq__submit-arrow" aria-hidden="true">&rarr;</span>
+        </button>
+        <p class="bm-enq__err" id="bmEnqErr" hidden>Sorry, something went wrong. Please call us on 01274 649151.</p>
+        <p class="bm-enq__legal">By sending this you agree we can contact you about your enquiry.</p>
+      </form>
+    </div>
+
+    <div class="bm-enq__panel bm-enq__success" data-enq-view="success" hidden>
+      <span class="bm-enq__tick" aria-hidden="true">&#10003;</span>
+      <h2 class="bm-enq__title">Thank you, we&rsquo;ve got it.</h2>
+      <p class="bm-enq__sub">A member of the family will be in touch shortly, usually the same day. For anything urgent, call <a href="tel:01274649151">01274 649151</a>.</p>
+      <button type="button" class="bm-enq__submit" data-enq-close>Close</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .bm-enq {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+  }
+  .bm-enq__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(31, 58, 46, 0.55);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    opacity: 0;
+    transition: opacity 0.28s ease;
+  }
+  .bm-enq.is-open .bm-enq__backdrop { opacity: 1; }
+  .bm-enq__dialog {
+    position: relative;
+    width: 100%;
+    max-width: 30rem;
+    background: #FFFDF8;
+    border: 1px solid rgba(176, 141, 87, 0.4);
+    border-radius: 4px;
+    box-shadow: 0 40px 90px -40px rgba(31, 58, 46, 0.85);
+    padding: clamp(1.6rem, 4vw, 2.4rem);
+    transform: translateY(14px) scale(0.98);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.26s ease;
+    max-height: calc(100vh - 2.5rem);
+    overflow-y: auto;
+  }
+  .bm-enq.is-open .bm-enq__dialog { transform: translateY(0) scale(1); opacity: 1; }
+
+  .bm-enq__x {
+    position: absolute;
+    top: 0.7rem; right: 0.9rem;
+    background: none; border: none;
+    font-size: 1.7rem; line-height: 1;
+    color: #7C766B; cursor: pointer;
+    padding: 0.2rem;
+  }
+  .bm-enq__x:hover { color: #1F3A2E; }
+
+  .bm-enq__eyebrow {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.24em;
+    color: #B08D57; margin: 0 0 0.5rem;
+  }
+  .bm-enq__title {
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: clamp(1.7rem, 4vw, 2.1rem); font-weight: 600;
+    color: #1F3A2E; margin: 0 0 0.35rem; line-height: 1.05;
+  }
+  .bm-enq__prop {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.85rem; color: #7C766B; margin: 0 0 1.4rem;
+  }
+
+  .bm-enq__form { display: flex; flex-direction: column; gap: 0.85rem; }
+  .bm-enq__row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
+  .bm-enq__label {
+    display: flex; flex-direction: column; gap: 0.3rem;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em;
+    color: #4A4640; font-weight: 600;
+  }
+  .bm-enq__label input, .bm-enq__label textarea {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.95rem; font-weight: 400; letter-spacing: 0;
+    text-transform: none; color: #20211C;
+    background: #F6F2EA;
+    border: 1px solid rgba(176, 141, 87, 0.4);
+    border-radius: 3px;
+    padding: 0.7rem 0.8rem;
+    outline: none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .bm-enq__label input:focus, .bm-enq__label textarea:focus {
+    border-color: #1F3A2E;
+    box-shadow: 0 0 0 3px rgba(176, 141, 87, 0.18);
+  }
+  .bm-enq__label textarea { resize: vertical; }
+  .bm-enq__hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+  .bm-enq__submit {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
+    margin-top: 0.4rem;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.9rem; font-weight: 600; letter-spacing: 0.04em;
+    color: #F6F2EA; background: #1F3A2E;
+    border: none; border-radius: 3px; cursor: pointer;
+    padding: 0.95rem 1.4rem;
+    transition: background 0.3s ease, transform 0.3s ease;
+  }
+  .bm-enq__submit:hover { background: #2c5141; transform: translateY(-2px); }
+  .bm-enq__submit[disabled] { opacity: 0.65; cursor: default; transform: none; }
+  .bm-enq__submit-arrow { color: #B08D57; }
+
+  .bm-enq__err {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.82rem; color: #9a3b2e; margin: 0.2rem 0 0;
+  }
+  .bm-enq__legal {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.7rem; color: #7C766B; margin: 0.2rem 0 0; line-height: 1.5;
+  }
+
+  .bm-enq__success { text-align: center; }
+  .bm-enq__tick {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 56px; height: 56px; border-radius: 50%;
+    background: #1F3A2E; color: #F6F2EA; font-size: 1.6rem;
+    margin: 0 auto 1rem;
+  }
+  .bm-enq__success .bm-enq__sub {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.92rem; line-height: 1.6; color: #4A4640; margin: 0 0 1.4rem;
+  }
+  .bm-enq__success .bm-enq__sub a { color: #1F3A2E; font-weight: 600; }
+
+  @media (max-width: 420px) {
+    .bm-enq__row { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bm-enq__backdrop, .bm-enq__dialog { transition: none; }
+  }
+</style>
+
+<script>
+  const modal = document.getElementById('bmEnq');
+  if (modal) {
+    const dialog = modal.querySelector('.bm-enq__dialog');
+    const form = document.getElementById('bmEnqForm');
+    const propLabel = document.getElementById('bmEnqProp');
+    const propField = document.getElementById('bmEnqPropField');
+    const urlField = document.getElementById('bmEnqUrlField');
+    const errEl = document.getElementById('bmEnqErr');
+    const endpoint = modal.getAttribute('data-endpoint') || '/api/enquire';
+    const formView = modal.querySelector('[data-enq-view="form"]');
+    const successView = modal.querySelector('[data-enq-view="success"]');
+    let lastFocus = null;
+
+    const open = (trigger) => {
+      const property = trigger?.getAttribute('data-property') || 'A PH Property Group rental';
+      const listingUrl = trigger?.getAttribute('data-listing-url') || '';
+      propLabel.textContent = property;
+      propField.value = property;
+      urlField.value = listingUrl;
+      const msg = form.elements['message'];
+      if (msg && !msg.value) msg.value = `I'd like to arrange a viewing of ${property}.`;
+      // reset to the form view
+      formView.hidden = false;
+      successView.hidden = true;
+      errEl.hidden = true;
+      lastFocus = document.activeElement;
+      modal.hidden = false;
+      void modal.offsetWidth;
+      modal.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => form.elements['name']?.focus(), 60);
+    };
+
+    const close = () => {
+      modal.classList.remove('is-open');
+      document.body.style.overflow = '';
+      setTimeout(() => { modal.hidden = true; }, 300);
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    };
+
+    document.addEventListener('click', (e) => {
+      const trigger = e.target.closest('[data-enquire]');
+      if (trigger) { e.preventDefault(); open(trigger); return; }
+      if (e.target.closest('[data-enq-close]')) { close(); }
+    });
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.hidden) close(); });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errEl.hidden = true;
+      // honeypot tripped -> pretend success, send nothing
+      if (form.elements['company'].value) { formView.hidden = true; successView.hidden = false; return; }
+      const submitBtn = form.querySelector('.bm-enq__submit');
+      const labelEl = submitBtn.querySelector('.bm-enq__submit-label');
+      const original = labelEl.textContent;
+      submitBtn.disabled = true;
+      labelEl.textContent = 'Sending...';
+      const payload = {
+        name: form.elements['name'].value.trim(),
+        phone: form.elements['phone'].value.trim(),
+        email: form.elements['email'].value.trim(),
+        message: form.elements['message'].value.trim(),
+        property: propField.value,
+        listing_url: urlField.value,
+      };
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error('bad status ' + res.status);
+        form.reset();
+        formView.hidden = true;
+        successView.hidden = false;
+      } catch (err) {
+        errEl.hidden = false;
+      } finally {
+        submitBtn.disabled = false;
+        labelEl.textContent = original;
+      }
+    });
+  }
+</script>

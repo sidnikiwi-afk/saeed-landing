@@ -1,0 +1,267 @@
+---
+// Brick & Mortar — Nav. Scroll-responsive (blur + shrink) via inline script.
+---
+<header class="bm-nav" id="bmNav">
+  <div class="bm-nav__inner">
+    <a href="#top" class="bm-brand" aria-label="PH Property Group home">
+      <span class="bm-brand__mark" aria-hidden="true">P&nbsp;<span class="amp">&amp;</span>&nbsp;H</span>
+      <span class="bm-brand__txt">
+        <span class="bm-brand__name">PH Property Group</span>
+        <span class="bm-brand__est">Est. 1996 &middot; Bradford</span>
+      </span>
+    </a>
+
+    <nav class="bm-links" aria-label="Primary">
+      <a href="#listings">Available Homes</a>
+      <a href="#services">Services</a>
+      <a href="#heritage">Our Story</a>
+      <a href="#testimonials">Reviews</a>
+    </nav>
+
+    <a href="tel:01274649151" class="bm-callbtn">
+      <span class="bm-callbtn__diamond" aria-hidden="true"></span>
+      <span>01274 649151</span>
+    </a>
+
+    <button class="bm-burger" id="bmBurger" aria-label="Open menu" aria-expanded="false" aria-controls="bmMobile">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </button>
+  </div>
+</header>
+
+<div class="bm-mobile" id="bmMobile" hidden>
+  <nav class="bm-mobile__links" aria-label="Mobile">
+    <a href="#listings">Available Homes</a>
+    <a href="#services">Services</a>
+    <a href="#heritage">Our Story</a>
+    <a href="#testimonials">Reviews</a>
+  </nav>
+  <a href="tel:01274649151" class="bm-mobile__call">
+    <span class="bm-callbtn__diamond" aria-hidden="true"></span>
+    01274 649151
+  </a>
+</div>
+
+<style>
+  .bm-nav {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 100;
+    transition: background 0.5s ease, backdrop-filter 0.5s ease,
+                box-shadow 0.5s ease, border-color 0.5s ease;
+    border-bottom: 1px solid transparent;
+  }
+  .bm-nav.is-scrolled {
+    background: rgba(246, 242, 234, 0.82);
+    backdrop-filter: blur(14px) saturate(1.1);
+    -webkit-backdrop-filter: blur(14px) saturate(1.1);
+    border-bottom: 1px solid rgba(176, 141, 87, 0.28);
+    box-shadow: 0 12px 40px -28px rgba(31, 58, 46, 0.6);
+  }
+  .bm-nav__inner {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 1.5rem 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    transition: padding 0.5s ease;
+  }
+  .bm-nav.is-scrolled .bm-nav__inner { padding: 0.85rem 2.25rem; }
+
+  .bm-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    text-decoration: none;
+    color: #20211C;
+  }
+  .bm-brand__mark {
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-weight: 600;
+    font-size: 1.35rem;
+    letter-spacing: 0.02em;
+    color: #1F3A2E;
+    border: 1px solid #B08D57;
+    padding: 0.28rem 0.6rem;
+    line-height: 1;
+    position: relative;
+    white-space: nowrap;
+  }
+  .bm-brand__mark .amp {
+    color: #B08D57;
+    font-style: italic;
+    font-weight: 500;
+  }
+  .bm-brand__txt { display: flex; flex-direction: column; line-height: 1.15; }
+  .bm-brand__name {
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: 1.18rem;
+    font-weight: 600;
+    color: #1F3A2E;
+    letter-spacing: 0.01em;
+  }
+  .bm-brand__est {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    color: #7C766B;
+    margin-top: 0.18rem;
+  }
+
+  .bm-links {
+    display: flex;
+    align-items: center;
+    gap: 2.1rem;
+  }
+  .bm-links a {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: #4A4640;
+    text-decoration: none;
+    position: relative;
+    padding-bottom: 0.3rem;
+    transition: color 0.3s ease;
+  }
+  .bm-links a::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 0; height: 1px;
+    background: #B08D57;
+    transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .bm-links a:hover { color: #1F3A2E; }
+  .bm-links a:hover::after { width: 100%; }
+
+  .bm-callbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #1F3A2E;
+    text-decoration: none;
+    border: 1px solid rgba(176, 141, 87, 0.55);
+    padding: 0.6rem 1.15rem;
+    border-radius: 2px;
+    transition: background 0.35s ease, color 0.35s ease, border-color 0.35s ease;
+    white-space: nowrap;
+  }
+  .bm-callbtn__diamond {
+    width: 7px; height: 7px;
+    background: #B08D57;
+    transform: rotate(45deg);
+    transition: transform 0.5s ease;
+  }
+  .bm-callbtn:hover {
+    background: #1F3A2E;
+    color: #F6F2EA;
+    border-color: #1F3A2E;
+  }
+  .bm-callbtn:hover .bm-callbtn__diamond { transform: rotate(225deg); }
+
+  /* mobile menu trigger */
+  .bm-burger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 42px; height: 42px;
+    padding: 0 10px;
+    border: 1px solid rgba(176,141,87,0.55);
+    border-radius: 2px;
+    background: rgba(246,242,234,0.7);
+    cursor: pointer;
+  }
+  .bm-burger span { display: block; height: 1.5px; width: 100%; background: #1F3A2E; transition: transform .3s ease, opacity .2s ease; }
+  .bm-nav.is-open .bm-burger span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .bm-nav.is-open .bm-burger span:nth-child(2) { opacity: 0; }
+  .bm-nav.is-open .bm-burger span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  /* mobile menu panel */
+  .bm-mobile {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 99;
+    display: flex;
+    flex-direction: column;
+    padding: 5.5rem 1.5rem 2rem;
+    background: rgba(246,242,234,0.98);
+    backdrop-filter: blur(14px) saturate(1.1);
+    -webkit-backdrop-filter: blur(14px) saturate(1.1);
+    border-bottom: 1px solid rgba(176,141,87,0.4);
+    box-shadow: 0 24px 50px -28px rgba(31,58,46,0.6);
+    transform: translateY(-10px);
+    opacity: 0;
+    transition: transform .32s cubic-bezier(0.22,1,0.36,1), opacity .28s ease;
+  }
+  .bm-mobile.is-open { transform: translateY(0); opacity: 1; }
+  .bm-mobile__links { display: flex; flex-direction: column; }
+  .bm-mobile__links a {
+    text-decoration: none;
+    color: #1F3A2E;
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: 1.7rem;
+    font-weight: 600;
+    padding: 0.7rem 0.2rem;
+    border-bottom: 1px solid rgba(176,141,87,0.25);
+  }
+  .bm-mobile__call {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    margin-top: 1.2rem; text-decoration: none;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.9rem; font-weight: 600; letter-spacing: 0.05em;
+    color: #1F3A2E;
+  }
+
+  @media (max-width: 900px) {
+    .bm-links { display: none; }
+    .bm-nav__inner { padding: 1rem 1.25rem; }
+    .bm-nav.is-scrolled .bm-nav__inner { padding: 0.7rem 1.25rem; }
+    .bm-burger { display: inline-flex; }
+  }
+  @media (min-width: 901px) {
+    .bm-mobile { display: none; }
+  }
+  @media (max-width: 560px) {
+    .bm-brand__name { font-size: 1rem; }
+    .bm-callbtn span:last-child { display: none; }
+    .bm-callbtn { padding: 0.6rem; }
+  }
+</style>
+
+<script>
+  const nav = document.getElementById('bmNav');
+  const onScroll = () => {
+    if (window.scrollY > 40) nav?.classList.add('is-scrolled');
+    else nav?.classList.remove('is-scrolled');
+  };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Mobile menu toggle
+  const bmBurger = document.getElementById('bmBurger');
+  const bmMobile = document.getElementById('bmMobile');
+  const bmSetMenu = (open) => {
+    if (!nav || !bmBurger || !bmMobile) return;
+    nav.classList.toggle('is-open', open);
+    bmBurger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    bmBurger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    if (open) { bmMobile.hidden = false; void bmMobile.offsetWidth; bmMobile.classList.add('is-open'); }
+    else { bmMobile.classList.remove('is-open'); setTimeout(() => { bmMobile.hidden = true; }, 320); }
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+  bmBurger?.addEventListener('click', () => bmSetMenu(!nav.classList.contains('is-open')));
+  bmMobile?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => bmSetMenu(false)));
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape') bmSetMenu(false); });
+  window.matchMedia('(min-width: 901px)').addEventListener('change', (e) => { if (e.matches) bmSetMenu(false); });
+</script>

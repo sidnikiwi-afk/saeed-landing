@@ -1,0 +1,222 @@
+---
+// Brick & Mortar — final CTA (full-bleed editorial moment) + footer.
+import listings from '../../data/premier-housing-listings.json';
+const a = listings.agent;
+---
+<section class="bm-cta">
+  <div class="bm-cta__inner bm-obs">
+    <span class="bm-cta__seal" aria-hidden="true">
+      <span class="bm-cta__seal-top">Premier</span>
+      <span class="bm-cta__seal-big">P&amp;H</span>
+      <span class="bm-cta__seal-bot">since 1996</span>
+    </span>
+    <p class="bm-cta__eyebrow">Ready when you are</p>
+    <h2 class="bm-cta__title">
+      Let&rsquo;s find you<br />a home worth <em>settling</em> into.
+    </h2>
+    <p class="bm-cta__sub">
+      Call the family directly, or browse what&rsquo;s available and book a viewing this week.
+    </p>
+    <div class="bm-cta__actions">
+      <a href="tel:01274649151" class="bm-cta__btn bm-cta__btn--solid">
+        <span class="bm-cta__diamond" aria-hidden="true"></span>
+        Call {a.phone}
+      </a>
+      <a href="#listings" class="bm-cta__btn bm-cta__btn--ghost">Browse available homes</a>
+    </div>
+  </div>
+</section>
+
+<footer class="bm-foot">
+  <div class="bm-foot__inner">
+    <div class="bm-foot__brand">
+      <span class="bm-foot__mark">PH&nbsp;<span>&amp;</span>&nbsp;Property Group</span>
+      <p class="bm-foot__blurb">
+        Quality rental homes and full property management across Bradford, Leeds
+        and Liverpool. A family-run service to a Premier standard for nearly
+        thirty years.
+      </p>
+      <div class="bm-foot__areas">
+        <span>Bradford</span><span class="bm-foot__diamond" aria-hidden="true"></span>
+        <span>Leeds</span><span class="bm-foot__diamond" aria-hidden="true"></span>
+        <span>Liverpool</span>
+      </div>
+    </div>
+
+    <div class="bm-foot__col">
+      <h4>Visit us</h4>
+      <p>{a.address}</p>
+    </div>
+    <div class="bm-foot__col">
+      <h4>Talk to us</h4>
+      <p><a href="tel:01274649151">{a.phone}</a></p>
+      <p><a href={a.facebook} target="_blank" rel="noopener">facebook.com/PremierHousing.Bradford</a></p>
+    </div>
+    <div class="bm-foot__col">
+      <h4>Services</h4>
+      <p><a href="#services">Renting</a></p>
+      <p><a href="#services">Letting</a></p>
+      <p><a href="#services">Property Management</a></p>
+      <p><a href="#services">Evictions</a></p>
+    </div>
+  </div>
+  <div class="bm-foot__legal">
+    <p class="bm-foot__compliance">
+      Private demo preview. Redress scheme, Client Money Protection, company,
+      privacy, cookie, terms and complaints details will be confirmed with PH
+      Property Group before public launch. This preview remains noindex.
+    </p>
+    <nav class="bm-foot__legal-links" aria-label="Legal">
+      <span>Privacy Policy</span>
+      <span>Cookie Policy</span>
+      <span>Terms of Use</span>
+      <span>Complaints Procedure</span>
+    </nav>
+  </div>
+  <div class="bm-foot__bar">
+    <span>&copy; {new Date().getFullYear()} PH Property Group. Family-run since 1996.</span>
+    <span class="bm-foot__est">2 Princeville Road &middot; Bradford &middot; BD7 2AR</span>
+  </div>
+</footer>
+
+<style>
+  /* ── full-bleed CTA ── */
+  .bm-cta {
+    position: relative;
+    background:
+      radial-gradient(90% 130% at 50% 0%, rgba(176,141,87,0.18), transparent 55%),
+      #1F3A2E;
+    padding: clamp(5rem, 10vw, 9rem) 2.25rem;
+    text-align: center;
+    overflow: hidden;
+  }
+  .bm-cta__inner { position: relative; max-width: 760px; margin: 0 auto; }
+  .bm-cta__seal {
+    display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 96px; height: 96px; border-radius: 50%;
+    border: 1px solid #B08D57; margin-bottom: 2rem;
+    animation: bm-cta-pulse 5s ease-in-out infinite;
+  }
+  @keyframes bm-cta-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(176,141,87,0.0); }
+    50% { box-shadow: 0 0 0 8px rgba(176,141,87,0.08); }
+  }
+  .bm-cta__seal-top, .bm-cta__seal-bot {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.5rem; text-transform: uppercase; letter-spacing: 0.22em; color: #B08D57;
+  }
+  .bm-cta__seal-big {
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: 1.7rem; font-weight: 600; color: #F6F2EA; margin: 0.15rem 0;
+  }
+  .bm-cta__eyebrow {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.3em;
+    color: #B08D57; margin: 0 0 1.4rem;
+  }
+  .bm-cta__title {
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: clamp(2.6rem, 6vw, 4.8rem); font-weight: 500; line-height: 1.0;
+    letter-spacing: -0.02em; color: #F6F2EA; margin: 0 0 1.4rem;
+  }
+  .bm-cta__title em { font-style: italic; color: #B08D57; font-weight: 400; }
+  .bm-cta__sub {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 1.02rem; line-height: 1.6; color: rgba(246,242,234,0.8);
+    max-width: 32rem; margin: 0 auto 2.4rem;
+  }
+  .bm-cta__actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .bm-cta__btn {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.9rem; font-weight: 600; letter-spacing: 0.04em;
+    padding: 1rem 1.8rem; border-radius: 2px; text-decoration: none;
+    transition: transform 0.35s ease, background 0.35s ease, color 0.35s ease;
+  }
+  .bm-cta__btn--solid { background: #B08D57; color: #1F3A2E; }
+  .bm-cta__btn--solid:hover { background: #c49b62; transform: translateY(-3px); }
+  .bm-cta__btn--ghost { background: transparent; color: #F6F2EA; border: 1px solid rgba(246,242,234,0.4); }
+  .bm-cta__btn--ghost:hover { border-color: #B08D57; color: #B08D57; transform: translateY(-3px); }
+  .bm-cta__diamond { width: 7px; height: 7px; background: #1F3A2E; transform: rotate(45deg); }
+
+  /* ── footer ── */
+  .bm-foot { background: #20211C; color: #F6F2EA; padding: clamp(3.5rem, 6vw, 5rem) 2.25rem 0; }
+  .bm-foot__inner {
+    max-width: 1320px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.6fr 1fr 1.2fr 1fr;
+    gap: 2.5rem; padding-bottom: 3rem;
+    border-bottom: 1px solid rgba(176,141,87,0.22);
+  }
+  .bm-foot__mark {
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: 1.4rem; font-weight: 600; color: #F6F2EA;
+  }
+  .bm-foot__mark span { color: #B08D57; font-style: italic; }
+  .bm-foot__blurb {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.85rem; line-height: 1.65; color: rgba(246,242,234,0.62);
+    margin: 1rem 0 1.2rem; max-width: 26rem;
+  }
+  .bm-foot__areas {
+    display: flex; align-items: center; gap: 0.7rem;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.18em; color: #B08D57;
+  }
+  .bm-foot__diamond { width: 5px; height: 5px; background: #B08D57; transform: rotate(45deg); }
+  .bm-foot__col h4 {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.2em;
+    color: #B08D57; margin: 0 0 1rem;
+  }
+  .bm-foot__col p {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.86rem; line-height: 1.55; color: rgba(246,242,234,0.78); margin: 0 0 0.5rem;
+  }
+  .bm-foot__col a { color: rgba(246,242,234,0.78); text-decoration: none; transition: color 0.3s ease; }
+  .bm-foot__col a:hover { color: #B08D57; }
+  .bm-foot__legal {
+    max-width: 1320px; margin: 0 auto;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem 2rem;
+    padding: 1.6rem 0 0;
+  }
+  .bm-foot__compliance {
+    flex: 1 1 30rem;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.72rem; line-height: 1.7;
+    color: rgba(246,242,234,0.5); margin: 0; max-width: 60rem;
+  }
+  .bm-foot__legal-links {
+    display: flex; flex-wrap: wrap; gap: 0.4rem 1.1rem;
+    flex: 0 0 auto;
+  }
+  .bm-foot__legal-links span {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.72rem; color: rgba(246,242,234,0.62);
+    white-space: nowrap;
+  }
+  .bm-foot__bar {
+    max-width: 1320px; margin: 0 auto;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.6rem;
+    padding: 1.5rem 0 2rem;
+    margin-top: 1.4rem;
+    border-top: 1px solid rgba(176,141,87,0.18);
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.72rem; color: rgba(246,242,234,0.45); letter-spacing: 0.04em;
+  }
+
+  :global(html.bm-anim) .bm-obs { opacity: 0; transform: translateY(26px); transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.22,1,0.36,1); }
+  :global(html.bm-anim) .bm-obs.is-in { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 880px) {
+    .bm-foot__inner { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 520px) {
+    .bm-foot__inner { grid-template-columns: 1fr; }
+    .bm-cta__btn { width: 100%; justify-content: center; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(html.bm-anim) .bm-obs { opacity: 1 !important; transform: none !important; }
+    .bm-cta__seal { animation: none; }
+  }
+</style>

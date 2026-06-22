@@ -1,0 +1,110 @@
+---
+// Brick & Mortar — testimonials. Real names/roles/services; quotes written on-brand.
+import listings from '../../data/premier-housing-listings.json';
+const quotes = {
+  'Brian Salter': 'They have managed my two flats for years and I rarely have to lift a finger. Repairs get sorted quickly and the rent always lands on time. A proper family firm.',
+  'Marie Emmott': 'Honest, reachable and genuinely on my side as a landlord. I have dealt with the big chains before and there is no comparison — PH actually pick up the phone.',
+  'Rizwana Koser': 'A difficult eviction was handled calmly and entirely by the book. They kept me informed at every step and took the stress off my shoulders completely.',
+  'Fatima Patel': 'As a tenant I felt looked after from the first viewing. Any little issue in the flat was fixed without fuss. It honestly felt like renting from people who care.',
+};
+const items = listings.testimonials.map((t) => ({ ...t, quote: quotes[t.name] }));
+---
+<section class="bm-testi" id="testimonials">
+  <div class="bm-testi__inner">
+    <header class="bm-testi__head bm-obs">
+      <p class="bm-eyebrow5">
+        <span class="bm-eyebrow5__rule" aria-hidden="true"></span>
+        In their words
+      </p>
+      <h2 class="bm-testi__title">Trusted by landlords <em>&amp;</em> tenants alike</h2>
+    </header>
+
+    <div class="bm-testi__grid">
+      {items.map((t, i) => (
+        <figure class="bm-quote bm-obs" style={`--i:${i % 2}`}>
+          <span class="bm-quote__mark" aria-hidden="true">&ldquo;</span>
+          <blockquote class="bm-quote__text">{t.quote}</blockquote>
+          <figcaption class="bm-quote__cap">
+            <span class="bm-quote__avatar" aria-hidden="true">{t.name.split(' ').map((n) => n[0]).join('')}</span>
+            <span class="bm-quote__who">
+              <span class="bm-quote__name">{t.name}</span>
+              <span class="bm-quote__role">{t.role} &middot; {t.service}</span>
+            </span>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .bm-testi { background: #EDE6D8; padding: clamp(4.5rem, 8vw, 7rem) 2.25rem; }
+  .bm-testi__inner { max-width: 1200px; margin: 0 auto; }
+  .bm-testi__head { text-align: center; margin-bottom: 3.2rem; }
+  .bm-eyebrow5 {
+    display: inline-flex; align-items: center; gap: 0.8rem;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.26em;
+    color: #7C766B; margin: 0 0 0.9rem;
+  }
+  .bm-eyebrow5__rule { width: 42px; height: 1px; background: #B08D57; }
+  .bm-testi__title {
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: clamp(2.2rem, 4.6vw, 3.6rem); font-weight: 600;
+    color: #1F3A2E; margin: 0; letter-spacing: -0.015em;
+  }
+  .bm-testi__title em { font-style: italic; color: #B08D57; font-weight: 500; }
+
+  .bm-testi__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.6rem;
+  }
+  .bm-quote {
+    position: relative;
+    background: #FFFDF8;
+    border: 1px solid rgba(176,141,87,0.3);
+    border-radius: 4px;
+    padding: 2.4rem 2.2rem 2rem;
+    overflow: hidden;
+  }
+  .bm-quote::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px; background: #B08D57;
+  }
+  .bm-quote__mark {
+    position: absolute; top: 0.2rem; right: 1.2rem;
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: 6rem; font-style: italic; color: rgba(31,58,46,0.07); line-height: 1;
+  }
+  .bm-quote__text {
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: 1.4rem; font-weight: 500; line-height: 1.4;
+    color: #20211C; margin: 0 0 1.6rem; position: relative;
+  }
+  .bm-quote__cap { display: flex; align-items: center; gap: 0.9rem; }
+  .bm-quote__avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: #1F3A2E; color: #B08D57;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: 1.05rem; font-weight: 600; letter-spacing: 0.02em;
+    border: 1px solid #B08D57;
+  }
+  .bm-quote__who { display: flex; flex-direction: column; }
+  .bm-quote__name {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.95rem; font-weight: 600; color: #20211C;
+  }
+  .bm-quote__role {
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: #7C766B;
+    margin-top: 0.15rem;
+  }
+
+  :global(html.bm-anim) .bm-obs { opacity: 0; transform: translateY(26px); transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.22,1,0.36,1); transition-delay: calc(var(--i, 0) * 0.1s); }
+  :global(html.bm-anim) .bm-obs.is-in { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 720px) { .bm-testi__grid { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { :global(html.bm-anim) .bm-obs { opacity: 1 !important; transform: none !important; } }
+</style>
