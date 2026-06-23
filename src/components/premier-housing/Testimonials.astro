@@ -1,13 +1,28 @@
 ---
-// Brick & Mortar — testimonials. Real names/roles/services; quotes written on-brand.
+// Brick & Mortar — testimonials. Real names/roles/services; real client video testimonials.
 import listings from '../../data/premier-housing-listings.json';
-const quotes = {
-  'Brian Salter': 'They have managed my two flats for years and I rarely have to lift a finger. Repairs get sorted quickly and the rent always lands on time. A proper family firm.',
-  'Marie Emmott': 'Honest, reachable and genuinely on my side as a landlord. I have dealt with the big chains before and there is no comparison. With PH you are a person, not an account number.',
-  'Rizwana Koser': 'A difficult eviction was handled calmly and entirely by the book. They kept me informed at every step and took the stress off my shoulders completely.',
-  'Fatima Patel': 'As a tenant I felt looked after from the first viewing. Any little issue in the flat was fixed without fuss. It honestly felt like renting from people who care.',
+
+const testimonialMedia = {
+  'Brian Salter': {
+    src: 'https://phpropertygroup.co.uk/wp-content/uploads/2022/01/Brian-Salter-Landlord.mp4',
+    poster: 'https://phpropertygroup.co.uk/wp-content/uploads/2022/01/video4-screen.webp',
+  },
+  'Marie Emmott': {
+    src: 'https://phpropertygroup.co.uk/wp-content/uploads/2022/01/Marie-Emmott-Landlord.mp4',
+    poster: 'https://phpropertygroup.co.uk/wp-content/uploads/2022/01/video1-screen.webp',
+  },
+  'Rizwana Koser': {
+    src: 'https://phpropertygroup.co.uk/wp-content/uploads/2022/01/Rizwana-Koser-Landlord.mp4',
+    poster: 'https://phpropertygroup.co.uk/wp-content/uploads/2022/01/video3-screen.webp',
+  },
+  'Fatima Patel': {
+    src: 'https://phpropertygroup.co.uk/wp-content/uploads/2022/01/Fatima-Patel-Tenant.mp4',
+    poster: 'https://phpropertygroup.co.uk/wp-content/uploads/2022/01/video2-screen.webp',
+  },
 };
-const items = listings.testimonials.map((t) => ({ ...t, quote: quotes[t.name] }));
+
+// Demo note: these videos are hotlinked from the client's site; self-host for production if their URLs may change.
+const items = listings.testimonials.map((t) => ({ ...t, media: testimonialMedia[t.name] }));
 ---
 <section class="bm-testi" id="testimonials">
   <div class="bm-testi__inner">
@@ -19,28 +34,20 @@ const items = listings.testimonials.map((t) => ({ ...t, quote: quotes[t.name] })
       <h2 class="bm-testi__title">Trusted by landlords <em>&amp;</em> tenants alike</h2>
     </header>
 
-    <figure class="bm-testi__feature bm-obs">
-      <video
-        class="bm-testi__video"
-        controls
-        preload="none"
-        playsinline
-        poster="https://phpropertygroup.co.uk/wp-content/uploads/2022/01/video4-screen.webp"
-      >
-        <source src="https://phpropertygroup.co.uk/wp-content/uploads/2022/01/Brian-Salter-Landlord.mp4" type="video/mp4" />
-        Your browser does not support video.
-      </video>
-      <figcaption class="bm-testi__feature-cap">
-        <span class="bm-testi__feature-name">Brian Salter</span>
-        <span class="bm-testi__feature-role">Landlord &middot; Property Management</span>
-      </figcaption>
-    </figure>
-
     <div class="bm-testi__grid">
       {items.map((t, i) => (
         <figure class="bm-quote bm-obs" style={`--i:${i % 2}`}>
-          <span class="bm-quote__mark" aria-hidden="true">&ldquo;</span>
-          <blockquote class="bm-quote__text">{t.quote}</blockquote>
+          <video
+            class="bm-quote__video"
+            controls
+            preload="none"
+            playsinline
+            poster={t.media.poster}
+            aria-label={`${t.name} testimonial video`}
+          >
+            <source src={t.media.src} type="video/mp4" />
+            Your browser does not support video.
+          </video>
           <figcaption class="bm-quote__cap">
             <span class="bm-quote__avatar" aria-hidden="true">{t.name.split(' ').map((n) => n[0]).join('')}</span>
             <span class="bm-quote__who">
@@ -72,34 +79,6 @@ const items = listings.testimonials.map((t) => ({ ...t, quote: quotes[t.name] })
   }
   .bm-testi__title em { font-style: italic; color: #B08D57; font-weight: 500; }
 
-  .bm-testi__feature {
-    max-width: 640px;
-    margin: 0 auto clamp(2.6rem, 5vw, 3.4rem);
-    text-align: center;
-  }
-  .bm-testi__video {
-    width: 100%;
-    display: block;
-    aspect-ratio: 16 / 9;
-    background: #1F3A2E;
-    border: 1px solid rgba(176,141,87,0.45);
-    border-radius: 4px;
-    box-shadow: 0 34px 70px -46px rgba(31,58,46,0.75);
-    object-fit: cover;
-  }
-  .bm-testi__feature-cap { display: block; margin-top: 0.9rem; }
-  .bm-testi__feature-name {
-    display: block;
-    font-family: 'Cormorant Variable', Georgia, serif;
-    font-size: 1.2rem; font-weight: 600; color: #20211C;
-  }
-  .bm-testi__feature-role {
-    display: block;
-    font-family: 'Work Sans Variable', system-ui, sans-serif;
-    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: #7C766B;
-    margin-top: 0.15rem;
-  }
-
   .bm-testi__grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -110,24 +89,24 @@ const items = listings.testimonials.map((t) => ({ ...t, quote: quotes[t.name] })
     background: #FFFDF8;
     border: 1px solid rgba(176,141,87,0.3);
     border-radius: 4px;
-    padding: 2.4rem 2.2rem 2rem;
+    padding: 1rem 1rem 1.25rem;
     overflow: hidden;
   }
   .bm-quote::before {
     content: ''; position: absolute; left: 0; top: 0; bottom: 0;
     width: 3px; background: #B08D57;
   }
-  .bm-quote__mark {
-    position: absolute; top: 0.2rem; right: 1.2rem;
-    font-family: 'Cormorant Variable', Georgia, serif;
-    font-size: 6rem; font-style: italic; color: rgba(31,58,46,0.07); line-height: 1;
+  .bm-quote__video {
+    width: 100%;
+    display: block;
+    aspect-ratio: 16 / 9;
+    background: #1F3A2E;
+    border: 1px solid rgba(176,141,87,0.45);
+    border-radius: 4px;
+    box-shadow: 0 34px 70px -46px rgba(31,58,46,0.75);
+    object-fit: cover;
   }
-  .bm-quote__text {
-    font-family: 'Cormorant Variable', Georgia, serif;
-    font-size: 1.4rem; font-weight: 500; line-height: 1.4;
-    color: #20211C; margin: 0 0 1.6rem; position: relative;
-  }
-  .bm-quote__cap { display: flex; align-items: center; gap: 0.9rem; }
+  .bm-quote__cap { display: flex; align-items: center; gap: 0.9rem; margin-top: 1.05rem; }
   .bm-quote__avatar {
     width: 44px; height: 44px; border-radius: 50%;
     background: #1F3A2E; color: #B08D57;
@@ -135,6 +114,7 @@ const items = listings.testimonials.map((t) => ({ ...t, quote: quotes[t.name] })
     font-family: 'Cormorant Variable', Georgia, serif;
     font-size: 1.05rem; font-weight: 600; letter-spacing: 0.02em;
     border: 1px solid #B08D57;
+    flex: 0 0 auto;
   }
   .bm-quote__who { display: flex; flex-direction: column; }
   .bm-quote__name {
