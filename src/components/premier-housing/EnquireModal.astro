@@ -203,6 +203,7 @@ const endpoint = import.meta.env.PUBLIC_PH_ENQUIRE_ENDPOINT || 'https://premier-
     const formView = modal.querySelector('[data-enq-view="form"]');
     const successView = modal.querySelector('[data-enq-view="success"]');
     let lastFocus = null;
+    let lastAutoMsg = '';
 
     const open = (trigger) => {
       const property = trigger?.getAttribute('data-property') || 'A PH Property Group rental';
@@ -211,7 +212,12 @@ const endpoint = import.meta.env.PUBLIC_PH_ENQUIRE_ENDPOINT || 'https://premier-
       propField.value = property;
       urlField.value = listingUrl;
       const msg = form.elements['message'];
-      if (msg && !msg.value) msg.value = `I'd like to arrange a viewing of ${property}.`;
+      const nextDefault = `I'd like to arrange a viewing of ${property}.`;
+      // Keep the message in sync with the selected property, but never overwrite
+      // something the visitor has actually typed. Only replace an empty message or
+      // our own previous auto-filled default.
+      if (msg && (!msg.value || msg.value === lastAutoMsg)) msg.value = nextDefault;
+      lastAutoMsg = nextDefault;
       // reset to the form view
       formView.hidden = false;
       successView.hidden = true;
