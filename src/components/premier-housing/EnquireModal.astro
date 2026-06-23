@@ -3,11 +3,11 @@
 // Any element on the page with [data-enquire] opens it. The trigger may carry
 // data-property and data-listing-url to prefill the enquiry.
 //
-// On submit it POSTs JSON to `${BASE_URL}api/enquire` (a Cloudflare Pages
-// Function that Codex wires to the Brackstone estate-leads intake). Using
-// BASE_URL means it keeps working if the site is served under a sub-path such
-// as /premier-housing.
-const endpoint = `${import.meta.env.BASE_URL}api/enquire`.replace(/\/{2,}/g, '/');
+// On submit it POSTs JSON to an explicitly configured endpoint when provided,
+// otherwise to `${BASE_URL}api/enquire`. The explicit endpoint is needed when
+// this visual route is served from GitHub Pages and the function remains on
+// Cloudflare Pages for the Premier Housing demo.
+const endpoint = import.meta.env.PUBLIC_PH_ENQUIRE_ENDPOINT || 'https://premier-housing-demo.pages.dev/api/enquire';
 ---
 <div class="bm-enq" id="bmEnq" data-endpoint={endpoint} hidden>
   <div class="bm-enq__backdrop" data-enq-close></div>
