@@ -19,6 +19,23 @@ const items = listings.testimonials.map((t) => ({ ...t, quote: quotes[t.name] })
       <h2 class="bm-testi__title">Trusted by landlords <em>&amp;</em> tenants alike</h2>
     </header>
 
+    <figure class="bm-testi__feature bm-obs">
+      <video
+        class="bm-testi__video"
+        controls
+        preload="none"
+        playsinline
+        poster="https://phpropertygroup.co.uk/wp-content/uploads/2022/01/video4-screen.webp"
+      >
+        <source src="https://phpropertygroup.co.uk/wp-content/uploads/2022/01/Brian-Salter-Landlord.mp4" type="video/mp4" />
+        Your browser does not support video.
+      </video>
+      <figcaption class="bm-testi__feature-cap">
+        <span class="bm-testi__feature-name">Brian Salter</span>
+        <span class="bm-testi__feature-role">Landlord &middot; Property Management</span>
+      </figcaption>
+    </figure>
+
     <div class="bm-testi__grid">
       {items.map((t, i) => (
         <figure class="bm-quote bm-obs" style={`--i:${i % 2}`}>
@@ -54,6 +71,34 @@ const items = listings.testimonials.map((t) => ({ ...t, quote: quotes[t.name] })
     color: #1F3A2E; margin: 0; letter-spacing: -0.015em;
   }
   .bm-testi__title em { font-style: italic; color: #B08D57; font-weight: 500; }
+
+  .bm-testi__feature {
+    max-width: 640px;
+    margin: 0 auto clamp(2.6rem, 5vw, 3.4rem);
+    text-align: center;
+  }
+  .bm-testi__video {
+    width: 100%;
+    display: block;
+    aspect-ratio: 16 / 9;
+    background: #1F3A2E;
+    border: 1px solid rgba(176,141,87,0.45);
+    border-radius: 4px;
+    box-shadow: 0 34px 70px -46px rgba(31,58,46,0.75);
+    object-fit: cover;
+  }
+  .bm-testi__feature-cap { display: block; margin-top: 0.9rem; }
+  .bm-testi__feature-name {
+    display: block;
+    font-family: 'Cormorant Variable', Georgia, serif;
+    font-size: 1.2rem; font-weight: 600; color: #20211C;
+  }
+  .bm-testi__feature-role {
+    display: block;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: #7C766B;
+    margin-top: 0.15rem;
+  }
 
   .bm-testi__grid {
     display: grid;
