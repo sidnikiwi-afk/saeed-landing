@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Jobs Board · Brackstone</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%237C5CFF'/%3E%3Cstop offset='1' stop-color='%234F2BFF'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='112' fill='url(%23g)'/%3E%3Ctext x='256' y='356' text-anchor='middle' font-family='sans-serif' font-weight='600' font-size='288' fill='%23fff'%3EB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F7F8; --card-bg:#FFFFFF; --input-bg:#FFFFFF; --detail-bg:#FAFAFB;
+  --border:rgba(15,15,20,0.08); --border-soft:rgba(15,15,20,0.05);
+  --text:#0A0A0B; --text-secondary:#4A4A52; --text-muted:#767680; --text-faint:#B1B1B8;
+  --accent:#6E48F0; --accent-strong:#5B36DC; --accent-soft:rgba(110,72,240,0.10); --accent-soft-2:rgba(110,72,240,0.18); --accent-text:#5B36DC;
+  --success:#0E9F6E; --success-soft:rgba(14,159,110,0.10);
+  --warning:#B7791F; --warning-soft:rgba(183,121,31,0.10);
+  --danger:#E11D48; --danger-soft:rgba(225,29,72,0.10);
+  --info:#2563EB; --info-soft:rgba(37,99,235,0.10);
+  --shadow:0 1px 2px rgba(15,15,20,0.04), 0 12px 30px -16px rgba(15,15,20,0.10);
+  --row-hover:rgba(15,15,20,0.025);
+  --color-scheme:light;
+}
+[data-theme="dark"]{
+  --bg:#0A0A0B; --card-bg:#131316; --input-bg:#18181C; --detail-bg:#101012;
+  --border:rgba(255,255,255,0.07); --border-soft:rgba(255,255,255,0.04);
+  --text:#F5F5F7; --text-secondary:#B6B6BD; --text-muted:#6E6E76; --text-faint:#5C5C66;
+  --accent:#7C5CFF; --accent-strong:#A78BFF; --accent-soft:rgba(124,92,255,0.14); --accent-soft-2:rgba(124,92,255,0.22); --accent-text:#A78BFF;
+  --success:#34D399; --success-soft:rgba(52,211,153,0.12);
+  --warning:#FBBF24; --warning-soft:rgba(251,191,36,0.12);
+  --danger:#FF5F6D; --danger-soft:rgba(255,95,109,0.14);
+  --info:#60A5FA; --info-soft:rgba(96,165,250,0.14);
+  --shadow:0 1px 0 rgba(255,255,255,0.04) inset, 0 20px 60px -30px rgba(0,0,0,0.8);
+  --row-hover:rgba(255,255,255,0.025);
+  --color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{color-scheme:var(--color-scheme)}
+body{
+  font-family:"Geist",-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-feature-settings:"ss01" 1,"cv11" 1;
+  -webkit-font-smoothing:antialiased;
+  background:var(--bg); color:var(--text); line-height:1.5;
+}
+a{color:inherit;text-decoration:none}
+.mono{font-family:"Geist Mono",monospace}
+
+/* ---------- Sidebar ---------- */
+.sidebar{
+  width:240px;position:fixed;top:0;left:0;height:100vh;
+  display:flex;flex-direction:column;padding:16px 14px;
+  background:var(--card-bg);border-right:1px solid var(--border);z-index:100;
+}
+.sidebar-brand{display:flex;align-items:center;gap:10px;padding:6px 10px 18px}
+.sidebar-mark{
+  width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--accent),var(--accent-strong));
+  color:#fff;font-weight:600;font-size:17px;box-shadow:0 4px 14px -4px var(--accent-soft-2);
+}
+.sidebar-brand-text strong{display:block;font-size:14px;font-weight:500;color:var(--text)}
+.sidebar-brand-text small{font-size:11px;color:var(--text-muted)}
+.sidebar-nav{display:flex;flex-direction:column;gap:4px;flex:1 1 auto;overflow-y:auto}
+.sidebar-section-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-faint);margin:12px 10px 4px;font-weight:600}
+.sidebar-item{
+  height:40px;padding:8px 10px;border-radius:8px;color:var(--text-muted);
+  display:flex;align-items:center;gap:10px;font-size:13.5px;cursor:pointer;border:none;background:none;width:100%;text-align:left;
+  transition:background .15s,color .15s;
+}
+.sidebar-item svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7}
+.sidebar-item:hover{background:var(--accent-soft);color:var(--accent-text)}
+.sidebar-item.active{background:var(--accent-soft-2);color:var(--accent-text)}
+.sidebar-item .count{margin-left:auto;font-size:11px;font-weight:600;background:var(--danger-soft);color:var(--danger);padding:1px 7px;border-radius:999px}
+.sidebar-bottom{margin-top:auto;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--border);padding-top:10px}
+
+/* ---------- Main ---------- */
+.main-content{margin-left:240px;padding:24px;min-height:100vh}
+.admin-bar{
+  background:var(--accent-soft);border:1px solid var(--accent-soft-2);border-radius:8px;
+  padding:8px 16px;font-size:13px;margin-bottom:16px;color:var(--text-secondary);
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.admin-bar b{color:var(--accent-text)}
+.page-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.page-header h1{font-size:22px;color:var(--text);font-weight:600}
+.page-header .sub{font-size:13px;color:var(--text-muted);width:100%;margin-top:-4px}
+.firm-badge{background:var(--card-bg);border:1px solid var(--border);padding:4px 10px;border-radius:6px;font-size:12px;color:var(--text-muted)}
+.header-actions{margin-left:auto;display:flex;gap:8px}
+
+/* ---------- Buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border:none;border-radius:6px;font-size:13px;line-height:1.2;cursor:pointer;transition:opacity .2s;font-family:inherit;white-space:nowrap}
+.btn:hover{opacity:.85}
+.btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-success{background:var(--success);color:#06210f}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-secondary{background:var(--input-bg);border:1px solid var(--border);color:var(--text-secondary)}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-secondary)}
+.btn-compact{padding:6px 12px;font-size:12.5px}
+
+/* ---------- Stat grid ---------- */
+.stat-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.stat{padding:15px 16px;border:1px solid var(--border);border-left-width:4px;border-radius:8px;background:var(--card-bg);box-shadow:var(--shadow)}
+.stat .number{color:var(--text);font-size:26px;font-weight:800;letter-spacing:-.5px}
+.stat .label{margin-top:6px;color:var(--text-muted);font-size:12px;font-weight:600}
+.stat-total{border-left-color:var(--accent)}
+.stat-new{border-left-color:var(--info)}
+.stat-progress{border-left-color:var(--warning)}
+.stat-invoice{border-left-color:var(--accent-strong)}
+.stat-urgent{border-left-color:var(--danger)}
+
+/* ---------- Toolbar ---------- */
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.seg{display:inline-flex;background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:3px;gap:2px}
+.seg button{border:none;background:none;font-family:inherit;font-size:12.5px;color:var(--text-muted);padding:6px 12px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:6px}
+.seg button svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+.seg button.active{background:var(--accent-soft);color:var(--accent-text);font-weight:600}
+.filter-pills{display:flex;gap:6px;flex-wrap:wrap}
+.fpill{font-size:12px;padding:5px 11px;border-radius:999px;border:1px solid var(--border);background:var(--card-bg);color:var(--text-muted);cursor:pointer}
+.fpill.active{border-color:var(--accent-soft-2);background:var(--accent-soft);color:var(--accent-text);font-weight:600}
+.search{flex:1;min-width:160px;max-width:280px;margin-left:auto}
+.search input{width:100%;padding:8px 12px;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font:inherit;font-size:13px;outline:none}
+.search input:focus{border-color:var(--accent)}
+
+/* ---------- Table ---------- */
+.data-table{width:100%;background:var(--card-bg);border:1px solid var(--border);border-radius:10px;overflow:hidden;border-collapse:collapse;box-shadow:var(--shadow)}
+.data-table th{text-align:left;padding:11px 14px;font-size:12px;color:var(--text-muted);border-bottom:1px solid var(--border);font-weight:500;background:var(--card-bg)}
+.data-table td{padding:11px 14px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--text-secondary);vertical-align:middle}
+.data-table tbody tr{cursor:pointer;transition:background .15s}
+.data-table tbody tr:hover{background:var(--row-hover)}
+.data-table tbody tr:last-child td{border-bottom:none}
+.data-table tr.urgent-row{border-left:3px solid var(--danger)}
+.cell-title{color:var(--text);font-weight:600}
+.cell-sub{color:var(--text-muted);font-size:12px;margin-top:2px}
+.avatar{width:24px;height:24px;border-radius:50%;background:var(--accent-soft);color:var(--accent-text);font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;margin-right:6px;vertical-align:middle}
+.unassigned{color:var(--text-faint);font-style:italic}
+
+/* ---------- Badges ---------- */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap}
+.b-new{background:var(--info-soft);color:var(--info)}
+.b-assigned{background:var(--accent-soft);color:var(--accent-text)}
+.b-progress{background:var(--warning-soft);color:var(--warning)}
+.b-completed{background:var(--success-soft);color:var(--success)}
+.b-invoice{background:rgba(124,92,255,.14);color:var(--accent-strong)}
+.b-paid{background:rgba(136,136,136,.16);color:var(--text-muted)}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.urg{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700}
+.urg-1{color:var(--text-muted)} .urg-2{color:var(--accent-text)} .urg-3{color:var(--warning)} .urg-4{color:#d65a1f} .urg-5{color:var(--danger)}
+.urg .bars{display:inline-flex;gap:2px}
+.urg .bars i{width:3px;height:11px;border-radius:1px;background:currentColor;opacity:.25}
+.urg .bars i.on{opacity:1}
+
+/* ---------- Board (kanban) ---------- */
+.board{display:grid;grid-template-columns:repeat(6,minmax(190px,1fr));gap:12px;overflow-x:auto;padding-bottom:8px}
+.board-col{background:var(--detail-bg);border:1px solid var(--border-soft);border-radius:10px;padding:10px;min-height:200px}
+.board-col h4{font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.board-col h4 .n{background:var(--card-bg);border:1px solid var(--border);border-radius:999px;padding:0 7px;font-size:11px;color:var(--text-muted)}
+.jcard{background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:11px;margin-bottom:9px;box-shadow:var(--shadow);cursor:pointer;transition:border-color .15s}
+.jcard:hover{border-color:var(--accent)}
+.jcard .jc-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+.jcard .jc-addr{font-size:11.5px;color:var(--text-muted);margin-bottom:8px}
+.jcard .jc-foot{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.jcard.urgent{border-left:3px solid var(--danger)}
+
+/* ---------- Cards / panels ---------- */
+.panel{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:20px;box-shadow:var(--shadow)}
+.empty{padding:48px;text-align:center;color:var(--text-muted);font-size:13px}
+
+/* ---------- Slide-over (job detail) ---------- */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.32);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .2s;z-index:200}
+.overlay.open{opacity:1;pointer-events:auto}
+.slideover{position:fixed;top:0;right:0;height:100vh;width:min(100%,560px);background:var(--card-bg);border-left:1px solid var(--border);box-shadow:-20px 0 60px -30px rgba(0,0,0,.5);transform:translateX(100%);transition:transform .25s ease;z-index:210;display:flex;flex-direction:column}
+.slideover.open{transform:translateX(0)}
+.so-head{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px}
+.so-head h3{font-size:17px;color:var(--text);font-weight:600}
+.so-head .so-id{font-size:11.5px;color:var(--text-muted)}
+.so-close{margin-left:auto;background:none;border:1px solid var(--border);border-radius:8px;width:32px;height:32px;cursor:pointer;color:var(--text-muted);font-size:18px;display:flex;align-items:center;justify-content:center}
+.so-body{padding:20px;overflow-y:auto;flex:1}
+.so-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;background:var(--detail-bg)}
+
+/* timeline */
+.timeline{display:flex;gap:0;margin:6px 0 18px}
+.tl-step{flex:1;text-align:center;position:relative;font-size:10.5px;color:var(--text-faint)}
+.tl-step .tl-dot{width:18px;height:18px;border-radius:50%;background:var(--border);margin:0 auto 6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;position:relative;z-index:2}
+.tl-step::before{content:"";position:absolute;top:9px;left:-50%;width:100%;height:2px;background:var(--border);z-index:1}
+.tl-step:first-child::before{display:none}
+.tl-step.done .tl-dot{background:var(--success)} .tl-step.done{color:var(--text-secondary)}
+.tl-step.done::before{background:var(--success)}
+.tl-step.current .tl-dot{background:var(--accent)} .tl-step.current{color:var(--accent-text);font-weight:700}
+.tl-step.current::before{background:var(--success)}
+
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;margin-bottom:18px}
+.field{min-width:0}
+.field .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--text-faint);font-weight:600;margin-bottom:3px}
+.field .v{font-size:13.5px;color:var(--text);word-break:break-word}
+.field.full{grid-column:1/-1}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-faint);font-weight:600;margin:18px 0 10px;border-top:1px solid var(--border-soft);padding-top:16px}
+.ai-card{background:var(--accent-soft);border:1px solid var(--accent-soft-2);border-radius:8px;padding:13px 14px;margin-bottom:6px}
+.ai-card .k{color:var(--accent-text);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.ai-card p{font-size:13px;color:var(--text-secondary)}
+.notes-feed{display:flex;flex-direction:column;gap:10px}
+.note{font-size:12.5px;color:var(--text-secondary);border-left:2px solid var(--border);padding:2px 0 2px 12px}
+.note b{color:var(--text)} .note time{color:var(--text-faint);font-size:11px}
+
+/* ---------- Modal (new job / from email) ---------- */
+.modal-wrap{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:20px;z-index:300;background:color-mix(in srgb,var(--bg) 16%,rgba(0,0,0,.72));backdrop-filter:blur(10px)}
+.modal-wrap.open{display:flex}
+.modal{width:min(100%,640px);max-height:90vh;overflow-y:auto;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow)}
+.modal-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.modal-head h3{font-size:17px;color:var(--text);font-weight:600}
+.modal-head .so-close{margin-left:auto}
+.modal-body{padding:22px}
+.modal-foot{padding:14px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;background:var(--detail-bg)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.form-group{margin-bottom:14px}
+.form-group.span{grid-column:1/-1}
+.form-group label{display:block;font-size:12.5px;color:var(--text-muted);margin-bottom:6px;font-weight:500}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:9px 12px;background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font:inherit;font-size:13.5px;outline:none}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--accent)}
+.form-group textarea{resize:vertical;min-height:72px}
+.prefill-note{background:var(--info-soft);border:1px solid var(--info-soft);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--info);margin-bottom:16px;display:flex;gap:8px;align-items:flex-start}
+
+/* ---------- Email intake ---------- */
+.email-row .conf{font-size:11px;font-weight:600}
+.conf-high{color:var(--success)} .conf-mid{color:var(--warning)} .conf-low{color:var(--danger)}
+.tag{display:inline-block;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:5px;background:var(--accent-soft);color:var(--accent-text)}
+
+.workload-bar{height:6px;border-radius:3px;background:var(--border);overflow:hidden;width:90px;display:inline-block;vertical-align:middle;margin-right:8px}
+.workload-bar i{display:block;height:100%;background:var(--accent)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);padding:11px 20px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:all .25s;z-index:400;box-shadow:var(--shadow)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:1024px){.stat-grid{grid-template-columns:repeat(3,1fr)}.field-grid{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}}
+@media(max-width:760px){
+  .sidebar{width:100%;height:auto;position:relative;flex-direction:row;flex-wrap:wrap;border-right:none;border-bottom:1px solid var(--border)}
+  .sidebar-nav{flex-direction:row;flex-wrap:wrap}.sidebar-bottom{border-top:none;flex-direction:row}
+  .main-content{margin-left:0;padding:16px}.stat-grid{grid-template-columns:repeat(2,1fr)}
+  .sidebar-section-label{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-mark">B</div>
+    <div class="sidebar-brand-text">
+      <strong>Brackstone</strong>
+      <small>Jay&rsquo;s Property Maintenance</small>
+    </div>
+  </div>
+  <div class="sidebar-nav" id="nav">
+    <div class="sidebar-section-label">Operations</div>
+    <button class="sidebar-item active" data-view="jobs"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5"/></svg><span>Jobs board</span></button>
+    <button class="sidebar-item" data-view="intake"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span>Email intake</span><span class="count" id="intakeCount">3</span></button>
+    <button class="sidebar-item" data-view="calendar"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><span>Dispatch calendar</span></button>
+    <div class="sidebar-section-label">Directory</div>
+    <button class="sidebar-item" data-view="agencies"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg><span>Agencies</span></button>
+    <button class="sidebar-item" data-view="workers"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v2M16 11l2 2 4-4"/></svg><span>Workers</span></button>
+    <div class="sidebar-section-label">Account</div>
+    <button class="sidebar-item" data-view="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.6-2-3.4-2.4 1a7 7 0 0 0-1.7-1L14.5 2h-4l-.4 2.6a7 7 0 0 0-1.7 1l-2.4-1-2 3.4 2 1.6a7 7 0 0 0 0 2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 1.7 1l.4 2.6h4l.4-2.6a7 7 0 0 0 1.7-1l2.4 1 2-3.4-2-1.6c.1-.3.1-.7.1-1Z"/></svg><span>Settings</span></button>
+  </div>
+  <div class="sidebar-bottom">
+    <button class="sidebar-item" id="themeToggle"><svg viewBox="0 0 24 24" id="themeIcon"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg><span id="themeLabel">Dark mode</span></button>
+    <button class="sidebar-item"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg><span>Log out</span></button>
+  </div>
+</nav>
+
+<main class="main-content">
+  <div class="admin-bar">
+    <b>Prototype</b> &middot; Interactive mockup of the proposed property-maintenance ops dashboard for Jay. Demo data only, no live system. Click jobs, change status, assign workers, log a job, or convert an email.
+  </div>
+  <div id="view"></div>
+</main>
+
+<!-- Slide-over -->
+<div class="overlay" id="overlay"></div>
+<aside class="slideover" id="slideover"></aside>
+
+<!-- Modal -->
+<div class="modal-wrap" id="modalWrap">
+  <div class="modal" id="modal"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ DEMO DATA ============ */
+const AGENCIES = [
+  {id:'AG1',name:'Premier Housing',type:'Letting agency',contact:'Donnie Walsh',phone:'0113 496 1180',open:7,month:24},
+  {id:'AG2',name:'Leeds Lettings Co',type:'Letting agency',contact:'Sarah Mensah',phone:'0113 320 5567',open:4,month:18},
+  {id:'AG3',name:'Bradford Property Group',type:'Estate & lettings',contact:'Imran Patel',phone:'01274 770 992',open:3,month:15},
+  {id:'AG4',name:'Aire Valley Estates',type:'Property management',contact:'Kelly Brooks',phone:'0113 887 4420',open:2,month:9},
+];
+const WORKERS = [
+  {id:'W1',name:'Mark Riley',trade:'Plumbing & heating',phone:'07700 900112',active:3,cap:5},
+  {id:'W2',name:'Dane Okafor',trade:'Electrical (NICEIC)',phone:'07700 900145',active:2,cap:5},
+  {id:'W3',name:'Tomasz Nowak',trade:'General / damp',phone:'07700 900233',active:4,cap:5},
+  {id:'W4',name:'Lewis Carter',trade:'Locks & glazing',phone:'07700 900318',active:1,cap:4},
+];
+const STATUSES = [
+  {key:'new',label:'New',badge:'b-new'},
+  {key:'assigned',label:'Assigned',badge:'b-assigned'},
+  {key:'progress',label:'In progress',badge:'b-progress'},
+  {key:'completed',label:'Completed',badge:'b-completed'},
+  {key:'invoice',label:'Awaiting invoice',badge:'b-invoice'},
+  {key:'paid',label:'Paid',badge:'b-paid'},
+];
+const statusOf = k => STATUSES.find(s=>s.key===k);
+let JOBS = [
+  {id:'JB-2041',type:'Leaking boiler / no hot water',agency:'AG1',addr:'14 Oakfield Road, Headingley, LS6 3AB',tenant:'Mrs A. Yusuf',phone:'07911 223344',issue:'Tenant reports boiler leaking from base, no hot water since this morning. Water collecting under unit.',urgency:5,access:'Tenant home after 3pm. Key safe code on file (C-2208).',price:'£140 call-out + parts',worker:'W1',status:'progress',created:'29 Jun, 08:12',source:'email',notes:[{by:'Mark Riley',t:'29 Jun 10:40',x:'On site. Diverter valve failed, isolated leak. Need replacement part, ordering now.'},{by:'Jay',t:'29 Jun 08:20',x:'Assigned to Mark, flagged urgent to agency.'}]},
+  {id:'JB-2040',type:'Electrical fault - tripping consumer unit',agency:'AG2',addr:'5 Brudenell Mount, Hyde Park, LS6 1HX',tenant:'Mr T. Cole',phone:'07822 556677',issue:'RCD keeps tripping when oven used. Possible faulty circuit.',urgency:4,access:'Tenant works from home, flexible.',price:'£95 diagnostic',worker:'W2',status:'assigned',created:'29 Jun, 07:50',source:'email',notes:[{by:'Jay',t:'29 Jun 09:05',x:'Assigned to Dane for tomorrow AM slot.'}]},
+  {id:'JB-2039',type:'Damp & mould - bedroom wall',agency:'AG3',addr:'22 Lumb Lane, Manningham, BD8 7ST',tenant:'Ms R. Begum',phone:'07533 889900',issue:'Black mould spreading on north-facing bedroom wall. Tenant has young child.',urgency:3,access:'Mornings only.',price:'Quote pending survey',worker:'W3',status:'progress',created:'28 Jun, 16:20',source:'manual',notes:[{by:'Tomasz Nowak',t:'29 Jun 09:15',x:'Surveyed. Penetrating damp from failed pointing. Quote to follow.'}]},
+  {id:'JB-2038',type:'Broken window lock - ground floor',agency:'AG1',addr:'9 Cardigan Lane, Burley, LS4 2LE',tenant:'Mr K. Adeyemi',phone:'07400 112233',issue:'Ground floor window will not lock - security concern.',urgency:4,access:'Anytime, tenant retired.',price:'£75 + lock',worker:'W4',status:'completed',created:'28 Jun, 11:00',source:'email',notes:[{by:'Lewis Carter',t:'28 Jun 15:30',x:'Replaced espagnolette lock. Window secure, tested. Photos uploaded.'}]},
+  {id:'JB-2037',type:'Blocked drain - kitchen',agency:'AG4',addr:'31 Town Street, Horsforth, LS18 4RJ',tenant:'Mrs D. Clarke',phone:'07688 445566',issue:'Kitchen sink not draining, standing water.',urgency:2,access:'Key safe (K-1190).',price:'£90 fixed',worker:'W1',status:'invoice',created:'27 Jun, 14:10',source:'email',notes:[{by:'Mark Riley',t:'28 Jun 12:00',x:'Cleared blockage at trap. Done.'}]},
+  {id:'JB-2036',type:'Annual gas safety check (CP12)',agency:'AG2',addr:'77 Brudenell Grove, Hyde Park, LS6 1HR',tenant:'Mr S. Iqbal',phone:'07799 667788',issue:'Landlord gas safety certificate due for renewal.',urgency:2,access:'Arrange with tenant.',price:'£70',worker:'W1',status:'paid',created:'24 Jun, 09:30',source:'email',notes:[{by:'Mark Riley',t:'26 Jun 11:00',x:'CP12 issued, all appliances pass. Cert sent to agency.'}]},
+  {id:'JB-2035',type:'Front door not closing - dropped hinge',agency:'AG3',addr:'4 Victor Terrace, Girlington, BD8 9PX',tenant:'Ms L. Whittaker',phone:'07300 998877',issue:'Communal front door dropped, not latching.',urgency:3,access:'Communal, no key needed.',price:'£60',worker:null,status:'new',created:'29 Jun, 09:40',source:'email',notes:[]},
+  {id:'JB-2034',type:'Radiator not heating - bedroom',agency:'AG1',addr:'18 Estcourt Avenue, Headingley, LS6 3ET',tenant:'Mr H. Shah',phone:'07211 334455',issue:'Upstairs radiator cold, rest of system fine. Possible airlock/valve.',urgency:1,access:'Evenings after 5pm.',price:'£65',worker:null,status:'new',created:'29 Jun, 10:05',source:'manual',notes:[]},
+];
+let EMAILS = [
+  {id:'EM-552',from:'maintenance@premierhousing.co.uk',agency:'AG1',subj:'Repair required - 4 Victor Terrace BD8 (door)',received:'29 Jun, 09:38',conf:96,cls:'New repair job',parsed:{type:'Front door not closing - dropped hinge',addr:'4 Victor Terrace, Girlington, BD8 9PX',tenant:'Ms L. Whittaker',phone:'07300 998877',issue:'Communal front door dropped, not latching.',urgency:3},status:'converted'},
+  {id:'EM-553',from:'repairs@leedslettings.co.uk',agency:'AG2',subj:'URGENT - water ingress 12 Ash Road LS6',received:'29 Jun, 10:22',conf:91,cls:'New repair job',parsed:{type:'Water ingress - ceiling',addr:'12 Ash Road, Headingley, LS6 3HD',tenant:'Mr P. Owusu',phone:'07455 221100',issue:'Water coming through kitchen ceiling after heavy rain. Tenant placed buckets.',urgency:5},status:'review'},
+  {id:'EM-554',from:'imran@bradfordpropertygroup.com',agency:'AG3',subj:'Quote request: bathroom extractor fan x2',received:'29 Jun, 10:48',conf:74,cls:'Quote request',parsed:{type:'Extractor fan replacement (x2)',addr:'88 Heaton Road, BD9 4RJ',tenant:'Mr & Mrs Ali',phone:'07900 010203',issue:'Two bathroom extractor fans not working, tenant complaint re condensation.',urgency:2},status:'review'},
+  {id:'EM-555',from:'noreply@rightmove.co.uk',agency:null,subj:'Your weekly listings performance report',received:'29 Jun, 06:00',conf:38,cls:'Not a job (newsletter)',parsed:null,status:'ignored'},
+  {id:'EM-556',from:'kelly@airevalleyestates.co.uk',agency:'AG4',subj:'New job - intermittent power 31 Town St',received:'29 Jun, 11:02',conf:88,cls:'New repair job',parsed:{type:'Intermittent power - sockets',addr:'31 Town Street, Horsforth, LS18 4RJ',tenant:'Mrs D. Clarke',phone:'07688 445566',issue:'Sockets in lounge cutting out intermittently.',urgency:3},status:'review'},
+];
+
+/* ============ HELPERS ============ */
+const $ = s => document.querySelector(s);
+const view = $('#view');
+const agency = id => AGENCIES.find(a=>a.id===id);
+const worker = id => WORKERS.find(w=>w.id===id);
+const esc = s => (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function urgencyHtml(u){
+  let bars='';for(let i=1;i<=5;i++)bars+=`<i class="${i<=u?'on':''}"></i>`;
+  const lbl=['','Low','Low','Medium','High','Critical'][u];
+  return `<span class="urg urg-${u}"><span class="bars">${bars}</span>${lbl}</span>`;
+}
+function badgeHtml(k){const s=statusOf(k);return `<span class="badge ${s.badge}"><span class="dot"></span>${s.label}</span>`;}
+function initials(n){return n.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200);}
+
+let filterStatus='all', boardMode=false, searchTerm='';
+
+/* ============ VIEWS ============ */
+function renderJobs(){
+  const counts={total:JOBS.length,new:0,progress:0,invoice:0,urgent:0};
+  JOBS.forEach(j=>{if(j.status==='new')counts.new++;if(j.status==='progress'||j.status==='assigned')counts.progress++;if(j.status==='invoice')counts.invoice++;if(j.urgency>=4&&j.status!=='paid'&&j.status!=='completed')counts.urgent++;});
+  let list = JOBS.filter(j=>filterStatus==='all'||j.status===filterStatus);
+  if(searchTerm){const q=searchTerm.toLowerCase();list=list.filter(j=>(j.type+j.addr+j.tenant+(agency(j.agency)?.name||'')+j.id).toLowerCase().includes(q));}
+
+  const pills = [['all','All'],...STATUSES.map(s=>[s.key,s.label])]
+    .map(([k,l])=>`<span class="fpill ${filterStatus===k?'active':''}" data-fs="${k}">${l}</span>`).join('');
+
+  let body;
+  if(boardMode){
+    body = `<div class="board">`+STATUSES.map(s=>{
+      const items=list.filter(j=>j.status===s.key);
+      return `<div class="board-col"><h4>${s.label}<span class="n">${items.length}</span></h4>${
+        items.map(j=>`<div class="jcard ${j.urgency>=4?'urgent':''}" data-job="${j.id}">
+          <div class="jc-title">${esc(j.type)}</div>
+          <div class="jc-addr">${esc(j.addr.split(',')[0])}</div>
+          <div class="jc-foot">${urgencyHtml(j.urgency)}${j.worker?`<span class="avatar" title="${esc(worker(j.worker).name)}">${initials(worker(j.worker).name)}</span>`:'<span class="unassigned" style="font-size:11px">Unassigned</span>'}</div>
+        </div>`).join('')||'<div style="font-size:11.5px;color:var(--text-faint);padding:6px">None</div>'
+      }</div>`;
+    }).join('')+`</div>`;
+  } else {
+    body = `<table class="data-table"><thead><tr>
+      <th>Job</th><th>Agency</th><th>Tenant / contact</th><th>Urgency</th><th>Worker</th><th>Status</th><th>Price</th>
+    </tr></thead><tbody>${
+      list.map(j=>`<tr class="${j.urgency>=4&&j.status!=='completed'&&j.status!=='paid'?'urgent-row':''}" data-job="${j.id}">
+        <td><div class="cell-title">${esc(j.type)}</div><div class="cell-sub">${esc(j.id)} &middot; ${esc(j.addr.split(',')[0])}</div></td>
+        <td>${esc(agency(j.agency)?.name||'-')}</td>
+        <td>${esc(j.tenant)}<div class="cell-sub mono">${esc(j.phone)}</div></td>
+        <td>${urgencyHtml(j.urgency)}</td>
+        <td>${j.worker?`<span class="avatar">${initials(worker(j.worker).name)}</span>${esc(worker(j.worker).name.split(' ')[0])}`:'<span class="unassigned">Unassigned</span>'}</td>
+        <td>${badgeHtml(j.status)}</td>
+        <td class="mono" style="font-size:12px">${esc(j.price)}</td>
+      </tr>`).join('')||'<tr><td colspan="7" class="empty">No jobs match this filter.</td></tr>'
+    }</tbody></table>`;
+  }
+
+  view.innerHTML = `
+    <div class="page-header"><h1>Jobs board</h1><span class="firm-badge">Jay&rsquo;s Property Maintenance</span>
+      <span class="sub">Maintenance jobs received from agencies, assigned to your workers, tracked to invoice.</span>
+      <div class="header-actions"><button class="btn btn-primary" id="newJobBtn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Log new job</button></div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat stat-total"><div class="number">${counts.total}</div><div class="label">Open jobs</div></div>
+      <div class="stat stat-new"><div class="number">${counts.new}</div><div class="label">New / unassigned</div></div>
+      <div class="stat stat-progress"><div class="number">${counts.progress}</div><div class="label">In progress</div></div>
+      <div class="stat stat-invoice"><div class="number">${counts.invoice}</div><div class="label">Awaiting invoice</div></div>
+      <div class="stat stat-urgent"><div class="number">${counts.urgent}</div><div class="label">Urgent open</div></div>
+    </div>
+    <div class="toolbar">
+      <div class="seg">
+        <button class="${!boardMode?'active':''}" id="listBtn"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>List</button>
+        <button class="${boardMode?'active':''}" id="boardBtn"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="5" height="16" rx="1"/><rect x="10" y="4" width="5" height="11" rx="1"/><rect x="17" y="4" width="4" height="14" rx="1"/></svg>Board</button>
+      </div>
+      <div class="filter-pills">${pills}</div>
+      <div class="search"><input type="text" id="search" placeholder="Search jobs, address, tenant…" value="${esc(searchTerm)}"></div>
+    </div>
+    ${body}
+  `;
+  $('#newJobBtn').onclick=()=>openNewJob();
+  $('#listBtn').onclick=()=>{boardMode=false;renderJobs();};
+  $('#boardBtn').onclick=()=>{boardMode=true;renderJobs();};
+  document.querySelectorAll('[data-fs]').forEach(p=>p.onclick=()=>{filterStatus=p.dataset.fs;renderJobs();});
+  const s=$('#search');if(s)s.oninput=e=>{searchTerm=e.target.value;const pos=e.target.selectionStart;renderJobs();const ns=$('#search');ns.focus();ns.setSelectionRange(pos,pos);};
+  document.querySelectorAll('[data-job]').forEach(r=>r.onclick=()=>openJob(r.dataset.job));
+}
+
+function renderIntake(){
+  const order={review:0,converted:1,ignored:2};
+  const list=[...EMAILS].sort((a,b)=>order[a.status]-order[b.status]);
+  view.innerHTML=`
+    <div class="page-header"><h1>Email intake</h1><span class="firm-badge">Human-in-the-loop</span>
+      <span class="sub">Agency job emails are captured and auto-read. You review before anything becomes a job, exactly as Jay asked: manual first, automation assists.</span>
+    </div>
+    <div class="panel" style="padding:0;overflow:hidden">
+    <table class="data-table" style="border:none;box-shadow:none">
+      <thead><tr><th>From / subject</th><th>Agency</th><th>AI read</th><th>Confidence</th><th>Received</th><th style="text-align:right">Action</th></tr></thead>
+      <tbody>${list.map(e=>{
+        const cc=e.conf>=85?'conf-high':e.conf>=60?'conf-mid':'conf-low';
+        let action;
+        if(e.status==='converted')action='<span class="badge b-completed"><span class="dot"></span>Job created</span>';
+        else if(e.status==='ignored')action='<span class="badge b-paid"><span class="dot"></span>Ignored</span>';
+        else action=`<button class="btn btn-primary btn-compact" data-email="${e.id}">Review &amp; create</button>`;
+        return `<tr class="email-row">
+          <td><div class="cell-title mono" style="font-size:12px">${esc(e.from)}</div><div class="cell-sub">${esc(e.subj)}</div></td>
+          <td>${esc(agency(e.agency)?.name||'<span class="unassigned">Unknown</span>')}</td>
+          <td><span class="tag">${esc(e.cls)}</span></td>
+          <td><span class="conf ${cc}">${e.conf}%</span></td>
+          <td class="mono" style="font-size:12px">${esc(e.received)}</td>
+          <td style="text-align:right">${action}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>
+    <p style="font-size:12px;color:var(--text-muted);margin-top:12px">Phase 2 capability shown for illustration. In the pilot, jobs are logged manually; this inbox demonstrates how agency emails could be auto-captured later while keeping a human approval step.</p>
+  `;
+  document.querySelectorAll('[data-email]').forEach(b=>b.onclick=()=>openFromEmail(b.dataset.email));
+}
+
+function renderAgencies(){
+  view.innerHTML=`
+    <div class="page-header"><h1>Agencies</h1><span class="firm-badge">${AGENCIES.length} active</span>
+      <span class="sub">The letting and estate agencies that send you work.</span></div>
+    <table class="data-table"><thead><tr><th>Agency</th><th>Type</th><th>Main contact</th><th>Phone</th><th>Open jobs</th><th>This month</th></tr></thead>
+    <tbody>${AGENCIES.map(a=>`<tr>
+      <td><div class="cell-title">${esc(a.name)}</div></td><td>${esc(a.type)}</td>
+      <td>${esc(a.contact)}</td><td class="mono" style="font-size:12px">${esc(a.phone)}</td>
+      <td><span class="badge b-assigned">${a.open}</span></td><td>${a.month}</td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+function renderWorkers(){
+  view.innerHTML=`
+    <div class="page-header"><h1>Workers</h1><span class="firm-badge">${WORKERS.length} on the books</span>
+      <span class="sub">Your team and subcontractors, and how loaded each one is right now.</span></div>
+    <table class="data-table"><thead><tr><th>Worker</th><th>Trade</th><th>Phone</th><th>Current load</th><th>Active jobs</th></tr></thead>
+    <tbody>${WORKERS.map(w=>{const pct=Math.round(w.active/w.cap*100);return `<tr>
+      <td><span class="avatar">${initials(w.name)}</span><span class="cell-title">${esc(w.name)}</span></td>
+      <td>${esc(w.trade)}</td><td class="mono" style="font-size:12px">${esc(w.phone)}</td>
+      <td><span class="workload-bar"><i style="width:${pct}%;background:${pct>=80?'var(--danger)':pct>=50?'var(--warning)':'var(--success)'}"></i></span>${w.active}/${w.cap}</td>
+      <td>${w.active}</td></tr>`;}).join('')}</tbody></table>`;
+}
+
+function renderCalendar(){
+  const days=['Mon 29','Tue 30','Wed 1','Thu 2','Fri 3'];
+  const sched={'Mon 29':[['JB-2041','W1'],['JB-2039','W3']],'Tue 30':[['JB-2040','W2'],['JB-2038','W4']],'Wed 1':[['JB-2037','W1']],'Thu 2':[],'Fri 3':[['JB-2036','W1']]};
+  view.innerHTML=`
+    <div class="page-header"><h1>Dispatch calendar</h1><span class="firm-badge">This week</span>
+      <span class="sub">Visual dispatch view of who is going where. Drag-and-drop in the real build.</span></div>
+    <div class="board" style="grid-template-columns:repeat(5,minmax(170px,1fr))">${days.map(d=>`
+      <div class="board-col"><h4>${d}<span class="n">${sched[d].length}</span></h4>${
+        sched[d].map(([jid,wid])=>{const j=JOBS.find(x=>x.id===jid);return `<div class="jcard ${j.urgency>=4?'urgent':''}" data-job="${jid}">
+          <div class="jc-title">${esc(j.type.split(' - ')[0].split(' / ')[0])}</div>
+          <div class="jc-addr">${esc(j.addr.split(',')[0])}</div>
+          <div class="jc-foot"><span class="avatar">${initials(worker(wid).name)}</span><span style="font-size:11px;color:var(--text-muted)">${esc(worker(wid).name.split(' ')[0])}</span></div>
+        </div>`;}).join('')||'<div style="font-size:11.5px;color:var(--text-faint);padding:6px">Free</div>'
+      }</div>`).join('')}</div>`;
+  document.querySelectorAll('[data-job]').forEach(r=>r.onclick=()=>openJob(r.dataset.job));
+}
+
+function renderSettings(){
+  view.innerHTML=`
+    <div class="page-header"><h1>Settings</h1><span class="sub">Configuration for the pilot. Shown for completeness.</span></div>
+    <div class="panel" style="margin-bottom:16px"><h3 style="font-size:15px;margin-bottom:14px">Job intake</h3>
+      <div class="field-grid">
+        <div class="field"><div class="k">Manual job logging</div><div class="v">Enabled</div></div>
+        <div class="field"><div class="k">Email auto-capture (Phase 2)</div><div class="v">Preview &middot; off by default</div></div>
+        <div class="field"><div class="k">Forwarding address</div><div class="v mono" style="font-size:12.5px">jobs@jay-maintenance.brackstone.app</div></div>
+        <div class="field"><div class="k">Human review required</div><div class="v">Yes &middot; nothing auto-creates</div></div>
+      </div>
+    </div>
+    <div class="panel"><h3 style="font-size:15px;margin-bottom:14px">Notifications</h3>
+      <div class="field-grid">
+        <div class="field"><div class="k">Worker SMS on assignment</div><div class="v">Enabled</div></div>
+        <div class="field"><div class="k">Agency status updates</div><div class="v">Phase 3</div></div>
+        <div class="field"><div class="k">Urgent job alerts</div><div class="v">Telegram &middot; ops channel</div></div>
+        <div class="field"><div class="k">Daily summary</div><div class="v">08:00, email</div></div>
+      </div>
+    </div>`;
+}
+
+/* ============ JOB DETAIL SLIDE-OVER ============ */
+function openJob(id){
+  const j=JOBS.find(x=>x.id===id);if(!j)return;
+  const curIdx=STATUSES.findIndex(s=>s.key===j.status);
+  const tl=STATUSES.map((s,i)=>`<div class="tl-step ${i<curIdx?'done':''} ${i===curIdx?'current':''}">
+    <div class="tl-dot">${i<curIdx?'✓':i+1}</div>${s.label}</div>`).join('');
+  const a=agency(j.agency), w=j.worker?worker(j.worker):null;
+  const workerOpts=WORKERS.map(x=>`<option value="${x.id}" ${j.worker===x.id?'selected':''}>${esc(x.name)} — ${esc(x.trade)} (${x.active}/${x.cap})</option>`).join('');
+  const nextStatus=STATUSES[Math.min(curIdx+1,STATUSES.length-1)];
+  $('#slideover').innerHTML=`
+    <div class="so-head">
+      <div><h3>${esc(j.type)}</h3><div class="so-id mono">${esc(j.id)} &middot; logged ${esc(j.created)} &middot; via ${j.source==='email'?'agency email':'manual entry'}</div></div>
+      <button class="so-close" id="soClose">&times;</button>
+    </div>
+    <div class="so-body">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap">${badgeHtml(j.status)}${urgencyHtml(j.urgency)}</div>
+      <div class="timeline">${tl}</div>
+
+      <div class="ai-card"><div class="k"><svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2"><path d="M12 3l1.9 5.8H20l-5 3.6 1.9 5.8-5-3.6-5 3.6 1.9-5.8-5-3.6h6.1z"/></svg>AI urgency assessment</div>
+        <p>Rated <b>${['','low','low','medium','high','critical'][j.urgency]}</b> priority. ${j.urgency>=4?'Flagged for same-day attention — potential safety/security or escalation risk.':'Routine scheduling window acceptable.'}</p></div>
+
+      <div class="section-title">Job details</div>
+      <div class="field-grid">
+        <div class="field"><div class="k">Agency</div><div class="v">${esc(a?.name||'-')}</div></div>
+        <div class="field"><div class="k">Agency contact</div><div class="v">${esc(a?.contact||'-')}</div></div>
+        <div class="field full"><div class="k">Property address</div><div class="v">${esc(j.addr)}</div></div>
+        <div class="field"><div class="k">Tenant</div><div class="v">${esc(j.tenant)}</div></div>
+        <div class="field"><div class="k">Tenant contact</div><div class="v mono">${esc(j.phone)}</div></div>
+        <div class="field full"><div class="k">Issue / description</div><div class="v">${esc(j.issue)}</div></div>
+        <div class="field full"><div class="k">Access notes</div><div class="v">${esc(j.access)}</div></div>
+        <div class="field"><div class="k">Quoted price / call-off</div><div class="v">${esc(j.price)}</div></div>
+        <div class="field"><div class="k">Assigned worker</div><div class="v">${w?esc(w.name):'<span class="unassigned">Unassigned</span>'}</div></div>
+      </div>
+
+      <div class="section-title">Assign &amp; update</div>
+      <div class="form-group"><label>Assign to worker</label><select id="assignSel">${workerOpts}</select></div>
+
+      <div class="section-title">Activity</div>
+      <div class="notes-feed">${j.notes.length?j.notes.map(n=>`<div class="note"><b>${esc(n.by)}</b> <time>${esc(n.t)}</time><br>${esc(n.x)}</div>`).join(''):'<div style="font-size:12.5px;color:var(--text-faint)">No activity yet.</div>'}</div>
+    </div>
+    <div class="so-foot">
+      <button class="btn btn-secondary btn-compact" id="assignBtn"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v2"/></svg>Save assignment</button>
+      ${j.status!=='paid'?`<button class="btn btn-primary btn-compact" id="advanceBtn"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>Move to ${nextStatus.label}</button>`:''}
+      <button class="btn btn-ghost btn-compact" id="smsBtn"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Text worker</button>
+    </div>`;
+  openOverlay();
+  $('#soClose').onclick=closeOverlay;
+  $('#assignBtn').onclick=()=>{const v=$('#assignSel').value;j.worker=v;if(j.status==='new')j.status='assigned';j.notes.unshift({by:'Jay',t:'now',x:`Assigned to ${worker(v).name}.`});toast('Worker assigned');closeOverlay();refresh();};
+  const adv=$('#advanceBtn');if(adv)adv.onclick=()=>{j.status=nextStatus.key;j.notes.unshift({by:'Jay',t:'now',x:`Status moved to ${nextStatus.label}.`});toast('Status updated to '+nextStatus.label);closeOverlay();refresh();};
+  $('#smsBtn').onclick=()=>toast(w?`SMS drafted to ${w.name}`:'Assign a worker first');
+}
+
+/* ============ MODALS ============ */
+function jobForm(p={}){
+  const agOpts=AGENCIES.map(a=>`<option value="${a.id}" ${p.agency===a.id?'selected':''}>${esc(a.name)}</option>`).join('');
+  const wOpts='<option value="">— Leave unassigned —</option>'+WORKERS.map(w=>`<option value="${w.id}">${esc(w.name)} — ${esc(w.trade)}</option>`).join('');
+  const uOpts=[1,2,3,4,5].map(u=>`<option value="${u}" ${p.urgency===u?'selected':''}>${u} — ${['','Low','Low','Medium','High','Critical'][u]}</option>`).join('');
+  return `
+    <div class="form-row">
+      <div class="form-group"><label>Agency</label><select id="f_agency">${agOpts}</select></div>
+      <div class="form-group"><label>Urgency</label><select id="f_urg">${uOpts}</select></div>
+    </div>
+    <div class="form-group"><label>Job type</label><input id="f_type" value="${esc(p.type||'')}" placeholder="e.g. Leaking boiler, electrical fault"></div>
+    <div class="form-group"><label>Property address</label><input id="f_addr" value="${esc(p.addr||'')}" placeholder="Full property address"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Tenant name</label><input id="f_tenant" value="${esc(p.tenant||'')}"></div>
+      <div class="form-group"><label>Tenant contact</label><input id="f_phone" value="${esc(p.phone||'')}" placeholder="Mobile number"></div>
+    </div>
+    <div class="form-group"><label>Issue / description</label><textarea id="f_issue" placeholder="What needs fixing?">${esc(p.issue||'')}</textarea></div>
+    <div class="form-group"><label>Access notes</label><textarea id="f_access" placeholder="Key safe code, availability, parking…">${esc(p.access||'')}</textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Quoted price / call-off</label><input id="f_price" placeholder="e.g. £90 fixed"></div>
+      <div class="form-group"><label>Assign worker (optional)</label><select id="f_worker">${wOpts}</select></div>
+    </div>`;
+}
+function readForm(){
+  return {type:$('#f_type').value||'Untitled job',agency:$('#f_agency').value,addr:$('#f_addr').value,tenant:$('#f_tenant').value,phone:$('#f_phone').value,
+    issue:$('#f_issue').value,access:$('#f_access').value||'-',price:$('#f_price').value||'TBC',urgency:+$('#f_urg').value,worker:$('#f_worker').value||null};
+}
+function commitJob(d,source){
+  const id='JB-'+(2042+JOBS.filter(j=>j.id.startsWith('JB-20')).length-7);
+  JOBS.unshift({id,...d,status:d.worker?'assigned':'new',created:'just now',source,notes:[{by:'Jay',t:'now',x:source==='email'?'Created from agency email after review.':'Logged manually.'}]});
+  return id;
+}
+function openNewJob(){
+  $('#modal').innerHTML=`
+    <div class="modal-head"><h3>Log new job</h3><button class="so-close" id="mClose">&times;</button></div>
+    <div class="modal-body">${jobForm({urgency:3})}</div>
+    <div class="modal-foot"><button class="btn btn-secondary" id="mCancel">Cancel</button><button class="btn btn-primary" id="mSave">Create job</button></div>`;
+  openModal();
+  $('#mClose').onclick=$('#mCancel').onclick=closeModal;
+  $('#mSave').onclick=()=>{commitJob(readForm(),'manual');closeModal();toast('Job logged');setActive('jobs');renderJobs();};
+}
+function openFromEmail(eid){
+  const e=EMAILS.find(x=>x.id===eid);if(!e||!e.parsed)return;
+  $('#modal').innerHTML=`
+    <div class="modal-head"><h3>Create job from email</h3><button class="so-close" id="mClose">&times;</button></div>
+    <div class="modal-body">
+      <div class="prefill-note"><svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;flex:none"><path d="M12 3l1.9 5.8H20l-5 3.6 1.9 5.8-5-3.6-5 3.6 1.9-5.8-5-3.6h6.1z"/></svg>
+      <span>Fields below were auto-filled from <b>${esc(e.from)}</b> (read at ${e.conf}% confidence). Check them, then create the job. Nothing is created automatically.</span></div>
+      ${jobForm({...e.parsed,agency:e.agency})}
+    </div>
+    <div class="modal-foot"><button class="btn btn-secondary" id="mCancel">Cancel</button><button class="btn btn-primary" id="mSave">Confirm &amp; create job</button></div>`;
+  openModal();
+  $('#mClose').onclick=$('#mCancel').onclick=closeModal;
+  $('#mSave').onclick=()=>{commitJob(readForm(),'email');e.status='converted';closeModal();toast('Job created from email');setActive('jobs');renderJobs();};
+}
+
+/* ============ overlay/modal plumbing ============ */
+function openOverlay(){$('#overlay').classList.add('open');$('#slideover').classList.add('open');}
+function closeOverlay(){$('#overlay').classList.remove('open');$('#slideover').classList.remove('open');}
+function openModal(){$('#modalWrap').classList.add('open');}
+function closeModal(){$('#modalWrap').classList.remove('open');}
+$('#overlay').onclick=closeOverlay;
+$('#modalWrap').onclick=e=>{if(e.target===$('#modalWrap'))closeModal();};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeOverlay();closeModal();}});
+
+/* ============ routing ============ */
+const VIEWS={jobs:renderJobs,intake:renderIntake,calendar:renderCalendar,agencies:renderAgencies,workers:renderWorkers,settings:renderSettings};
+let current='jobs';
+function setActive(v){current=v;document.querySelectorAll('.sidebar-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));}
+function refresh(){VIEWS[current]();updateIntakeCount();}
+function updateIntakeCount(){const n=EMAILS.filter(e=>e.status==='review').length;const el=$('#intakeCount');if(el){el.textContent=n;el.style.display=n?'':'none';}}
+document.querySelectorAll('.sidebar-item[data-view]').forEach(b=>b.onclick=()=>{setActive(b.dataset.view);VIEWS[b.dataset.view]();});
+
+/* ============ theme ============ */
+const moon='<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/>';
+const sun='<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>';
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t);$('#themeIcon').innerHTML=t==='dark'?sun:moon;$('#themeLabel').textContent=t==='dark'?'Light mode':'Dark mode';try{localStorage.setItem('bk-theme',t);}catch(e){}}
+$('#themeToggle').onclick=()=>applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
+try{applyTheme(localStorage.getItem('bk-theme')||'light');}catch(e){applyTheme('light');}
+
+/* ============ boot ============ */
+renderJobs();updateIntakeCount();
+</script>
+</body>
+</html>
