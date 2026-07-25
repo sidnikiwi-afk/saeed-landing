@@ -1,0 +1,120 @@
+---
+---
+<section class="cta-section" id="cta">
+  <div class="cta-card">
+    <div class="cta-bg" aria-hidden="true"></div>
+    <div class="cta-content">
+      <span class="cta-eyebrow">Start here</span>
+      <h2 class="cta-headline">Book a 15-minute teardown of where your enquiries leak.</h2>
+      <p class="cta-sub">
+        Tell us what your team keeps dropping. We will map where the work goes missing, show you
+        what we would automate first, and say so plainly if we are not the right fit.
+      </p>
+      <div class="cta-row">
+        <a href="/contact" class="cta-primary">
+          Book the teardown
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a href="/contact" class="cta-secondary">Ask a question first</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  @reference "../../styles/global.css";
+
+  .cta-section {
+    background: var(--color-brand-bg);
+    padding: 4.5rem 1.5rem 5rem;
+  }
+  .cta-card {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+    border-radius: 18px;
+    overflow: hidden;
+    background: var(--color-brand-ink);
+    padding: 3.5rem 2rem;
+  }
+  .cta-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(60% 90% at 15% 0%, rgba(110, 72, 240, 0.5), transparent 65%),
+      radial-gradient(50% 80% at 88% 100%, rgba(0, 200, 150, 0.28), transparent 65%);
+    pointer-events: none;
+  }
+  .cta-content {
+    position: relative;
+    z-index: 2;
+    max-width: 620px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .cta-eyebrow {
+    display: inline-block;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-brand-accent);
+    margin-bottom: 0.9rem;
+  }
+  .cta-headline {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(1.65rem, 3.1vw, 2.3rem);
+    line-height: 1.16;
+    letter-spacing: -0.02em;
+    color: #fff;
+    margin: 0 0 0.9rem;
+    text-wrap: balance;
+  }
+  .cta-sub {
+    font-size: 1rem;
+    line-height: 1.62;
+    color: rgba(255, 255, 255, 0.72);
+    margin: 0 0 1.9rem;
+  }
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.7rem;
+  }
+  .cta-primary,
+  .cta-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.5rem;
+    border-radius: 9px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+  }
+  .cta-primary {
+    background: #fff;
+    color: var(--color-brand-ink);
+  }
+  .cta-primary:hover { transform: translateY(-1px); }
+  .cta-secondary {
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: #fff;
+  }
+  .cta-secondary:hover { border-color: rgba(255, 255, 255, 0.6); }
+  .cta-primary:focus-visible,
+  .cta-secondary:focus-visible {
+    outline: 2px solid var(--color-brand-accent);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 640px) {
+    .cta-section { padding: 3.25rem 1.25rem 3.75rem; }
+    .cta-card { padding: 2.75rem 1.35rem; }
+  }
+</style>

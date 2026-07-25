@@ -1,0 +1,138 @@
+---
+const checks = [
+  {
+    title: 'It gets tested against your awkward calls',
+    body: 'Before anything goes live we run it through the conversations that actually go wrong: the caller who changes their mind, the one who will not give a name, the one asking for something you do not do.',
+  },
+  {
+    title: 'Every run gets scored, not eyeballed',
+    body: 'Each simulated conversation is marked against a written rubric rather than a gut feel, so we can tell whether a change made it better or just different.',
+  },
+  {
+    title: 'It fails on our time, not yours',
+    body: 'Anything that cannot clear the bar stays switched off and gets handed to a person instead. We would rather it say "I will get someone to call you back" than guess.',
+  },
+];
+---
+<section class="rel">
+  <div class="rel-inner">
+    <div class="rel-copy">
+      <span class="rel-eyebrow">Before it goes live</span>
+      <h2 class="rel-title">We score our own work before it touches your customers.</h2>
+      <p class="rel-lede">
+        The risk with automating the front of a business is not that it fails loudly. It is that it
+        quietly says something daft to a good customer and nobody finds out for a month. So we
+        built the checking part first.
+      </p>
+      <p class="rel-note">
+        These are our own internal tests, run by us against simulated conversations. They are how
+        we decide whether something is fit to switch on, not a measure of how it has performed for
+        anyone else.
+      </p>
+    </div>
+
+    <ul class="rel-list">
+      {checks.map((c) => (
+        <li class="check">
+          <span class="check-rule" aria-hidden="true"></span>
+          <h3 class="check-title">{c.title}</h3>
+          <p class="check-body">{c.body}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  @reference "../../styles/global.css";
+
+  .rel {
+    background: var(--color-brand-bg);
+    padding: 4.5rem 1.5rem;
+  }
+  .rel-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    gap: 3.5rem;
+    align-items: start;
+  }
+  .rel-eyebrow {
+    display: inline-block;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--color-brand-primary);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+  .rel-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(1.75rem, 3.2vw, 2.35rem);
+    line-height: 1.14;
+    letter-spacing: -0.02em;
+    color: var(--color-brand-ink);
+    margin: 0 0 1rem;
+    text-wrap: balance;
+  }
+  .rel-lede {
+    font-size: 1rem;
+    line-height: 1.62;
+    color: var(--color-brand-muted);
+    margin: 0 0 1.25rem;
+  }
+  .rel-note {
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: var(--color-brand-muted);
+    margin: 0;
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--color-brand-line);
+  }
+
+  .rel-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.35rem;
+  }
+  .check {
+    background: var(--color-brand-surface);
+    border: 1px solid var(--color-brand-line);
+    border-radius: 12px;
+    padding: 1.35rem 1.4rem;
+  }
+  .check-rule {
+    display: block;
+    width: 26px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--color-brand-accent);
+    margin-bottom: 0.9rem;
+  }
+  .check-title {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-brand-ink);
+    margin: 0 0 0.45rem;
+    line-height: 1.32;
+  }
+  .check-body {
+    font-size: 0.89rem;
+    line-height: 1.58;
+    color: var(--color-brand-muted);
+    margin: 0;
+  }
+
+  @media (max-width: 900px) {
+    .rel { padding: 3.5rem 1.25rem; }
+    .rel-inner {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2.25rem;
+    }
+  }
+</style>
