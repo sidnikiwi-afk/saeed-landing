@@ -1,4 +1,9 @@
 ---
+// `base` lets pages other than the homepage point the section anchors back at "/".
+interface Props {
+  base?: string;
+}
+const { base = '' } = Astro.props;
 ---
 <footer class="footer">
   <div class="footer-inner">
@@ -17,15 +22,15 @@
     <div class="footer-right">
       <div class="footer-col">
         <span class="footer-col-label">Industries</span>
-        <a href="#industries">Garages and workshops</a>
-        <a href="#industries">Estate agents and lettings</a>
-        <a href="#industries">Trades and field service</a>
-        <a href="#industries">Vehicle hire</a>
+        <a href={`${base}#industries`}>Garages and workshops</a>
+        <a href={`${base}#industries`}>Estate agents and lettings</a>
+        <a href={`${base}#industries`}>Trades and field service</a>
+        <a href={`${base}#industries`}>Vehicle hire</a>
       </div>
       <div class="footer-col">
         <span class="footer-col-label">The system</span>
-        <a href="#jobs">What it runs</a>
-        <a href="#proof">See it run</a>
+        <a href={`${base}#jobs`}>What it runs</a>
+        <a href={`${base}#proof`}>See it run</a>
       </div>
       <div class="footer-col">
         <span class="footer-col-label">Company</span>

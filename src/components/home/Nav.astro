@@ -1,4 +1,9 @@
 ---
+// `base` lets pages other than the homepage point the section anchors back at "/".
+interface Props {
+  base?: string;
+}
+const { base = '' } = Astro.props;
 ---
 <nav class="nav" id="nav">
   <div class="nav-inner">
@@ -12,9 +17,9 @@
       <span class="logo-text">Brackstone</span>
     </a>
     <div class="nav-links">
-      <a href="#industries">Industries</a>
-      <a href="#jobs">What it runs</a>
-      <a href="#proof">See it run</a>
+      <a href={`${base}#industries`}>Industries</a>
+      <a href={`${base}#jobs`}>What it runs</a>
+      <a href={`${base}#proof`}>See it run</a>
       <a href="/contact" class="nav-cta">Book a teardown</a>
     </div>
     <button class="mobile-toggle" id="mobile-toggle" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
@@ -23,9 +28,9 @@
   </div>
 </nav>
 <div class="mobile-menu" id="mobile-menu">
-  <a href="#industries" class="mobile-link">Industries</a>
-  <a href="#jobs" class="mobile-link">What it runs</a>
-  <a href="#proof" class="mobile-link">See it run</a>
+  <a href={`${base}#industries`} class="mobile-link">Industries</a>
+  <a href={`${base}#jobs`} class="mobile-link">What it runs</a>
+  <a href={`${base}#proof`} class="mobile-link">See it run</a>
   <a href="/contact" class="mobile-cta">Book a teardown</a>
 </div>
 
