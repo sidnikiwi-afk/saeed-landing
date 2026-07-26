@@ -1,0 +1,64 @@
+---
+// Single source of truth for the Brackstone lockup. It was previously copied
+// into the nav, the footer and the privacy page, which is how those drifted
+// apart. Change the mark here and every use updates.
+interface Props {
+  size?: number;
+  wordmark?: boolean;
+  href?: string | null;
+  class?: string;
+}
+const { size = 26, wordmark = true, href = '/', class: className = '' } = Astro.props;
+
+const Tag = href ? 'a' : 'div';
+const attrs = href ? { href, 'aria-label': 'Brackstone home' } : {};
+---
+<Tag class:list={['logo', className]} {...attrs}>
+  <span class="logo-mark" style={`width:${size}px;height:${size}px`} aria-hidden="true">
+    <svg viewBox="0 0 32 32" width={size} height={size} xmlns="http://www.w3.org/2000/svg" focusable="false">
+      <rect width="32" height="32" rx="9" fill="var(--color-brand-primary)" />
+      <!-- The glyph is drawn around its own centre (16.5, 15.5), then scaled and
+           moved onto the square's true centre so it sits optically level. -->
+      <g transform="translate(16 16) scale(0.9) translate(-16.5 -15.5)">
+        <path
+          fill="#fff"
+          fill-rule="evenodd"
+          d="M10.4 8h7.1c3.2 0 5.2 1.6 5.2 4.1 0 1.6-.9 2.8-2.4 3.4 1.9.5 3 1.9 3 3.8 0 2.7-2.1 4.7-5.6 4.7h-7.3V8Zm3.3 2.8v3.4h3.4c1.4 0 2.2-.6 2.2-1.7 0-1.1-.8-1.7-2.2-1.7h-3.4Zm0 6v4h3.7c1.6 0 2.5-.8 2.5-2s-.9-2-2.5-2h-3.7Z"
+        />
+      </g>
+    </svg>
+  </span>
+  {wordmark && <span class="logo-text">Brackstone</span>}
+</Tag>
+
+<style>
+  @reference "../../styles/global.css";
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    text-decoration: none;
+    line-height: 1;
+  }
+  .logo-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+  }
+  .logo-mark svg { display: block; }
+  .logo-text {
+    font-family: var(--font-heading);
+    font-weight: 650;
+    font-size: 1.08rem;
+    letter-spacing: -0.021em;
+    color: var(--color-brand-ink);
+    white-space: nowrap;
+  }
+  .logo:focus-visible {
+    outline: 2px solid var(--color-brand-primary);
+    outline-offset: 4px;
+    border-radius: 6px;
+  }
+</style>
