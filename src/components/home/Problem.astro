@@ -1,0 +1,53 @@
+---
+---
+<section class="problem">
+  <div class="problem-inner">
+    <p class="problem-lede">
+      You are not losing work to better firms.
+      <span class="hl">You are losing it to the phone ringing while everyone is already busy.</span>
+    </p>
+    <p class="problem-body">
+      Most small teams do not have an enquiry problem. They have a Tuesday-afternoon problem. The
+      calls arrive in the same hour as the job, the diary and the customer standing at the desk,
+      so the ones that do not get answered quietly become someone else's work.
+    </p>
+  </div>
+</section>
+
+<style>
+  @reference "../../styles/global.css";
+
+  .problem {
+    background: var(--color-brand-bg);
+    padding: 3.5rem 1.5rem 1rem;
+  }
+  .problem-inner {
+    max-width: 820px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .problem-lede {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(1.4rem, 2.8vw, 2rem);
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: var(--color-brand-ink);
+    margin: 0 0 1.1rem;
+    text-wrap: balance;
+  }
+  .hl {
+    display: block;
+    color: var(--color-brand-muted);
+  }
+  .problem-body {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--color-brand-muted);
+    margin: 0;
+  }
+
+  @media (max-width: 640px) {
+    .problem { padding: 2.75rem 1.25rem 0.5rem; }
+  }
+</style>

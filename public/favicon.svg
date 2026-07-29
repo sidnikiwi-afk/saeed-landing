@@ -1,4 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <rect width="64" height="64" rx="16" fill="#6E48F0"/>
-  <text x="32" y="34" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="800" font-size="42" fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">B</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Same mark as src/components/home/Logo.astro. Drawn as a path rather than
+       text because a favicon cannot rely on a webfont being available. -->
+  <rect width="32" height="32" rx="9" fill="#6E48F0"/>
+  <g transform="translate(16 16) scale(0.9) translate(-16.5 -15.5)">
+    <path fill="#FFFFFF" fill-rule="evenodd" d="M10.4 8h7.1c3.2 0 5.2 1.6 5.2 4.1 0 1.6-.9 2.8-2.4 3.4 1.9.5 3 1.9 3 3.8 0 2.7-2.1 4.7-5.6 4.7h-7.3V8Zm3.3 2.8v3.4h3.4c1.4 0 2.2-.6 2.2-1.7 0-1.1-.8-1.7-2.2-1.7h-3.4Zm0 6v4h3.7c1.6 0 2.5-.8 2.5-2s-.9-2-2.5-2h-3.7Z"/>
+  </g>
 </svg>

@@ -1,0 +1,179 @@
+---
+import Logo from './Logo.astro';
+
+// `base` lets pages other than the homepage point the section anchors back at "/".
+interface Props {
+  base?: string;
+}
+const { base = '' } = Astro.props;
+---
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <Logo size={26} />
+    <div class="nav-links">
+      <a href={`${base}#industries`}>Industries</a>
+      <a href={`${base}#jobs`}>What it runs</a>
+      <a href={`${base}#proof`}>See it run</a>
+      <a href="/contact" class="nav-cta">Book a teardown</a>
+    </div>
+    <button class="mobile-toggle" id="mobile-toggle" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
+      <span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a href={`${base}#industries`} class="mobile-link">Industries</a>
+  <a href={`${base}#jobs`} class="mobile-link">What it runs</a>
+  <a href={`${base}#proof`} class="mobile-link">See it run</a>
+  <a href="/contact" class="mobile-cta">Book a teardown</a>
+</div>
+
+<style>
+  @reference "../../styles/global.css";
+
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 0 2rem;
+    transition: background 0.25s ease, border-color 0.25s ease;
+    border-bottom: 1px solid transparent;
+    background: rgba(247, 247, 248, 0);
+  }
+  .nav.scrolled {
+    background: rgba(247, 247, 248, 0.85);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid var(--color-brand-line);
+  }
+  .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+  }
+  
+  
+  
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+  .nav-links a {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-brand-muted);
+    text-decoration: none;
+    transition: color 0.18s ease;
+  }
+  .nav-links a:hover {
+    color: var(--color-brand-ink);
+  }
+  .nav-cta {
+    background: var(--color-brand-primary);
+    color: #fff !important;
+    padding: 0.6rem 1.15rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background 0.18s ease;
+  }
+  .nav-cta:hover {
+    background: var(--color-brand-primary-2);
+  }
+  .nav a:focus-visible,
+  .mobile-menu a:focus-visible,
+  .mobile-toggle:focus-visible {
+    outline: 2px solid var(--color-brand-primary);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  .mobile-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+  .mobile-toggle span {
+    display: block;
+    height: 1.5px;
+    width: 20px;
+    margin: 0 auto;
+    background: var(--color-brand-ink);
+    transition: transform 0.25s ease, opacity 0.25s ease;
+  }
+  .mobile-toggle.open span:nth-child(1) { transform: translateY(3.25px) rotate(45deg); }
+  .mobile-toggle.open span:nth-child(2) { transform: translateY(-3.25px) rotate(-45deg); }
+
+  .mobile-menu {
+    position: fixed;
+    top: 72px;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    background: var(--color-brand-surface);
+    border-bottom: 1px solid var(--color-brand-line);
+    padding: 1rem 2rem 1.5rem;
+    display: none;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .mobile-menu.open { display: flex; }
+  .mobile-link {
+    padding: 0.85rem 0;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-brand-ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-brand-line);
+  }
+  .mobile-cta {
+    margin-top: 1rem;
+    background: var(--color-brand-primary);
+    color: #fff;
+    text-align: center;
+    padding: 0.85rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  @media (max-width: 860px) {
+    .nav { padding: 0 1.25rem; }
+    .nav-links { display: none; }
+    .mobile-toggle { display: flex; }
+  }
+</style>
+
+<script>
+  const nav = document.getElementById('nav');
+  const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  const toggle = document.getElementById('mobile-toggle');
+  const menu = document.getElementById('mobile-menu');
+  toggle?.addEventListener('click', () => {
+    const open = menu?.classList.toggle('open') ?? false;
+    toggle.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+  menu?.querySelectorAll('a').forEach((a) =>
+    a.addEventListener('click', () => {
+      menu.classList.remove('open');
+      toggle?.classList.remove('open');
+      toggle?.setAttribute('aria-expanded', 'false');
+    })
+  );
+</script>

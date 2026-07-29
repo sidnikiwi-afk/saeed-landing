@@ -1,0 +1,117 @@
+---
+import Logo from './Logo.astro';
+
+// `base` lets pages other than the homepage point the section anchors back at "/".
+interface Props {
+  base?: string;
+}
+const { base = '' } = Astro.props;
+---
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-left">
+      <Logo size={24} class="footer-logo" />
+      <p class="footer-tagline">The work small teams drop when they are busy, running on its own.</p>
+    </div>
+    <div class="footer-right">
+      <div class="footer-col">
+        <span class="footer-col-label">Industries</span>
+        <a href={`${base}#industries`}>Garages and workshops</a>
+        <a href={`${base}#industries`}>Estate agents and lettings</a>
+        <a href={`${base}#industries`}>Trades and field service</a>
+        <a href={`${base}#industries`}>Vehicle hire</a>
+      </div>
+      <div class="footer-col">
+        <span class="footer-col-label">The system</span>
+        <a href={`${base}#jobs`}>What it runs</a>
+        <a href={`${base}#proof`}>See it run</a>
+      </div>
+      <div class="footer-col">
+        <span class="footer-col-label">Company</span>
+        <a href="/contact">Get in touch</a>
+        <a href="/privacy">Privacy</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Brackstone Digital. All rights reserved.</span>
+    <span class="footer-legal">Brackstone Digital Limited, registered in England &amp; Wales, company no. 17159711. Registered office: 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ.</span>
+  </div>
+</footer>
+
+<style>
+  @reference "../../styles/global.css";
+
+  .footer {
+    background: var(--color-brand-bg);
+    border-top: 1px solid var(--color-brand-line);
+    padding: 3.25rem 1.5rem 2rem;
+  }
+  .footer-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 2.5rem;
+    padding-bottom: 2.25rem;
+    border-bottom: 1px solid var(--color-brand-line);
+  }
+  .footer-left :global(.logo) { margin-bottom: 0.75rem; }
+  .footer-tagline {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--color-brand-muted);
+    margin: 0;
+    max-width: 20rem;
+  }
+  .footer-right {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3rem;
+  }
+  .footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .footer-col-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--color-brand-ink);
+    margin-bottom: 0.2rem;
+  }
+  .footer-col a {
+    font-size: 0.86rem;
+    color: var(--color-brand-muted);
+    text-decoration: none;
+    transition: color 0.18s ease;
+  }
+  .footer-col a:hover { color: var(--color-brand-ink); }
+  .footer-col a:focus-visible {
+    outline: 2px solid var(--color-brand-primary);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+
+  .footer-bottom {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding-top: 1.5rem;
+    font-size: 0.78rem;
+    color: var(--color-brand-muted);
+  }
+  .footer-legal {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.72rem;
+    opacity: 0.62;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 700px) {
+    .footer-right { gap: 2rem; }
+  }
+</style>

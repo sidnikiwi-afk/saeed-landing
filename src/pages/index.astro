@@ -1,20 +1,21 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { Schema } from 'astro-seo-schema';
-import Nav from '../components/direction-2/Nav.astro';
-import Hero from '../components/direction-2/Hero.astro';
-import Trust from '../components/direction-2/Trust.astro';
-import HowItWorks from '../components/direction-2/HowItWorks.astro';
-import VoiceAI from '../components/direction-2/VoiceAI.astro';
-import DashboardProof from '../components/direction-2/DashboardProof.astro';
-import Testimonial from '../components/direction-2/Testimonial.astro';
-import Cta from '../components/direction-2/Cta.astro';
-import Footer from '../components/direction-2/Footer.astro';
+import Nav from '../components/home/Nav.astro';
+import Hero from '../components/home/Hero.astro';
+import Problem from '../components/home/Problem.astro';
+import Industries from '../components/home/Industries.astro';
+import FourJobs from '../components/home/FourJobs.astro';
+import Proof from '../components/home/Proof.astro';
+import Reliability from '../components/home/Reliability.astro';
+import Standards from '../components/home/Standards.astro';
+import Cta from '../components/home/Cta.astro';
+import Footer from '../components/home/Footer.astro';
 ---
 
 <Layout
-  title="Brackstone - Voice AI receptionist for UK small teams"
-  description="Brackstone answers, qualifies and organises enquiries for small teams, so urgent follow-ups and bookings stay visible without extra admin."
+  title="Brackstone - the work your business drops, running on its own"
+  description="Brackstone answers the calls, captures the enquiries, books the work and chases the follow-ups small UK teams never get back to. For businesses that run on a phone and a diary, from garages and letting agents to trades and hire desks."
 >
   <style is:global>
     html { scroll-behavior: smooth; }
@@ -47,42 +48,70 @@ import Footer from '../components/direction-2/Footer.astro';
       opacity: 1;
       transform: translateY(0);
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .sr { opacity: 1; transform: none; transition: none; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
   </style>
 
   <Nav />
-  <Hero />
-  <Trust />
-  <HowItWorks />
-  <VoiceAI />
-  <DashboardProof />
-  <Testimonial />
-  <Cta />
+  <main>
+    <Hero />
+    <Problem />
+    <Industries />
+    <FourJobs />
+    <Proof />
+    <Reliability />
+    <Standards />
+    <Cta />
+  </main>
   <Footer />
 
   <script>
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
-    );
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    document.querySelectorAll('.step, .panel, .va-card, .va-list li, .trust-item, .quote-body').forEach((el) => {
-      el.classList.add('sr');
-      observer.observe(el);
-    });
+    if (!prefersReduced && 'IntersectionObserver' in window) {
+      const targets = Array.from(
+        document.querySelectorAll<HTMLElement>('.card, .job, .check, .std-item')
+      );
 
-    document.querySelectorAll('.step').forEach((el, i) => {
-      (el as HTMLElement).style.transitionDelay = `${i * 0.08}s`;
-    });
-    document.querySelectorAll('.trust-item').forEach((el, i) => {
-      (el as HTMLElement).style.transitionDelay = `${i * 0.05}s`;
-    });
+      const reveal = (el: Element) => el.classList.add('visible');
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              reveal(entry.target);
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+      );
+
+      targets.forEach((el) => {
+        el.classList.add('sr');
+        observer.observe(el);
+      });
+
+      document.querySelectorAll<HTMLElement>('.card').forEach((el, i) => {
+        el.style.transitionDelay = `${i * 0.07}s`;
+      });
+      document.querySelectorAll<HTMLElement>('.job').forEach((el, i) => {
+        el.style.transitionDelay = `${i * 0.07}s`;
+      });
+
+      // Safety net: never let the reveal animation be the reason content is unreadable.
+      // If the observer has not fired (throttled background tab, restored session, no scroll),
+      // show everything rather than leaving the page blank.
+      window.setTimeout(() => targets.forEach(reveal), 1600);
+    }
   </script>
 
   <Schema
@@ -91,16 +120,28 @@ import Footer from '../components/direction-2/Footer.astro';
       "@type": "ProfessionalService",
       "name": "Brackstone Digital",
       "url": "https://brackstonedigital.co.uk",
-      "description": "Voice AI receptionist that answers, qualifies and organises enquiries for small UK teams.",
+      "description":
+        "Brackstone builds and runs the operational automation small UK businesses drop when they are busy: answering enquiries, capturing them, booking the work and chasing the follow-ups.",
       "areaServed": {
         "@type": "Country",
         "name": "United Kingdom"
       },
-      "serviceType": ["Voice AI", "AI Receptionist", "Call Handling", "Lead Qualification"],
+      "serviceType": [
+        "Business Process Automation",
+        "Enquiry Handling and Lead Capture",
+        "Appointment and Booking Automation",
+        "Follow-up and Pipeline Automation",
+        "AI Receptionist and Call Handling"
+      ],
+      "knowsAbout": [
+        "Garages and vehicle workshops",
+        "Estate agents and lettings",
+        "Trades and field service",
+        "Vehicle hire"
+      ],
       "contactPoint": {
         "@type": "ContactPoint",
         "contactType": "sales",
-        "email": "hello@brackstonedigital.co.uk",
         "url": "https://brackstonedigital.co.uk/contact"
       }
     }}
