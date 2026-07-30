@@ -203,6 +203,24 @@ function validate(payload = {}) {
   return { ok: true, honeypot: false, data };
 }
 
+const CANONICAL_RECIPIENT_RE = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/;
+
+// Server-only canonical recipient for the dashboard tenancy binding. Derived
+// exclusively from PH_INBOUND_RECIPIENT; browser payloads never influence it.
+// Returns '' when unset or malformed so callers fail closed.
+function canonicalRecipient(env) {
+  const configuredRecipient = env && env.PH_INBOUND_RECIPIENT;
+  if (typeof configuredRecipient !== 'string') return '';
+  if (!/^[\x21-\x7E]+$/.test(configuredRecipient)) return '';
+  const raw = configuredRecipient.toLowerCase();
+  if (!raw || raw.length > 254) return '';
+  if (!CANONICAL_RECIPIENT_RE.test(raw)) return '';
+  const [localPart, domain] = raw.split('@');
+  if (localPart.length > 64) return '';
+  if (domain.split('.').some((label) => label.length > 63)) return '';
+  return raw;
+}
+
 function webhookUrl(baseUrl) {
   const raw = clean(baseUrl, 2000);
   if (!raw) return '';
@@ -278,6 +296,7 @@ async function intakePayload(data, env, now = new Date()) {
     provider: 'synthetic',
     provider_message_id: providerMessageId,
     inbound_token: configured(env, 'PH_INBOUND_TOKEN'),
+    recipient: canonicalRecipient(env),
     from: data.email,
     subject: clean(`New enquiry: ${data.property}`, 300),
     text: syntheticZooplaBody(data),
@@ -293,10 +312,13 @@ async function intakePayload(data, env, now = new Date()) {
 }
 
 function missingEnv(env) {
-  const missing = ['INBOUND_EMAIL_WEBHOOK_SECRET', 'PH_INBOUND_TOKEN', 'DASHBOARD_WEBHOOK_URL']
+  const missing = ['INBOUND_EMAIL_WEBHOOK_SECRET', 'PH_INBOUND_TOKEN', 'PH_INBOUND_RECIPIENT', 'DASHBOARD_WEBHOOK_URL']
     .filter((key) => !configured(env, key));
   if (configured(env, 'DASHBOARD_WEBHOOK_URL') && !webhookUrl(env.DASHBOARD_WEBHOOK_URL)) {
     missing.push('DASHBOARD_WEBHOOK_URL_INVALID');
+  }
+  if (configured(env, 'PH_INBOUND_RECIPIENT') && !canonicalRecipient(env)) {
+    missing.push('PH_INBOUND_RECIPIENT_INVALID');
   }
   return missing;
 }
@@ -379,6 +401,7 @@ export const onRequestDelete = methodNotAllowed;
 
 export const __test = {
   allowedOrigins,
+  canonicalRecipient,
   corsHeaders,
   intakePayload,
   listingUrlAllowed,
