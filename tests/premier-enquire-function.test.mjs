@@ -402,6 +402,9 @@ test('fails closed without forwarding when the canonical recipient is malformed'
     'firm 58@dashboard.brackstonedigital.co.uk',
     'firm-58@dashboard.brackstöne.co.uk',
     'K@dashboard.brackstonedigital.co.uk',
+    'firm\r-58@dashboard.brackstonedigital.co.uk',
+    'firm\u0000-58@dashboard.brackstonedigital.co.uk',
+    '\u00a0firm-58@dashboard.brackstonedigital.co.uk\u00a0',
     `${'a'.repeat(65)}@dashboard.brackstonedigital.co.uk`,
     `firm-58@${'a'.repeat(64)}.brackstonedigital.co.uk`,
   ]) {
