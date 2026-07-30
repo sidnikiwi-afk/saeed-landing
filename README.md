@@ -1,4 +1,62 @@
-# Astro Starter Kit: Minimal
+# Brackstone Digital website
+
+## Premier Housing enquiry bridge
+
+The public Premier Housing demo is served at
+`https://brackstonedigital.co.uk/premier-housing-demo/`. Its form posts to the
+Cloudflare Pages Function at
+`https://premier-housing-demo.pages.dev/api/enquire`.
+
+The source-controlled function is `functions/api/enquire.js`. It:
+
+- accepts only allowlisted HTTPS origins;
+- validates and bounds the public form fields;
+- silently absorbs honeypot submissions;
+- applies a light per-isolate/IP rate limit;
+- accepts only approved Zoopla and Brackstone listing URLs;
+- forwards only to the fixed Brackstone dashboard inbound-email route;
+- binds the request to Premier through the server-side `PH_INBOUND_TOKEN`;
+- creates a stable provider message ID so the dashboard's persisted
+  idempotency layer can deduplicate retries;
+- fails closed with generic errors and never returns its secrets.
+
+Set these values only in the `premier-housing-demo` Cloudflare Pages production
+environment:
+
+- `DASHBOARD_WEBHOOK_URL`
+- `INBOUND_EMAIL_WEBHOOK_SECRET`
+- `PH_INBOUND_TOKEN`
+- `PH_ALLOWED_ORIGINS` (optional additional HTTPS origins)
+
+Do not commit or print their values.
+
+Run the focused verification locally:
+
+```sh
+npm run verify:premier-enquire
+```
+
+This creates `dist-premier-housing-pages/`, a Cloudflare Pages artifact whose
+root page is the Premier Housing demo and whose `/api/enquire` function is
+loaded from the repository `functions/` directory.
+
+After the reviewed commit is merged and the normal provider gate is approved,
+deploy the exact merge commit from a clean checkout:
+
+```sh
+npx wrangler pages deploy dist-premier-housing-pages \
+  --project-name premier-housing-demo \
+  --branch main \
+  --commit-hash <MERGE_SHA>
+```
+
+Verify the deployment ID, exact commit hash, allowed-origin OPTIONS response,
+honeypot/no-forward response, public demo endpoint, and the controlled
+firm-58 end-to-end canary before calling it production-ready.
+
+Rollback is a Cloudflare Pages rollback to the previous production deployment,
+followed by verification that the public form either reaches that reviewed
+function or fails visibly without sending.
 
 ```sh
 npm create astro@latest -- --template minimal

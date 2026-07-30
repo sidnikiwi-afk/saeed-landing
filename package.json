@@ -8,6 +8,9 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "build:premier-pages": "astro build && node scripts/build-premier-housing-pages.mjs",
+    "test:premier-enquire": "node --test tests/premier-enquire-function.test.mjs",
+    "verify:premier-enquire": "npm run test:premier-enquire && npm run build:premier-pages",
     "preview": "astro preview",
     "astro": "astro"
   },

@@ -1,0 +1,260 @@
+import assert from 'node:assert/strict';
+import { afterEach, beforeEach, test } from 'node:test';
+
+import {
+  __test,
+  onRequestGet,
+  onRequestOptions,
+  onRequestPost,
+} from '../functions/api/enquire.js';
+
+const endpoint = 'https://premier-housing-demo.pages.dev/api/enquire';
+const allowedOrigin = 'https://brackstonedigital.co.uk';
+const env = {
+  DASHBOARD_WEBHOOK_URL: 'https://dashboard.brackstonedigital.co.uk',
+  INBOUND_EMAIL_WEBHOOK_SECRET: 'test-secret-not-real',
+  PH_INBOUND_TOKEN: 'test-firm-58-token-not-real',
+};
+const validPayload = {
+  name: 'Saeed Test',
+  phone: '07700 900310',
+  email: 'saeed.test@example.com',
+  message: 'I would like to arrange a viewing.',
+  property: 'Pasture Walk, Bradford BD14',
+  listing_url: 'https://www.zoopla.co.uk/to-rent/details/73196230/',
+  submission_id: '9adcdace-4e48-4e84-86ce-d8fa311dca0e',
+};
+
+let originalFetch;
+
+function request(method = 'POST', payload = validPayload, options = {}) {
+  const headers = {
+    Origin: options.origin === undefined ? allowedOrigin : options.origin,
+    'Content-Type': options.contentType || 'application/json',
+    'CF-Connecting-IP': options.ip || '203.0.113.10',
+  };
+  if (options.omitOrigin) delete headers.Origin;
+  const init = { method, headers };
+  if (method !== 'GET' && method !== 'HEAD' && method !== 'OPTIONS') {
+    init.body = options.rawBody === undefined ? JSON.stringify(payload) : options.rawBody;
+  }
+  return new Request(endpoint, init);
+}
+
+async function responseJson(response) {
+  return JSON.parse(await response.text());
+}
+
+beforeEach(() => {
+  originalFetch = globalThis.fetch;
+  __test.resetRateLimit();
+});
+
+afterEach(() => {
+  globalThis.fetch = originalFetch;
+  __test.resetRateLimit();
+});
+
+test('allows only the expected production origins', () => {
+  const origins = __test.allowedOrigins({});
+  assert.equal(origins.has('https://brackstonedigital.co.uk'), true);
+  assert.equal(origins.has('https://www.brackstonedigital.co.uk'), true);
+  assert.equal(origins.has('https://premier-housing-demo.pages.dev'), true);
+  assert.equal(origins.has('https://evil.example'), false);
+});
+
+test('answers an allowed browser preflight and rejects other origins', async () => {
+  const allowed = await onRequestOptions({ request: request('OPTIONS'), env });
+  assert.equal(allowed.status, 204);
+  assert.equal(allowed.headers.get('Access-Control-Allow-Origin'), allowedOrigin);
+
+  const rejected = await onRequestOptions({
+    request: request('OPTIONS', validPayload, { origin: 'https://evil.example' }),
+    env,
+  });
+  assert.equal(rejected.status, 403);
+  assert.equal(rejected.headers.get('Access-Control-Allow-Origin'), null);
+});
+
+test('rejects originless and disallowed POSTs before forwarding', async () => {
+  let forwards = 0;
+  globalThis.fetch = async () => {
+    forwards += 1;
+    return new Response('{}', { status: 202 });
+  };
+
+  const originless = await onRequestPost({
+    request: request('POST', validPayload, { omitOrigin: true }),
+    env,
+  });
+  const disallowed = await onRequestPost({
+    request: request('POST', validPayload, { origin: 'https://evil.example' }),
+    env,
+  });
+
+  assert.equal(originless.status, 403);
+  assert.equal(disallowed.status, 403);
+  assert.equal(forwards, 0);
+});
+
+test('silently accepts the honeypot without requiring secrets or forwarding', async () => {
+  let forwards = 0;
+  globalThis.fetch = async () => {
+    forwards += 1;
+    return new Response('{}', { status: 202 });
+  };
+
+  const response = await onRequestPost({
+    request: request('POST', { ...validPayload, company: 'bot-company' }),
+    env: {},
+  });
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(await responseJson(response), { ok: true });
+  assert.equal(forwards, 0);
+});
+
+test('validates required fields, body type and listing host', async () => {
+  const badEmail = await onRequestPost({
+    request: request('POST', { ...validPayload, email: 'not-an-email' }),
+    env,
+  });
+  assert.equal(badEmail.status, 400);
+
+  const badListing = await onRequestPost({
+    request: request('POST', {
+      ...validPayload,
+      listing_url: 'https://evil.example/listing/1',
+    }),
+    env,
+  });
+  assert.equal(badListing.status, 400);
+
+  const badType = await onRequestPost({
+    request: request('POST', validPayload, { contentType: 'text/plain' }),
+    env,
+  });
+  assert.equal(badType.status, 415);
+
+  const badSubmissionId = await onRequestPost({
+    request: request('POST', { ...validPayload, submission_id: 'bad id!' }),
+    env,
+  });
+  assert.equal(badSubmissionId.status, 400);
+});
+
+test('rejects an oversized request before forwarding', async () => {
+  let forwards = 0;
+  globalThis.fetch = async () => {
+    forwards += 1;
+    return new Response('{}', { status: 202 });
+  };
+
+  const response = await onRequestPost({
+    request: request('POST', validPayload, {
+      rawBody: JSON.stringify({
+        ...validPayload,
+        message: 'x'.repeat((16 * 1024) + 1),
+      }),
+    }),
+    env,
+  });
+
+  assert.equal(response.status, 413);
+  assert.equal(forwards, 0);
+});
+
+test('fails closed when firm binding or dashboard configuration is missing', async () => {
+  let forwards = 0;
+  globalThis.fetch = async () => {
+    forwards += 1;
+    return new Response('{}', { status: 202 });
+  };
+
+  const missing = await onRequestPost({
+    request: request('POST'),
+    env: { ...env, PH_INBOUND_TOKEN: '' },
+  });
+  const wrongHost = await onRequestPost({
+    request: request('POST'),
+    env: { ...env, DASHBOARD_WEBHOOK_URL: 'https://evil.example/webhook' },
+  });
+
+  assert.equal(missing.status, 503);
+  assert.equal(wrongHost.status, 503);
+  assert.equal(forwards, 0);
+});
+
+test('forwards one fixed-destination, firm-bound synthetic enquiry', async () => {
+  const forwards = [];
+  globalThis.fetch = async (url, init) => {
+    forwards.push({ url, init, payload: JSON.parse(init.body) });
+    return new Response('{"ok":true}', { status: 202 });
+  };
+
+  const response = await onRequestPost({ request: request(), env });
+  assert.equal(response.status, 200);
+  assert.deepEqual(await responseJson(response), { ok: true });
+  assert.equal(forwards.length, 1);
+
+  const forwarded = forwards[0];
+  assert.equal(forwarded.url, 'https://dashboard.brackstonedigital.co.uk/webhook/inbound-email');
+  assert.equal(forwarded.init.method, 'POST');
+  assert.equal(forwarded.init.headers['X-Webhook-Secret'], env.INBOUND_EMAIL_WEBHOOK_SECRET);
+  assert.equal(forwarded.payload.provider, 'synthetic');
+  assert.equal(forwarded.payload.inbound_token, env.PH_INBOUND_TOKEN);
+  assert.equal(forwarded.payload.from, validPayload.email);
+  assert.match(forwarded.payload.provider_message_id, /^ph-form:/);
+  assert.equal(forwarded.payload.provider_metadata.source, 'ph_property_group_demo_site');
+  assert.equal(forwarded.payload.provider_metadata.source_version, 'ph_website_enquiry_v1');
+  assert.match(forwarded.payload.text, /Pasture Walk, Bradford BD14/);
+  assert.equal(JSON.stringify(forwarded.payload).includes(env.INBOUND_EMAIL_WEBHOOK_SECRET), false);
+});
+
+test('repeated identical submissions produce the same durable provider message id', async () => {
+  const ids = [];
+  globalThis.fetch = async (_url, init) => {
+    ids.push(JSON.parse(init.body).provider_message_id);
+    return new Response('{"ok":true}', { status: 202 });
+  };
+
+  const first = await onRequestPost({ request: request(), env });
+  const second = await onRequestPost({ request: request(), env });
+
+  assert.equal(first.status, 200);
+  assert.equal(second.status, 200);
+  assert.equal(ids.length, 2);
+  assert.equal(ids[0], ids[1]);
+
+  const changed = await __test.intakePayload(
+    { ...validPayload, message: 'A different viewing request.' },
+    env,
+    new Date('2026-07-30T10:00:00Z')
+  );
+  assert.notEqual(changed.provider_message_id, ids[0]);
+});
+
+test('rate limits repeated real submissions but does not expose configuration', async () => {
+  globalThis.fetch = async () => new Response('{"ok":true}', { status: 202 });
+  for (let index = 0; index < 5; index += 1) {
+    const response = await onRequestPost({ request: request(), env });
+    assert.equal(response.status, 200);
+  }
+  const limited = await onRequestPost({ request: request(), env });
+  assert.equal(limited.status, 429);
+  assert.equal(limited.headers.get('Retry-After'), '600');
+  assert.deepEqual(await responseJson(limited), {
+    error: 'Too many enquiries. Please try again shortly.',
+  });
+});
+
+test('returns a generic error for provider failures and blocks unsupported methods', async () => {
+  globalThis.fetch = async () => new Response('provider detail', { status: 500 });
+  const failed = await onRequestPost({ request: request(), env });
+  assert.equal(failed.status, 502);
+  assert.deepEqual(await responseJson(failed), { error: 'Enquiry could not be sent' });
+
+  const get = await onRequestGet({ request: request('GET'), env });
+  assert.equal(get.status, 405);
+  assert.equal(get.headers.get('Allow'), 'POST, OPTIONS');
+});
