@@ -41,6 +41,30 @@ function request(method = 'POST', payload = validPayload, options = {}) {
   return new Request(endpoint, init);
 }
 
+function streamedRequest(chunks, options = {}) {
+  let index = 0;
+  const body = new ReadableStream({
+    pull(controller) {
+      if (index >= chunks.length) {
+        controller.close();
+        return;
+      }
+      controller.enqueue(chunks[index]);
+      index += 1;
+    },
+  });
+  return new Request(endpoint, {
+    method: 'POST',
+    headers: {
+      Origin: allowedOrigin,
+      'Content-Type': 'application/json',
+      'CF-Connecting-IP': options.ip || '203.0.113.10',
+    },
+    body,
+    duplex: 'half',
+  });
+}
+
 async function responseJson(response) {
   return JSON.parse(await response.text());
 }
@@ -157,6 +181,50 @@ test('rejects an oversized request before forwarding', async () => {
         message: 'x'.repeat((16 * 1024) + 1),
       }),
     }),
+    env,
+  });
+
+  assert.equal(response.status, 413);
+  assert.equal(forwards, 0);
+});
+
+test('rejects a streamed request once its accumulated bytes exceed the limit', async () => {
+  let forwards = 0;
+  globalThis.fetch = async () => {
+    forwards += 1;
+    return new Response('{}', { status: 202 });
+  };
+
+  const encoder = new TextEncoder();
+  const response = await onRequestPost({
+    request: streamedRequest([
+      encoder.encode('x'.repeat(8 * 1024)),
+      encoder.encode('x'.repeat(8 * 1024)),
+      encoder.encode('x'),
+    ]),
+    env,
+  });
+
+  assert.equal(response.status, 413);
+  assert.equal(forwards, 0);
+});
+
+test('enforces the request limit in UTF-8 bytes for multibyte JSON', async () => {
+  let forwards = 0;
+  globalThis.fetch = async () => {
+    forwards += 1;
+    return new Response('{}', { status: 202 });
+  };
+
+  const rawBody = JSON.stringify({
+    ...validPayload,
+    message: '£'.repeat(9 * 1024),
+  });
+  assert.equal(rawBody.length < 16 * 1024, true);
+  assert.equal(new TextEncoder().encode(rawBody).byteLength > 16 * 1024, true);
+
+  const response = await onRequestPost({
+    request: request('POST', validPayload, { rawBody }),
     env,
   });
 

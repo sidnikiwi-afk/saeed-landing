@@ -115,19 +115,36 @@ async function readJson(request) {
     return { ok: false, status: 415, body: { error: 'Expected JSON' } };
   }
 
-  const contentLength = Number(request.headers.get('Content-Length') || 0);
-  if (contentLength > MAX_BODY_BYTES) {
+  const contentLengthHeader = request.headers.get('Content-Length') || '';
+  if (/^\d+$/.test(contentLengthHeader) && Number(contentLengthHeader) > MAX_BODY_BYTES) {
     return { ok: false, status: 413, body: { error: 'Request too large' } };
   }
 
+  let reader;
   let raw = '';
   try {
-    raw = await request.text();
+    reader = request.body?.getReader();
+    if (reader) {
+      const decoder = new TextDecoder('utf-8', { fatal: true });
+      let totalBytes = 0;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        totalBytes += value.byteLength;
+        if (totalBytes > MAX_BODY_BYTES) {
+          await reader.cancel().catch(() => {});
+          return { ok: false, status: 413, body: { error: 'Request too large' } };
+        }
+        raw += decoder.decode(value, { stream: true });
+      }
+      raw += decoder.decode();
+    }
   } catch (_err) {
     return { ok: false, status: 400, body: { error: 'Invalid request body' } };
-  }
-  if (raw.length > MAX_BODY_BYTES) {
-    return { ok: false, status: 413, body: { error: 'Request too large' } };
+  } finally {
+    reader?.releaseLock();
   }
 
   try {
