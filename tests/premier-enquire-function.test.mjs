@@ -401,6 +401,8 @@ test('fails closed without forwarding when the canonical recipient is malformed'
     'firm-58@dashboard.brackstonedigital.co.uk, evil@evil.example',
     'firm 58@dashboard.brackstonedigital.co.uk',
     'firm-58@dashboard.brackstöne.co.uk',
+    `${'a'.repeat(65)}@dashboard.brackstonedigital.co.uk`,
+    `firm-58@${'a'.repeat(64)}.brackstonedigital.co.uk`,
   ]) {
     const response = await onRequestPost({
       request: request('POST'),
@@ -435,6 +437,22 @@ test('canonicalRecipient accepts one strict ASCII address and rejects the rest',
   );
   assert.equal(
     __test.canonicalRecipient({ PH_INBOUND_RECIPIENT: 'unïcode@c.co' }),
+    ''
+  );
+  assert.equal(
+    __test.canonicalRecipient({ PH_INBOUND_RECIPIENT: `${'a'.repeat(64)}@c.co` }),
+    `${'a'.repeat(64)}@c.co`
+  );
+  assert.equal(
+    __test.canonicalRecipient({ PH_INBOUND_RECIPIENT: `${'a'.repeat(65)}@c.co` }),
+    ''
+  );
+  assert.equal(
+    __test.canonicalRecipient({ PH_INBOUND_RECIPIENT: `a@${'b'.repeat(63)}.co` }),
+    `a@${'b'.repeat(63)}.co`
+  );
+  assert.equal(
+    __test.canonicalRecipient({ PH_INBOUND_RECIPIENT: `a@${'b'.repeat(64)}.co` }),
     ''
   );
 });

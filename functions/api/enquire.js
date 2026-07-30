@@ -212,6 +212,9 @@ function canonicalRecipient(env) {
   const raw = configured(env, 'PH_INBOUND_RECIPIENT').toLowerCase();
   if (!raw || raw.length > 254) return '';
   if (!CANONICAL_RECIPIENT_RE.test(raw)) return '';
+  const [localPart, domain] = raw.split('@');
+  if (localPart.length > 64) return '';
+  if (domain.split('.').some((label) => label.length > 63)) return '';
   return raw;
 }
 
