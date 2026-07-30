@@ -263,9 +263,16 @@ async function payloadFingerprint(data) {
   ].join('\n'));
 }
 
+function createServerSubmissionId() {
+  if (crypto.randomUUID) return crypto.randomUUID();
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
 async function intakePayload(data, env, now = new Date()) {
   const fingerprint = await payloadFingerprint(data);
-  const submissionId = data.submission_id || 'legacy';
+  const submissionId = data.submission_id || createServerSubmissionId();
   const providerMessageId = `ph-form:${submissionId}:${fingerprint.slice(0, 32)}`;
   return {
     provider: 'synthetic',

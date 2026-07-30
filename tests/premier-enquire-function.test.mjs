@@ -302,6 +302,24 @@ test('repeated identical submissions produce the same durable provider message i
   assert.notEqual(changed.provider_message_id, ids[0]);
 });
 
+test('legacy callers without a submission id do not collapse distinct enquiries', async () => {
+  const legacyPayload = { ...validPayload, submission_id: '' };
+  const first = await __test.intakePayload(
+    legacyPayload,
+    env,
+    new Date('2026-07-30T10:00:00Z')
+  );
+  const second = await __test.intakePayload(
+    legacyPayload,
+    env,
+    new Date('2026-07-30T10:00:00Z')
+  );
+
+  assert.notEqual(first.provider_message_id, second.provider_message_id);
+  assert.equal(first.provider_metadata.submission_id_present, false);
+  assert.equal(second.provider_metadata.submission_id_present, false);
+});
+
 test('rate limits repeated real submissions but does not expose configuration', async () => {
   globalThis.fetch = async () => new Response('{"ok":true}', { status: 202 });
   for (let index = 0; index < 5; index += 1) {
