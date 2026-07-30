@@ -204,6 +204,17 @@ const endpoint = import.meta.env.PUBLIC_PH_ENQUIRE_ENDPOINT || 'https://premier-
     const successView = modal.querySelector('[data-enq-view="success"]');
     let lastFocus = null;
     let lastAutoMsg = '';
+    let pendingSubmissionId = null;
+
+    const createSubmissionId = () => {
+      if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+      const bytes = new Uint8Array(16);
+      if (globalThis.crypto?.getRandomValues) {
+        globalThis.crypto.getRandomValues(bytes);
+        return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+      }
+      return `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    };
 
     const open = (trigger) => {
       const property = trigger?.getAttribute('data-property') || 'A PH Property Group rental';
@@ -222,6 +233,7 @@ const endpoint = import.meta.env.PUBLIC_PH_ENQUIRE_ENDPOINT || 'https://premier-
       formView.hidden = false;
       successView.hidden = true;
       errEl.hidden = true;
+      pendingSubmissionId = null;
       lastFocus = document.activeElement;
       modal.hidden = false;
       void modal.offsetWidth;
@@ -254,6 +266,7 @@ const endpoint = import.meta.env.PUBLIC_PH_ENQUIRE_ENDPOINT || 'https://premier-
       const original = labelEl.textContent;
       submitBtn.disabled = true;
       labelEl.textContent = 'Sending...';
+      pendingSubmissionId ||= createSubmissionId();
       const payload = {
         name: form.elements['name'].value.trim(),
         phone: form.elements['phone'].value.trim(),
@@ -261,6 +274,7 @@ const endpoint = import.meta.env.PUBLIC_PH_ENQUIRE_ENDPOINT || 'https://premier-
         message: form.elements['message'].value.trim(),
         property: propField.value,
         listing_url: urlField.value,
+        submission_id: pendingSubmissionId,
       };
       try {
         const res = await fetch(endpoint, {
@@ -270,6 +284,7 @@ const endpoint = import.meta.env.PUBLIC_PH_ENQUIRE_ENDPOINT || 'https://premier-
         });
         if (!res.ok) throw new Error('bad status ' + res.status);
         form.reset();
+        pendingSubmissionId = null;
         formView.hidden = true;
         successView.hidden = false;
       } catch (err) {

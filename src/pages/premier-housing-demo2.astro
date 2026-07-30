@@ -794,6 +794,17 @@ const features = [
       const form = document.getElementById('demo2Enquiry');
       const status = document.querySelector('[data-status]');
       let lastFocused = null;
+      let pendingSubmissionId = null;
+
+      const createSubmissionId = () => {
+        if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+        const bytes = new Uint8Array(16);
+        if (globalThis.crypto?.getRandomValues) {
+          globalThis.crypto.getRandomValues(bytes);
+          return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+        }
+        return `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+      };
 
       const openForm = () => {
         if (!overlay) return;
@@ -835,7 +846,11 @@ const features = [
         event.preventDefault();
         if (!status) return;
         const formData = new FormData(form);
-        const payload = Object.fromEntries(formData.entries());
+        pendingSubmissionId ||= createSubmissionId();
+        const payload = {
+          ...Object.fromEntries(formData.entries()),
+          submission_id: pendingSubmissionId,
+        };
         status.textContent = 'Sending demo enquiry...';
         try {
           const response = await fetch(endpoint, {
@@ -846,6 +861,7 @@ const features = [
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
           status.textContent = 'Demo enquiry sent. Check the Premier Housing responder evidence.';
           form.reset();
+          pendingSubmissionId = null;
         } catch (error) {
           status.textContent = 'Demo enquiry did not send. Please use the controlled smoke route.';
           console.error('Premier Housing demo2 enquiry failed', error);
