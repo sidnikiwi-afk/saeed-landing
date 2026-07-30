@@ -209,7 +209,9 @@ const CANONICAL_RECIPIENT_RE = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*
 // exclusively from PH_INBOUND_RECIPIENT; browser payloads never influence it.
 // Returns '' when unset or malformed so callers fail closed.
 function canonicalRecipient(env) {
-  const raw = configured(env, 'PH_INBOUND_RECIPIENT').toLowerCase();
+  const configuredRecipient = configured(env, 'PH_INBOUND_RECIPIENT');
+  if (!/^[\x00-\x7F]+$/.test(configuredRecipient)) return '';
+  const raw = configuredRecipient.toLowerCase();
   if (!raw || raw.length > 254) return '';
   if (!CANONICAL_RECIPIENT_RE.test(raw)) return '';
   const [localPart, domain] = raw.split('@');

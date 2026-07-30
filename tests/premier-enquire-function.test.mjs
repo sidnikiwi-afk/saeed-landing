@@ -401,6 +401,7 @@ test('fails closed without forwarding when the canonical recipient is malformed'
     'firm-58@dashboard.brackstonedigital.co.uk, evil@evil.example',
     'firm 58@dashboard.brackstonedigital.co.uk',
     'firm-58@dashboard.brackstöne.co.uk',
+    'K@dashboard.brackstonedigital.co.uk',
     `${'a'.repeat(65)}@dashboard.brackstonedigital.co.uk`,
     `firm-58@${'a'.repeat(64)}.brackstonedigital.co.uk`,
   ]) {
@@ -423,6 +424,7 @@ test('canonicalRecipient accepts one strict ASCII address and rejects the rest',
     __test.canonicalRecipient({ PH_INBOUND_RECIPIENT: 'Firm-58@Dashboard.Brackstonedigital.co.uk' }),
     'firm-58@dashboard.brackstonedigital.co.uk'
   );
+  assert.equal(__test.canonicalRecipient({ PH_INBOUND_RECIPIENT: 'K@C.CO' }), 'k@c.co');
   assert.equal(__test.canonicalRecipient({}), '');
   assert.equal(__test.canonicalRecipient({ PH_INBOUND_RECIPIENT: '' }), '');
   assert.equal(__test.canonicalRecipient({ PH_INBOUND_RECIPIENT: 'no-at-symbol' }), '');
