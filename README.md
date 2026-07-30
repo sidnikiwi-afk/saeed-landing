@@ -15,7 +15,11 @@ The source-controlled function is `functions/api/enquire.js`. It:
 - applies a light per-isolate/IP rate limit;
 - accepts only approved Zoopla and Brackstone listing URLs;
 - forwards only to the fixed Brackstone dashboard inbound-email route;
-- binds the request to Premier through the server-side `PH_INBOUND_TOKEN`;
+- binds the request to the correct dashboard tenant using the server-side
+  canonical recipient (`PH_INBOUND_RECIPIENT`) together with the
+  `X-Webhook-Secret` sourced from `INBOUND_EMAIL_WEBHOOK_SECRET`; the recipient
+  is validated as one strict ASCII email address and is never taken from or
+  overridden by the browser payload;
 - creates a stable provider message ID so the dashboard's persisted
   idempotency layer can deduplicate retries;
 - fails closed with generic errors and never returns its secrets.
@@ -26,6 +30,8 @@ environment:
 - `DASHBOARD_WEBHOOK_URL`
 - `INBOUND_EMAIL_WEBHOOK_SECRET`
 - `PH_INBOUND_TOKEN`
+- `PH_INBOUND_RECIPIENT` (the canonical dashboard recipient address; a single
+  strict ASCII email - a malformed value fails closed with a generic error)
 - `PH_ALLOWED_ORIGINS` (optional additional HTTPS origins)
 
 Do not commit or print their values.

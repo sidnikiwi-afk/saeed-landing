@@ -14,6 +14,7 @@ const env = {
   DASHBOARD_WEBHOOK_URL: 'https://dashboard.brackstonedigital.co.uk',
   INBOUND_EMAIL_WEBHOOK_SECRET: 'test-secret-not-real',
   PH_INBOUND_TOKEN: 'test-firm-58-token-not-real',
+  PH_INBOUND_RECIPIENT: 'firm-58@dashboard.brackstonedigital.co.uk',
 };
 const validPayload = {
   name: 'Saeed Test',
@@ -271,6 +272,7 @@ test('forwards one fixed-destination, firm-bound synthetic enquiry', async () =>
   assert.equal(forwarded.init.headers['X-Webhook-Secret'], env.INBOUND_EMAIL_WEBHOOK_SECRET);
   assert.equal(forwarded.payload.provider, 'synthetic');
   assert.equal(forwarded.payload.inbound_token, env.PH_INBOUND_TOKEN);
+  assert.equal(forwarded.payload.recipient, env.PH_INBOUND_RECIPIENT);
   assert.equal(forwarded.payload.from, validPayload.email);
   assert.match(forwarded.payload.provider_message_id, /^ph-form:/);
   assert.equal(forwarded.payload.provider_metadata.source, 'ph_property_group_demo_site');
@@ -332,6 +334,109 @@ test('rate limits repeated real submissions but does not expose configuration', 
   assert.deepEqual(await responseJson(limited), {
     error: 'Too many enquiries. Please try again shortly.',
   });
+});
+
+test('binds the forwarded enquiry to the server-only canonical recipient', async () => {
+  const forwarded = await __test.intakePayload(
+    validPayload,
+    env,
+    new Date('2026-07-30T10:00:00Z')
+  );
+  assert.equal(forwarded.recipient, env.PH_INBOUND_RECIPIENT);
+});
+
+test('ignores any browser-supplied recipient and never lets it override the binding', async () => {
+  const forwards = [];
+  globalThis.fetch = async (_url, init) => {
+    forwards.push(JSON.parse(init.body));
+    return new Response('{"ok":true}', { status: 202 });
+  };
+
+  const response = await onRequestPost({
+    request: request('POST', {
+      ...validPayload,
+      recipient: 'attacker@evil.example',
+      to: 'attacker@evil.example',
+      mail_to: 'attacker@evil.example',
+    }),
+    env,
+  });
+
+  assert.equal(response.status, 200);
+  assert.equal(forwards.length, 1);
+  assert.equal(forwards[0].recipient, env.PH_INBOUND_RECIPIENT);
+  assert.equal(JSON.stringify(forwards[0]).includes('attacker@evil.example'), false);
+});
+
+test('fails closed without forwarding when the canonical recipient is missing', async () => {
+  let forwards = 0;
+  globalThis.fetch = async () => {
+    forwards += 1;
+    return new Response('{}', { status: 202 });
+  };
+
+  const response = await onRequestPost({
+    request: request('POST'),
+    env: { ...env, PH_INBOUND_RECIPIENT: '' },
+  });
+
+  assert.equal(response.status, 503);
+  assert.deepEqual(await responseJson(response), {
+    error: 'Enquiry forwarding is not configured',
+  });
+  assert.equal(forwards, 0);
+});
+
+test('fails closed without forwarding when the canonical recipient is malformed', async () => {
+  let forwards = 0;
+  globalThis.fetch = async () => {
+    forwards += 1;
+    return new Response('{}', { status: 202 });
+  };
+
+  for (const bad of [
+    'not-an-email',
+    'firm-58@dashboard',
+    'firm-58@@dashboard.brackstonedigital.co.uk',
+    'firm-58@dashboard.brackstonedigital.co.uk, evil@evil.example',
+    'firm 58@dashboard.brackstonedigital.co.uk',
+    'firm-58@dashboard.brackstöne.co.uk',
+  ]) {
+    const response = await onRequestPost({
+      request: request('POST'),
+      env: { ...env, PH_INBOUND_RECIPIENT: bad },
+    });
+    assert.equal(response.status, 503, `expected 503 for ${bad}`);
+    assert.deepEqual(await responseJson(response), {
+      error: 'Enquiry forwarding is not configured',
+    });
+    __test.resetRateLimit();
+  }
+
+  assert.equal(forwards, 0);
+});
+
+test('canonicalRecipient accepts one strict ASCII address and rejects the rest', () => {
+  assert.equal(
+    __test.canonicalRecipient({ PH_INBOUND_RECIPIENT: 'Firm-58@Dashboard.Brackstonedigital.co.uk' }),
+    'firm-58@dashboard.brackstonedigital.co.uk'
+  );
+  assert.equal(__test.canonicalRecipient({}), '');
+  assert.equal(__test.canonicalRecipient({ PH_INBOUND_RECIPIENT: '' }), '');
+  assert.equal(__test.canonicalRecipient({ PH_INBOUND_RECIPIENT: 'no-at-symbol' }), '');
+  assert.equal(__test.canonicalRecipient({ PH_INBOUND_RECIPIENT: 'a@b' }), '');
+  assert.equal(
+    __test.canonicalRecipient({ PH_INBOUND_RECIPIENT: 'a@b.co, c@d.co' }),
+    ''
+  );
+  assert.equal(
+    __test.canonicalRecipient({ PH_INBOUND_RECIPIENT: 'a b@c.co' }),
+    ''
+  );
+  assert.equal(
+    __test.canonicalRecipient({ PH_INBOUND_RECIPIENT: 'unïcode@c.co' }),
+    ''
+  );
 });
 
 test('returns a generic error for provider failures and blocks unsupported methods', async () => {
