@@ -73,6 +73,23 @@ test('fails closed for absent, incorrect, and missing configured secrets', async
   }
 });
 
+test('does not trim a whitespace-padded configured secret into a false match', async () => {
+  const exactEnv = { INBOUND_EMAIL_WEBHOOK_SECRET: ' test-secret-with-spaces ' };
+  const normalizedHeader = await onRequestPost({
+    request: request(exactEnv.INBOUND_EMAIL_WEBHOOK_SECRET, '203.0.113.60'),
+    env: exactEnv,
+  });
+  assert.equal(normalizedHeader.status, 401);
+  assert.deepEqual(await body(normalizedHeader), { error: 'Unauthorized' });
+
+  const trimmed = await onRequestPost({
+    request: request(exactEnv.INBOUND_EMAIL_WEBHOOK_SECRET.trim(), '203.0.113.61'),
+    env: exactEnv,
+  });
+  assert.equal(trimmed.status, 401);
+  assert.deepEqual(await body(trimmed), { error: 'Unauthorized' });
+});
+
 test('rejects every supported non-POST method without a fingerprint', async () => {
   for (const [method, handler] of [
     ['GET', onRequestGet],
@@ -107,4 +124,12 @@ test('rate limits repeated attempts without returning a fingerprint', async () =
   assert.equal(limited.status, 429);
   assert.deepEqual(await body(limited), { error: 'Too many requests' });
   assert.equal(limited.headers.get('Retry-After'), '600');
+});
+
+test('prunes inactive rate-limit buckets', () => {
+  assert.equal(__test.isRateLimited('expired-client', 1), false);
+  assert.equal(__test.bucketCount(), 1);
+
+  assert.equal(__test.isRateLimited('current-client', (10 * 60 * 1000) + 2), false);
+  assert.equal(__test.bucketCount(), 1);
 });

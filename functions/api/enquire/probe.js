@@ -4,9 +4,10 @@ const RATE_LIMIT_MAX = 5;
 
 const rateLimitBuckets = globalThis.__phBindingProbeRateLimitBuckets || new Map();
 globalThis.__phBindingProbeRateLimitBuckets = rateLimitBuckets;
+let lastRateLimitPruneAt = 0;
 
 function configured(env, key) {
-  return typeof env?.[key] === 'string' ? env[key].trim() : '';
+  return typeof env?.[key] === 'string' ? env[key] : '';
 }
 
 async function digest(value) {
@@ -31,6 +32,13 @@ function clientIp(request) {
 }
 
 function isRateLimited(key, now = Date.now()) {
+  if (now - lastRateLimitPruneAt >= RATE_LIMIT_WINDOW_MS) {
+    for (const [bucketKey, bucket] of rateLimitBuckets) {
+      if (now - bucket.startedAt > RATE_LIMIT_WINDOW_MS) rateLimitBuckets.delete(bucketKey);
+    }
+    lastRateLimitPruneAt = now;
+  }
+
   const bucket = rateLimitBuckets.get(key);
   if (!bucket || now - bucket.startedAt > RATE_LIMIT_WINDOW_MS) {
     rateLimitBuckets.set(key, { startedAt: now, count: 1 });
@@ -42,6 +50,7 @@ function isRateLimited(key, now = Date.now()) {
 
 function resetRateLimit() {
   rateLimitBuckets.clear();
+  lastRateLimitPruneAt = 0;
 }
 
 function response(body, status = 200, headers = {}) {
@@ -83,5 +92,7 @@ export const onRequestPatch = onRequestGet;
 export const onRequestDelete = onRequestGet;
 
 export const __test = {
+  bucketCount: () => rateLimitBuckets.size,
+  isRateLimited,
   resetRateLimit,
 };
