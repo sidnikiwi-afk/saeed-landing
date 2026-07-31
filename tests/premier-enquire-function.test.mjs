@@ -254,7 +254,7 @@ test('fails closed when firm binding or dashboard configuration is missing', asy
   assert.equal(forwards, 0);
 });
 
-test('forwards one fixed-destination, firm-bound synthetic enquiry', async () => {
+test('forwards one fixed-destination, firm-bound website enquiry', async () => {
   const forwards = [];
   globalThis.fetch = async (url, init) => {
     forwards.push({ url, init, payload: JSON.parse(init.body) });
@@ -270,7 +270,7 @@ test('forwards one fixed-destination, firm-bound synthetic enquiry', async () =>
   assert.equal(forwarded.url, 'https://dashboard.brackstonedigital.co.uk/webhook/inbound-email');
   assert.equal(forwarded.init.method, 'POST');
   assert.equal(forwarded.init.headers['X-Webhook-Secret'], env.INBOUND_EMAIL_WEBHOOK_SECRET);
-  assert.equal(forwarded.payload.provider, 'synthetic');
+  assert.equal(forwarded.payload.provider, 'website');
   assert.equal(forwarded.payload.inbound_token, env.PH_INBOUND_TOKEN);
   assert.equal(forwarded.payload.recipient, env.PH_INBOUND_RECIPIENT);
   assert.equal(forwarded.payload.from, validPayload.email);

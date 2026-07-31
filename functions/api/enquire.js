@@ -293,7 +293,7 @@ async function intakePayload(data, env, now = new Date()) {
   const submissionId = data.submission_id || createServerSubmissionId();
   const providerMessageId = `ph-form:${submissionId}:${fingerprint.slice(0, 32)}`;
   return {
-    provider: 'synthetic',
+    provider: 'website',
     provider_message_id: providerMessageId,
     inbound_token: configured(env, 'PH_INBOUND_TOKEN'),
     recipient: canonicalRecipient(env),
