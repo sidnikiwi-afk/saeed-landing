@@ -5,8 +5,6 @@ const standards = [
   { label: 'Access is locked down', body: 'Multi-factor sign-in, per-user accounts, and an audit trail of who looked at what.' },
   { label: 'Handover, not hostage', body: 'Numbers, records and prompts belong to you. If you leave, you take them, and we help you move them.' },
 ];
-
-const integrations = ['Retell', 'Twilio', 'Cal.com', 'Stripe', 'Instantly'];
 ---
 <section class="std">
   <div class="std-inner">
@@ -26,17 +24,6 @@ const integrations = ['Retell', 'Twilio', 'Cal.com', 'Stripe', 'Instantly'];
         </li>
       ))}
     </ul>
-
-    <div class="integr">
-      <span class="integr-label">Integrations we build on</span>
-      <ul class="integr-list">
-        {integrations.map((i) => <li>{i}</li>)}
-      </ul>
-      <p class="integr-note">
-        These are services we integrate with to deliver the work. Naming them is not a claim of
-        partnership or endorsement.
-      </p>
-    </div>
   </div>
 </section>
 
@@ -97,43 +84,6 @@ const integrations = ['Retell', 'Twilio', 'Cal.com', 'Stripe', 'Instantly'];
     line-height: 1.56;
     color: var(--color-brand-muted);
     margin: 0;
-  }
-
-  .integr {
-    border-top: 1px solid var(--color-brand-line);
-    padding-top: 1.6rem;
-  }
-  .integr-label {
-    display: block;
-    font-size: 0.74rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-brand-muted);
-    margin-bottom: 0.9rem;
-  }
-  .integr-list {
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin: 0 0 0.9rem;
-    padding: 0;
-  }
-  .integr-list li {
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    color: var(--color-brand-muted);
-    border: 1px solid var(--color-brand-line);
-    border-radius: 6px;
-    padding: 0.35rem 0.7rem;
-  }
-  .integr-note {
-    font-size: 0.76rem;
-    line-height: 1.5;
-    color: var(--color-brand-muted);
-    margin: 0;
-    max-width: 38rem;
   }
 
   @media (max-width: 900px) {
