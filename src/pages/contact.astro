@@ -3,10 +3,12 @@ import Layout from '../layouts/Layout.astro';
 import Nav from '../components/home/Nav.astro';
 import Footer from '../components/home/Footer.astro';
 
-// Where the contact form posts. Enquiries must reach saeed@brackstonedigital.co.uk.
-// Change this one value to switch delivery. The form reads the response status, so
-// whatever sits behind it must return a 2xx on success.
-const FORM_ENDPOINT = 'https://primary-production-64370.up.railway.app/webhook/brackstone-lead';
+// Browser posts here. The Cloudflare Pages function at /api/contact verifies the
+// honeypot and Turnstile token, then emails Saeed via Resend.
+// Override with PUBLIC_CONTACT_ENDPOINT if the function is hosted elsewhere.
+const FORM_ENDPOINT = import.meta.env.PUBLIC_CONTACT_ENDPOINT
+  || 'https://premier-housing-demo.pages.dev/api/contact';
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
 
 const reassurances = [
   'One working day for a reply, usually sooner',
@@ -78,6 +80,24 @@ const reassurances = [
             <label for="message">What keeps slipping?</label>
             <textarea id="message" name="message" rows="4" placeholder="Missed calls, quotes nobody chased, empty slots in the diary..."></textarea>
           </div>
+
+          {/* Bots fill this; humans never see it. Server also rejects when set. */}
+          <div class="hp" aria-hidden="true">
+            <label for="website">Website</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+          </div>
+
+          {TURNSTILE_SITE_KEY && (
+            <div class="turnstile">
+              <div
+                class="cf-turnstile"
+                data-sitekey={TURNSTILE_SITE_KEY}
+                data-theme="light"
+                data-action="brackstone-contact"
+                data-appearance="interaction-only"
+              ></div>
+            </div>
+          )}
 
           <button type="submit" class="submit" id="submit-btn">
             <span id="submit-label">Book the teardown</span>
@@ -210,6 +230,7 @@ const reassurances = [
     box-shadow: 0 24px 60px -34px rgba(10, 10, 11, 0.35);
   }
   .form {
+    position: relative;
     display: grid;
     gap: 1.15rem;
   }
@@ -247,6 +268,14 @@ const reassurances = [
   .field textarea[aria-invalid='true'] {
     border-color: color-mix(in srgb, var(--color-brand-primary) 55%, #c0392b);
   }
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .turnstile { min-height: 1px; }
 
   /* Same shape and weight as the primary buttons on the homepage. */
   .submit {
@@ -330,7 +359,11 @@ const reassurances = [
   }
 </style>
 
-<script define:vars={{ FORM_ENDPOINT }}>
+{TURNSTILE_SITE_KEY && (
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+)}
+
+<script define:vars={{ FORM_ENDPOINT, TURNSTILE_SITE_KEY }}>
   const form = document.getElementById('contact-form');
   const btn = document.getElementById('submit-btn');
   const label = document.getElementById('submit-label');
@@ -342,12 +375,34 @@ const reassurances = [
     else el.removeAttribute('aria-invalid');
   };
 
+  const turnstileToken = () => {
+    const field = form?.querySelector('[name="cf-turnstile-response"]');
+    if (field?.value) return field.value;
+    try {
+      return window.turnstile?.getResponse?.() || '';
+    } catch (_err) {
+      return '';
+    }
+  };
+
+  const resetTurnstile = () => {
+    try { window.turnstile?.reset?.(); } catch (_err) { /* widget not loaded */ }
+  };
+
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     errorBox.hidden = true;
 
     const name = form.querySelector('#name');
     const email = form.querySelector('#email');
+    const honeypot = form.querySelector('#website');
+
+    // Pretend success if a bot filled the hidden field; send nothing.
+    if (honeypot?.value.trim()) {
+      form.hidden = true;
+      success.hidden = false;
+      return;
+    }
 
     const missingName = !name.value.trim();
     const badEmail = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
@@ -356,6 +411,12 @@ const reassurances = [
 
     if (missingName || badEmail) {
       (missingName ? name : email).focus();
+      return;
+    }
+
+    const token = turnstileToken();
+    if (TURNSTILE_SITE_KEY && !token) {
+      errorBox.hidden = false;
       return;
     }
 
@@ -373,6 +434,7 @@ const reassurances = [
           message: form.querySelector('#message').value.trim(),
           source: 'brackstonedigital.co.uk/contact',
           submitted_at: new Date().toISOString(),
+          'cf-turnstile-response': token,
         }),
       });
 
@@ -383,6 +445,7 @@ const reassurances = [
       success.hidden = false;
       success.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     } catch (err) {
+      resetTurnstile();
       errorBox.hidden = false;
       btn.disabled = false;
       label.textContent = 'Book the teardown';
