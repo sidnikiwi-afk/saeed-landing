@@ -4,8 +4,11 @@ const RATE_LIMIT_MAX = 5;
 const TURNSTILE_SITEVERIFY = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 const TURNSTILE_ACTION = 'brackstone-contact';
 const CANONICAL_SOURCE = 'brackstonedigital.co.uk/contact';
-const DEFAULT_WEBHOOK = 'https://primary-production-64370.up.railway.app/webhook/brackstone-lead';
-const DEFAULT_WEBHOOK_HOST = 'primary-production-64370.up.railway.app';
+const RESEND_EMAILS = 'https://api.resend.com/emails';
+const MAIL_DOMAIN = 'brackstonedigital.co.uk';
+const DEFAULT_FROM_EMAIL = `noreply@${MAIL_DOMAIN}`;
+const DEFAULT_NOTIFY_TO = `saeed@${MAIL_DOMAIN}`;
+const CANONICAL_EMAIL_RE = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/;
 
 const rateLimitBuckets = globalThis.__contactLeadRateLimitBuckets || new Map();
 globalThis.__contactLeadRateLimitBuckets = rateLimitBuckets;
@@ -194,27 +197,64 @@ function validate(payload = {}) {
   return { ok: true, honeypot: false, data };
 }
 
-function allowedWebhookHosts(env = {}) {
-  const extra = clean(env.N8N_LEAD_WEBHOOK_HOSTS || '', 2000)
-    .split(',')
-    .map((host) => clean(host, 253).toLowerCase())
-    .filter(Boolean);
-  return new Set([DEFAULT_WEBHOOK_HOST, ...extra]);
+function domainEmail(value, domain = MAIL_DOMAIN) {
+  if (typeof value !== 'string') return '';
+  if (!/^[\x21-\x7E]+$/.test(value)) return '';
+  const raw = value.toLowerCase();
+  if (!raw || raw.length > 254) return '';
+  if (!CANONICAL_EMAIL_RE.test(raw)) return '';
+  const [localPart, host] = raw.split('@');
+  if (localPart.length > 64) return '';
+  if (host !== domain) return '';
+  return raw;
 }
 
-function webhookUrl(env = {}) {
-  const raw = configured(env, 'N8N_LEAD_WEBHOOK_URL') || DEFAULT_WEBHOOK;
-  try {
-    const url = new URL(raw);
-    if (url.protocol !== 'https:') return '';
-    if (!allowedWebhookHosts(env).has(url.hostname.toLowerCase())) return '';
-    url.username = '';
-    url.password = '';
-    url.hash = '';
-    return url.toString();
-  } catch (_err) {
-    return '';
-  }
+function fromEmail(env = {}) {
+  const value = env && env.CONTACT_FROM_EMAIL;
+  if (value === undefined || value === '') return DEFAULT_FROM_EMAIL;
+  return domainEmail(value);
+}
+
+function notifyTo(env = {}) {
+  const value = env && env.CONTACT_NOTIFY_TO;
+  if (value === undefined || value === '') return DEFAULT_NOTIFY_TO;
+  return domainEmail(value);
+}
+
+function resendApiKey(env = {}) {
+  const key = env && env.RESEND_API_KEY;
+  if (typeof key !== 'string') return '';
+  const raw = key.trim();
+  if (!raw || raw.length > 200) return '';
+  if (!/^[\x21-\x7E]+$/.test(raw)) return '';
+  return raw;
+}
+
+function mailConfigured(env = {}) {
+  return Boolean(resendApiKey(env) && fromEmail(env) && notifyTo(env));
+}
+
+function enquiryEmail(data, env = {}) {
+  const from = fromEmail(env);
+  const to = notifyTo(env);
+  const lines = [
+    `Name: ${data.name}`,
+    `Email: ${data.email}`,
+    `Business: ${data.business || '(not given)'}`,
+    '',
+    'What keeps slipping:',
+    data.message || '(not given)',
+    '',
+    `Source: ${CANONICAL_SOURCE}`,
+    `Submitted: ${data.submitted_at}`,
+  ];
+  return {
+    from: `Brackstone <${from}>`,
+    to: [to],
+    reply_to: data.email,
+    subject: clean(`New enquiry: ${data.name}`, 200),
+    text: lines.join('\n'),
+  };
 }
 
 function allowedTurnstileHostnames(env = {}) {
@@ -264,15 +304,17 @@ async function verifyTurnstile(token, request, env) {
   return { ok: true, skipped: false };
 }
 
-function leadPayload(data) {
-  return {
-    name: data.name,
-    email: data.email,
-    business: data.business,
-    message: data.message,
-    source: CANONICAL_SOURCE,
-    submitted_at: data.submitted_at,
-  };
+async function sendEnquiryEmail(data, env) {
+  const apiKey = resendApiKey(env);
+  const payload = enquiryEmail(data, env);
+  return fetch(RESEND_EMAILS, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
 }
 
 export async function onRequestOptions({ request, env }) {
@@ -306,8 +348,7 @@ export async function onRequestPost({ request, env }) {
     return json({ error: 'That did not send. Please try again in a moment.' }, { status: 400 }, request, env);
   }
 
-  const forwardUrl = webhookUrl(env);
-  if (!forwardUrl) {
+  if (!mailConfigured(env)) {
     return json({ error: 'Enquiry forwarding is not configured' }, { status: 503 }, request, env);
   }
 
@@ -324,11 +365,7 @@ export async function onRequestPost({ request, env }) {
 
   let response;
   try {
-    response = await fetch(forwardUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(leadPayload(validation.data)),
-    });
+    response = await sendEnquiryEmail(validation.data, env);
   } catch (_err) {
     return json({ error: 'Enquiry could not be sent' }, { status: 502 }, request, env);
   }
@@ -352,16 +389,20 @@ export const onRequestPatch = methodNotAllowed;
 export const onRequestDelete = methodNotAllowed;
 
 export const __test = {
+  DEFAULT_FROM_EMAIL,
+  DEFAULT_NOTIFY_TO,
+  RESEND_EMAILS,
   TURNSTILE_ACTION,
   allowedOrigins,
   allowedTurnstileHostnames,
-  allowedWebhookHosts,
   corsHeaders,
-  leadPayload,
+  enquiryEmail,
+  fromEmail,
+  mailConfigured,
+  notifyTo,
   originAllowed,
   resetRateLimit,
   turnstileHostnameAllowed,
   validate,
   verifyTurnstile,
-  webhookUrl,
 };

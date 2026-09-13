@@ -4,7 +4,7 @@ import Nav from '../components/home/Nav.astro';
 import Footer from '../components/home/Footer.astro';
 
 // Browser posts here. The Cloudflare Pages function at /api/contact verifies the
-// honeypot and Turnstile token, then forwards only the existing n8n fields.
+// honeypot and Turnstile token, then emails Saeed via Resend.
 // Override with PUBLIC_CONTACT_ENDPOINT if the function is hosted elsewhere.
 const FORM_ENDPOINT = import.meta.env.PUBLIC_CONTACT_ENDPOINT
   || 'https://premier-housing-demo.pages.dev/api/contact';

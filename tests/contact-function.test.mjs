@@ -10,9 +10,9 @@ import {
 
 const endpoint = 'https://premier-housing-demo.pages.dev/api/contact';
 const allowedOrigin = 'https://brackstonedigital.co.uk';
-const n8nWebhook = 'https://primary-production-64370.up.railway.app/webhook/brackstone-lead';
 const env = {
   TURNSTILE_SECRET_KEY: 'test-turnstile-secret-not-real',
+  RESEND_API_KEY: 're_test_key_not_real',
 };
 const validPayload = {
   name: 'Sarah Johnson',
@@ -44,18 +44,31 @@ async function responseJson(response) {
   return JSON.parse(await response.text());
 }
 
-function mockFetch({ turnstile = { success: true, hostname: 'brackstonedigital.co.uk', action: __test.TURNSTILE_ACTION }, n8nStatus = 200 } = {}) {
+function mockFetch({
+  turnstile = { success: true, hostname: 'brackstonedigital.co.uk', action: __test.TURNSTILE_ACTION },
+  resendStatus = 200,
+} = {}) {
   const calls = [];
   globalThis.fetch = async (url, init = {}) => {
     const href = String(url);
+    if (/railway\.app|n8n|brackstone-lead/i.test(href)) {
+      throw new Error(`n8n must not be called: ${href}`);
+    }
     const body = init.body ? JSON.parse(init.body) : null;
     calls.push({ href, init, body });
     if (href.includes('challenges.cloudflare.com/turnstile/v0/siteverify')) {
       return new Response(JSON.stringify(turnstile), { status: 200 });
     }
-    return new Response('{"ok":true}', { status: n8nStatus });
+    if (href === __test.RESEND_EMAILS) {
+      return new Response(JSON.stringify({ id: 'email_test' }), { status: resendStatus });
+    }
+    throw new Error(`unexpected fetch: ${href}`);
   };
   return calls;
+}
+
+function resendCalls(calls) {
+  return calls.filter((call) => call.href === __test.RESEND_EMAILS);
 }
 
 beforeEach(() => {
@@ -89,7 +102,7 @@ test('answers an allowed browser preflight and rejects other origins', async () 
   assert.equal(rejected.headers.get('Access-Control-Allow-Origin'), null);
 });
 
-test('rejects originless and disallowed POSTs before forwarding', async () => {
+test('rejects originless and disallowed POSTs before sending', async () => {
   const calls = mockFetch();
 
   const originless = await onRequestPost({
@@ -106,7 +119,7 @@ test('rejects originless and disallowed POSTs before forwarding', async () => {
   assert.equal(calls.length, 0);
 });
 
-test('silently accepts the honeypot without verifying Turnstile or forwarding', async () => {
+test('silently accepts the honeypot without verifying Turnstile or sending mail', async () => {
   const calls = mockFetch();
 
   const response = await onRequestPost({
@@ -142,7 +155,7 @@ test('validates required fields and body type', async () => {
   assert.equal(calls.length, 0);
 });
 
-test('rejects an oversized request before forwarding', async () => {
+test('rejects an oversized request before sending', async () => {
   const calls = mockFetch();
 
   const response = await onRequestPost({
@@ -176,6 +189,7 @@ test('rejects a missing or failed Turnstile token when the secret is configured'
   });
   assert.equal(failedCalls.length, 1);
   assert.match(failedCalls[0].href, /siteverify/);
+  assert.equal(resendCalls(failedCalls).length, 0);
 });
 
 test('rejects a Turnstile success with the wrong action or hostname', async () => {
@@ -184,14 +198,14 @@ test('rejects a Turnstile success with the wrong action or hostname', async () =
   });
   const wrongAction = await onRequestPost({ request: request(), env });
   assert.equal(wrongAction.status, 400);
-  assert.equal(actionCalls.filter((call) => call.href.includes(n8nWebhook)).length, 0);
+  assert.equal(resendCalls(actionCalls).length, 0);
 
   const hostCalls = mockFetch({
     turnstile: { success: true, hostname: 'evil.example', action: __test.TURNSTILE_ACTION },
   });
   const wrongHost = await onRequestPost({ request: request(), env });
   assert.equal(wrongHost.status, 400);
-  assert.equal(hostCalls.filter((call) => call.href.includes(n8nWebhook)).length, 0);
+  assert.equal(resendCalls(hostCalls).length, 0);
 });
 
 test('accepts the widget field name for the Turnstile token', async () => {
@@ -212,7 +226,7 @@ test('accepts the widget field name for the Turnstile token', async () => {
   assert.equal(calls[0].body.remoteip, '203.0.113.10');
 });
 
-test('forwards only the existing n8n fields after a successful Turnstile check', async () => {
+test('emails Saeed via Resend after a successful Turnstile check', async () => {
   const calls = mockFetch();
 
   const response = await onRequestPost({
@@ -220,73 +234,93 @@ test('forwards only the existing n8n fields after a successful Turnstile check',
       ...validPayload,
       website: '',
       recipient: 'attacker@evil.example',
+      phone: '07700900310',
     }),
     env,
   });
 
   assert.equal(response.status, 200);
-  assert.deepEqual(await responseJson(response), { ok: true });
+  const body = await responseJson(response);
+  assert.deepEqual(body, { ok: true });
   assert.equal(calls.length, 2);
   assert.match(calls[0].href, /siteverify/);
-  assert.equal(calls[1].href, n8nWebhook);
+  assert.equal(calls[1].href, 'https://api.resend.com/emails');
+  assert.equal(calls[1].init.headers.Authorization, `Bearer ${env.RESEND_API_KEY}`);
   assert.deepEqual(calls[1].body, {
-    name: 'Sarah Johnson',
-    email: 'sarah@company.co.uk',
-    business: 'letting agent',
-    message: 'Missed calls and quotes nobody chased.',
-    source: 'brackstonedigital.co.uk/contact',
-    submitted_at: '2026-09-13T12:00:00.000Z',
+    from: 'Brackstone <noreply@brackstonedigital.co.uk>',
+    to: ['saeed@brackstonedigital.co.uk'],
+    reply_to: 'sarah@company.co.uk',
+    subject: 'New enquiry: Sarah Johnson',
+    text: [
+      'Name: Sarah Johnson',
+      'Email: sarah@company.co.uk',
+      'Business: letting agent',
+      '',
+      'What keeps slipping:',
+      'Missed calls and quotes nobody chased.',
+      '',
+      'Source: brackstonedigital.co.uk/contact',
+      'Submitted: 2026-09-13T12:00:00.000Z',
+    ].join('\n'),
   });
-  assert.equal('website' in calls[1].body, false);
-  assert.equal('turnstile_token' in calls[1].body, false);
-  assert.equal('cf-turnstile-response' in calls[1].body, false);
-  assert.equal('recipient' in calls[1].body, false);
+  assert.equal(JSON.stringify(calls[1].body).includes('attacker@evil.example'), false);
+  assert.equal(JSON.stringify(calls[1].body).includes('07700900310'), false);
+  assert.equal(JSON.stringify(calls[1].body).includes(env.RESEND_API_KEY), false);
+  assert.equal(JSON.stringify(body).includes(env.RESEND_API_KEY), false);
 });
 
-test('honeypot-only interim forwards when Turnstile is not configured', async () => {
+test('honeypot-only interim still emails via Resend when Turnstile is not configured', async () => {
   const calls = mockFetch();
 
   const response = await onRequestPost({
     request: request('POST', { ...validPayload, turnstile_token: '' }),
-    env: {},
+    env: { RESEND_API_KEY: env.RESEND_API_KEY },
   });
 
   assert.equal(response.status, 200);
   assert.equal(calls.length, 1);
-  assert.equal(calls[0].href, n8nWebhook);
-  assert.equal(calls[0].body.email, 'sarah@company.co.uk');
+  assert.equal(calls[0].href, 'https://api.resend.com/emails');
+  assert.equal(calls[0].body.reply_to, 'sarah@company.co.uk');
 });
 
-test('fails closed when the n8n webhook host is not allowlisted', async () => {
-  const calls = mockFetch();
-
-  const response = await onRequestPost({
+test('fails closed when Resend is missing or the mailbox is not on the verified domain', async () => {
+  const missingKey = mockFetch();
+  const missing = await onRequestPost({
     request: request(),
-    env: {
-      ...env,
-      N8N_LEAD_WEBHOOK_URL: 'https://evil.example/webhook/brackstone-lead',
-    },
+    env: { TURNSTILE_SECRET_KEY: env.TURNSTILE_SECRET_KEY },
   });
-
-  assert.equal(response.status, 503);
-  assert.deepEqual(await responseJson(response), {
+  assert.equal(missing.status, 503);
+  assert.deepEqual(await responseJson(missing), {
     error: 'Enquiry forwarding is not configured',
   });
-  assert.equal(calls.filter((call) => !call.href.includes('siteverify')).length, 0);
+  assert.equal(resendCalls(missingKey).length, 0);
+
+  const badFrom = mockFetch();
+  const wrongFrom = await onRequestPost({
+    request: request(),
+    env: { ...env, CONTACT_FROM_EMAIL: 'noreply@evil.example' },
+  });
+  assert.equal(wrongFrom.status, 503);
+  assert.equal(resendCalls(badFrom).length, 0);
+
+  const badTo = mockFetch();
+  const wrongTo = await onRequestPost({
+    request: request(),
+    env: { ...env, CONTACT_NOTIFY_TO: 'attacker@evil.example' },
+  });
+  assert.equal(wrongTo.status, 503);
+  assert.equal(resendCalls(badTo).length, 0);
 });
 
-test('webhookUrl keeps the live Railway path and rejects http', () => {
-  assert.equal(__test.webhookUrl({}), n8nWebhook);
-  assert.equal(
-    __test.webhookUrl({ N8N_LEAD_WEBHOOK_URL: 'http://primary-production-64370.up.railway.app/webhook/brackstone-lead' }),
-    ''
-  );
-  assert.equal(
-    __test.webhookUrl({
-      N8N_LEAD_WEBHOOK_URL: 'https://primary-production-64370.up.railway.app/webhook/brackstone-lead-rotated',
-    }),
-    'https://primary-production-64370.up.railway.app/webhook/brackstone-lead-rotated'
-  );
+test('fromEmail and notifyTo default to the verified Brackstone mailboxes', () => {
+  assert.equal(__test.fromEmail({}), 'noreply@brackstonedigital.co.uk');
+  assert.equal(__test.notifyTo({}), 'saeed@brackstonedigital.co.uk');
+  assert.equal(__test.fromEmail({ CONTACT_FROM_EMAIL: 'hello@brackstonedigital.co.uk' }), 'hello@brackstonedigital.co.uk');
+  assert.equal(__test.notifyTo({ CONTACT_NOTIFY_TO: 'hello@brackstonedigital.co.uk' }), 'hello@brackstonedigital.co.uk');
+  assert.equal(__test.fromEmail({ CONTACT_FROM_EMAIL: 'noreply@evil.example' }), '');
+  assert.equal(__test.notifyTo({ CONTACT_NOTIFY_TO: 'not-an-email' }), '');
+  assert.equal(__test.mailConfigured({}), false);
+  assert.equal(__test.mailConfigured({ RESEND_API_KEY: 're_test_key_not_real' }), true);
 });
 
 test('rate limits repeated real submissions but does not expose configuration', async () => {
@@ -304,7 +338,7 @@ test('rate limits repeated real submissions but does not expose configuration', 
 });
 
 test('returns a generic error for provider failures and blocks unsupported methods', async () => {
-  mockFetch({ n8nStatus: 500 });
+  mockFetch({ resendStatus: 500 });
   const failed = await onRequestPost({ request: request(), env });
   assert.equal(failed.status, 502);
   assert.deepEqual(await responseJson(failed), { error: 'Enquiry could not be sent' });

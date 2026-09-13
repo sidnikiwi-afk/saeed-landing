@@ -2,10 +2,11 @@
 
 ## Contact form spam protection
 
-The public teardown form at `/contact` no longer posts straight to the Railway
-n8n webhook. The browser posts JSON to the Cloudflare Pages Function at
-`https://premier-housing-demo.pages.dev/api/contact` (override with
-`PUBLIC_CONTACT_ENDPOINT`).
+The public teardown form at `/contact` posts JSON to the Cloudflare Pages
+Function at `https://premier-housing-demo.pages.dev/api/contact` (override
+with `PUBLIC_CONTACT_ENDPOINT`). After checks pass, the function emails
+`saeed@brackstonedigital.co.uk` through Resend. It does not call n8n or
+Railway.
 
 The source-controlled function is `functions/api/contact.js`. It:
 
@@ -14,13 +15,15 @@ The source-controlled function is `functions/api/contact.js`. It:
 - verifies a Cloudflare Turnstile token with Siteverify when
   `TURNSTILE_SECRET_KEY` is set, and runs honeypot-only until that secret exists;
 - applies a light per-isolate/IP rate limit;
-- forwards only the existing n8n fields (`name`, `email`, `business`,
-  `message`, `source`, `submitted_at`) to the live lead webhook;
-- never forwards the honeypot value or the Turnstile token;
+- sends one Resend email (`POST https://api.resend.com/emails`) with the
+  existing form fields (`name`, `email`, `business`, `message`) plus
+  `source` and `submitted_at`;
+- sets `Reply-To` to the visitor so Saeed can reply from his inbox;
+- never emails the honeypot value or the Turnstile token;
 - fails closed with generic errors and never returns its secrets.
 
-The n8n workflow is unchanged by this repository. Do not edit the live
-workflow until the function is deployed and the new form is live.
+The contact page does not collect a phone number, so the email does not
+include one.
 
 ### Env / secrets still needed
 
@@ -29,9 +32,10 @@ environment (Settings → Environment variables). Do not commit them.
 
 | Name | Where | Required for |
 | --- | --- | --- |
+| `RESEND_API_KEY` | Cloudflare Pages secret | Send the enquiry email. Without it the function returns 503. |
 | `TURNSTILE_SECRET_KEY` | Cloudflare Pages secret | Server-side Turnstile Siteverify |
-| `N8N_LEAD_WEBHOOK_URL` | Cloudflare Pages (optional) | Override the default Railway webhook after rotating the n8n path |
-| `N8N_LEAD_WEBHOOK_HOSTS` | Cloudflare Pages (optional) | Extra HTTPS hosts allowed after a webhook move |
+| `CONTACT_NOTIFY_TO` | Cloudflare Pages (optional) | Override the inbox. Default `saeed@brackstonedigital.co.uk`. Must be `@brackstonedigital.co.uk`. |
+| `CONTACT_FROM_EMAIL` | Cloudflare Pages (optional) | Override the verified sender. Default `noreply@brackstonedigital.co.uk`. Must be `@brackstonedigital.co.uk`. |
 | `CONTACT_ALLOWED_ORIGINS` | Cloudflare Pages (optional) | Extra HTTPS origins for local / preview |
 | `TURNSTILE_ALLOWED_HOSTNAMES` | Cloudflare Pages (optional) | Extra hostnames accepted from Siteverify |
 | `PUBLIC_TURNSTILE_SITE_KEY` | GitHub Actions **variable** (not a secret) | Renders the Turnstile widget on the static contact page |
@@ -43,24 +47,25 @@ Use a **managed** widget. The page sends `data-action="brackstone-contact"`.
 
 Until `PUBLIC_TURNSTILE_SITE_KEY` is set on the GitHub Pages build, the page
 ships honeypot-only (no widget). Until `TURNSTILE_SECRET_KEY` is set on the
-function, the function also stays honeypot-only and still hides the n8n URL
-from new HTML.
+function, the function also stays honeypot-only. Mail still requires
+`RESEND_API_KEY`.
 
-### Manual n8n steps (do not click until Saeed approves)
+`brackstonedigital.co.uk` is the verified Resend sending domain (eu-west-1).
+Do not point `CONTACT_FROM_EMAIL` at any other domain.
 
-The live workflow is `iL6PCYVnJNDAqMgU` ("Brackstone Lead Intake"). This PR
-does not change it. After the function is deployed and real human leads still
-arrive:
+### Cutover (do not deploy from this PR)
 
-1. Open the Webhook node that currently listens on `/webhook/brackstone-lead`.
-2. Create a **new** production path (do not keep publishing the old URL in HTML).
-3. Put the new HTTPS URL in Cloudflare Pages as `N8N_LEAD_WEBHOOK_URL`.
-4. Confirm one real test lead still emails `saeed@`.
-5. Only then disable or delete the old webhook path so bots that already
-   scraped it stop getting through.
-
-Do not add Turnstile verification inside n8n unless the Pages function cannot
-be deployed. Verification lives in `functions/api/contact.js`.
+1. Create a Resend API key that can send from `brackstonedigital.co.uk`.
+2. Set `RESEND_API_KEY` (and optionally `TURNSTILE_SECRET_KEY`) on
+   `premier-housing-demo` production.
+3. Deploy `functions/` to that Pages project (same wrangler path as Premier
+   Housing).
+4. Set `PUBLIC_TURNSTILE_SITE_KEY` on the GitHub repo if the widget should
+   render, then merge so GitHub Pages rebuilds `/contact` against the live
+   function.
+5. Send one real human test lead and confirm the email arrives for Saeed.
+6. After that, the old Railway n8n webhook can be left unused. This repo no
+   longer calls it.
 
 ### Local checks
 
