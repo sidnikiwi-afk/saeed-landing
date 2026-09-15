@@ -269,19 +269,21 @@ test('emails Saeed via Resend after a successful Turnstile check', async () => {
   assert.equal(JSON.stringify(body).includes(env.RESEND_API_KEY), false);
 });
 
-test('honeypot-only interim still emails via Resend when Turnstile is not configured', async () => {
-  const calls = mockFetch();
+for (const secret of [undefined, '', '   ']) {
+  test(`rejects contact submissions with an unconfigured Turnstile secret (${JSON.stringify(secret)})`, async () => {
+    const calls = mockFetch();
+    const response = await onRequestPost({
+      request: request(),
+      env: { RESEND_API_KEY: env.RESEND_API_KEY, TURNSTILE_SECRET_KEY: secret },
+    });
 
-  const response = await onRequestPost({
-    request: request('POST', { ...validPayload, turnstile_token: '' }),
-    env: { RESEND_API_KEY: env.RESEND_API_KEY },
+    assert.equal(response.status, 400);
+    assert.deepEqual(await responseJson(response), {
+      error: 'That did not send. Please try again in a moment.',
+    });
+    assert.equal(calls.length, 0, 'must not call Siteverify or send mail without a secret');
   });
-
-  assert.equal(response.status, 200);
-  assert.equal(calls.length, 1);
-  assert.equal(calls[0].href, 'https://api.resend.com/emails');
-  assert.equal(calls[0].body.reply_to, 'sarah@company.co.uk');
-});
+}
 
 test('fails closed when Resend is missing or the mailbox is not on the verified domain', async () => {
   const missingKey = mockFetch();

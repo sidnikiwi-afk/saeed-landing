@@ -279,7 +279,7 @@ function turnstileHostnameAllowed(hostname, env = {}) {
 
 async function verifyTurnstile(token, request, env) {
   const secret = configured(env, 'TURNSTILE_SECRET_KEY');
-  if (!secret) return { ok: true, skipped: true };
+  if (!secret) return { ok: false, skipped: false };
   if (!token) return { ok: false, skipped: false };
 
   let result;
