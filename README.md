@@ -12,8 +12,9 @@ The source-controlled function is `functions/api/contact.js`. It:
 
 - accepts only allowlisted HTTPS origins;
 - silently absorbs honeypot submissions (`website` filled);
-- verifies a Cloudflare Turnstile token with Siteverify when
-  `TURNSTILE_SECRET_KEY` is set, and runs honeypot-only until that secret exists;
+- requires `TURNSTILE_SECRET_KEY` and a successful Cloudflare Turnstile
+  Siteverify check before forwarding a real enquiry; missing or blank secrets
+  reject the request without contacting Siteverify or Resend;
 - applies a light per-isolate/IP rate limit;
 - sends one Resend email (`POST https://api.resend.com/emails`) with the
   existing form fields (`name`, `email`, `business`, `message`) plus
@@ -45,27 +46,34 @@ Create the widget in Cloudflare Dashboard → Turnstile. Add
 `brackstonedigital.co.uk` and `www.brackstonedigital.co.uk` as hostnames.
 Use a **managed** widget. The page sends `data-action="brackstone-contact"`.
 
-Until `PUBLIC_TURNSTILE_SITE_KEY` is set on the GitHub Pages build, the page
-ships honeypot-only (no widget). Until `TURNSTILE_SECRET_KEY` is set on the
-function, the function also stays honeypot-only. Mail still requires
-`RESEND_API_KEY`.
+Both keys are required for a working contact form. `PUBLIC_TURNSTILE_SITE_KEY`
+is baked into the GitHub Pages build. `TURNSTILE_SECRET_KEY` must be bound to
+the active Cloudflare Pages Functions deployment. Saving a Pages secret alone
+does not update an existing deployment: redeploy the reviewed artifact and
+verify the new production deployment contains the binding. Mail also requires
+`RESEND_API_KEY`. Never alter the existing Resend or Premier enquiry secrets
+when deploying this contact-form change.
 
 `brackstonedigital.co.uk` is the verified Resend sending domain (eu-west-1).
 Do not point `CONTACT_FROM_EMAIL` at any other domain.
 
-### Cutover (do not deploy from this PR)
+### Contact deployment verification
 
-1. Create a Resend API key that can send from `brackstonedigital.co.uk`.
-2. Set `RESEND_API_KEY` (and optionally `TURNSTILE_SECRET_KEY`) on
-   `premier-housing-demo` production.
-3. Deploy `functions/` to that Pages project (same wrangler path as Premier
-   Housing).
-4. Set `PUBLIC_TURNSTILE_SITE_KEY` on the GitHub repo if the widget should
-   render, then merge so GitHub Pages rebuilds `/contact` against the live
-   function.
-5. Send one real human test lead and confirm the email arrives for Saeed.
-6. After that, the old Railway n8n webhook can be left unused. This repo no
-   longer calls it.
+1. Confirm the existing `RESEND_API_KEY` is configured; do not replace it.
+2. Set `TURNSTILE_SECRET_KEY` on `premier-housing-demo` production.
+3. After review and merge, deploy the exact merged artifact using the Premier
+   Housing deployment command below. Preserve every other production binding.
+4. Confirm Cloudflare reports a successful production deployment for that SHA
+   with `TURNSTILE_SECRET_KEY` bound. Check names/types without logging values.
+5. Set `PUBLIC_TURNSTILE_SITE_KEY` on the GitHub repository and rebuild GitHub
+   Pages. Verify the live `/contact/` HTML contains the matching nonempty key.
+6. Verify missing and invalid tokens return HTTP 400, without forwarding mail.
+7. Submit one labelled browser test with valid Turnstile verification and
+   confirm both the success screen and delivery of the enquiry email.
+
+If rolling back, use a reviewed deployment that retains required Turnstile
+verification and its secret binding. A deployment that accepts invalid tokens
+is not a safe rollback target.
 
 ### Local checks
 
@@ -75,7 +83,6 @@ npm run test:contact
 
 The function is deployed with the existing Premier Housing Pages artifact
 (`functions/` is picked up from the repo root on `wrangler pages deploy`).
-Do not deploy from this PR.
 
 ## Premier Housing enquiry bridge
 
