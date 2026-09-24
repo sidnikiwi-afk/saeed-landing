@@ -1,7 +1,5 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Nav from '../components/home/Nav.astro';
-import Footer from '../components/home/Footer.astro';
+import BrandLayout from '../layouts/BrandLayout.astro';
 
 // Browser posts here. The Cloudflare Pages function at /api/contact verifies the
 // honeypot and Turnstile token, then emails Saeed via Resend.
@@ -17,28 +15,12 @@ const reassurances = [
 ];
 ---
 
-<Layout
-  title="Book a teardown - Brackstone"
+<BrandLayout
+  title="Book a teardown | Brackstone Digital"
   description="Tell us what your team keeps dropping. We map where your enquiries leak, show you what we would automate first, and say plainly if we are not the right fit."
+  home="/"
 >
-  <style is:global>
-    html { scroll-behavior: smooth; }
-    body {
-      background: var(--color-brand-bg) !important;
-      color: var(--color-brand-text) !important;
-      font-family: var(--font-body) !important;
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-    h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading) !important; }
-    ::selection { background: var(--color-brand-primary); color: #fff; }
-  </style>
-
-  <Nav base="/" />
-
   <main class="contact">
-    <div class="contact-bg" aria-hidden="true"></div>
     <div class="contact-inner">
       <div class="contact-copy">
         <span class="eyebrow">Book a teardown</span>
@@ -129,31 +111,15 @@ const reassurances = [
       </div>
     </div>
   </main>
-
-  <Footer base="/" />
-</Layout>
+</BrandLayout>
 
 <style>
-  @reference "../styles/global.css";
-
   .contact {
-    position: relative;
-    padding: 9rem 1.5rem 5rem;
-    overflow: hidden;
-    background: var(--color-brand-bg);
-  }
-  .contact-bg {
-    position: absolute;
-    inset: -10% -5% 40% -5%;
-    background:
-      radial-gradient(55% 60% at 20% 0%, rgba(110, 72, 240, 0.15), transparent 70%),
-      radial-gradient(40% 50% at 90% 10%, rgba(0, 200, 150, 0.08), transparent 70%);
-    pointer-events: none;
+    flex: 1;
+    padding: 3.5rem 1.25rem 5rem;
   }
   .contact-inner {
-    position: relative;
-    z-index: 2;
-    max-width: 1080px;
+    width: min(1140px, 100%);
     margin: 0 auto;
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -165,24 +131,23 @@ const reassurances = [
     display: inline-block;
     font-size: 0.76rem;
     font-weight: 600;
-    color: var(--color-brand-primary);
+    color: var(--brand-purple);
     letter-spacing: 0.08em;
     text-transform: uppercase;
     margin-bottom: 0.9rem;
   }
   .headline {
-    font-family: var(--font-heading);
-    font-weight: 600;
+    font-weight: 700;
     font-size: clamp(2rem, 4vw, 3rem);
     line-height: 1.08;
     letter-spacing: -0.02em;
-    color: var(--color-brand-ink);
+    color: var(--brand-ink);
     margin: 0 0 1.1rem;
     text-wrap: balance;
   }
   .grad {
     display: block;
-    background: linear-gradient(100deg, var(--color-brand-primary), var(--color-brand-accent));
+    background: linear-gradient(100deg, var(--brand-purple), var(--brand-mint));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -190,7 +155,7 @@ const reassurances = [
   .lede {
     font-size: 1.04rem;
     line-height: 1.62;
-    color: var(--color-brand-muted);
+    color: var(--brand-muted);
     margin: 0 0 2rem;
     max-width: 30rem;
   }
@@ -207,7 +172,7 @@ const reassurances = [
     gap: 0.6rem;
     font-size: 0.9rem;
     line-height: 1.5;
-    color: var(--color-brand-muted);
+    color: var(--brand-muted);
   }
   .tick {
     flex: none;
@@ -218,16 +183,16 @@ const reassurances = [
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: color-mix(in srgb, var(--color-brand-accent) 16%, transparent);
-    color: var(--color-brand-accent);
+    background: var(--brand-purple-soft);
+    color: var(--brand-purple);
   }
 
   .form-card {
-    background: var(--color-brand-surface);
-    border: 1px solid var(--color-brand-line);
+    background: #fff;
+    border: 1px solid var(--brand-line);
     border-radius: 14px;
     padding: 1.9rem;
-    box-shadow: 0 24px 60px -34px rgba(10, 10, 11, 0.35);
+    box-shadow: 0 24px 60px -34px rgba(10, 10, 20, 0.35);
   }
   .form {
     position: relative;
@@ -240,33 +205,33 @@ const reassurances = [
   }
   .field label {
     font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--color-brand-ink);
+    font-weight: 600;
+    color: var(--brand-ink);
   }
   .field input,
   .field textarea {
     width: 100%;
-    background: var(--color-brand-bg);
-    border: 1px solid var(--color-brand-line);
-    border-radius: 9px;
+    background: var(--brand-bg);
+    border: 1px solid var(--brand-line);
+    border-radius: 11px;
     padding: 0.75rem 0.9rem;
-    font-family: var(--font-body);
+    font-family: inherit;
     font-size: 0.94rem;
-    color: var(--color-brand-ink);
-    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    color: var(--brand-ink);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     outline: none;
   }
   .field textarea { resize: vertical; min-height: 104px; }
   .field input::placeholder,
-  .field textarea::placeholder { color: color-mix(in srgb, var(--color-brand-muted) 60%, transparent); }
+  .field textarea::placeholder { color: var(--brand-muted); opacity: 0.7; }
   .field input:focus,
   .field textarea:focus {
-    border-color: var(--color-brand-primary);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-primary) 14%, transparent);
+    border-color: var(--brand-purple);
+    box-shadow: 0 0 0 3px var(--brand-purple-soft);
   }
   .field input[aria-invalid='true'],
   .field textarea[aria-invalid='true'] {
-    border-color: color-mix(in srgb, var(--color-brand-primary) 55%, #c0392b);
+    border-color: #c0392b;
   }
   .hp {
     position: absolute;
@@ -277,50 +242,51 @@ const reassurances = [
   }
   .turnstile { min-height: 1px; }
 
-  /* Same shape and weight as the primary buttons on the homepage. */
+  /* Same shape and weight as the primary buttons in the brand nav. */
   .submit {
     justify-self: start;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.85rem 1.4rem;
-    border: none;
-    border-radius: 9px;
-    background: var(--color-brand-primary);
+    padding: 0.75rem 1.125rem;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    background: var(--brand-ink);
     color: #fff;
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    font-weight: 500;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.2;
     cursor: pointer;
-    transition: background 0.18s ease, transform 0.18s ease;
+    transition: background 0.2s ease, transform 0.2s ease;
   }
   .submit:hover:not(:disabled) {
-    background: var(--color-brand-primary-2);
+    background: #1f1c33;
     transform: translateY(-1px);
   }
   .submit:focus-visible {
-    outline: 2px solid var(--color-brand-primary);
-    outline-offset: 3px;
+    outline: 2px solid var(--brand-purple);
+    outline-offset: 2px;
   }
   .submit:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
 
   .privacy {
     font-size: 0.78rem;
     line-height: 1.55;
-    color: var(--color-brand-muted);
+    color: var(--brand-muted);
     margin: 0;
   }
-  .privacy a { color: var(--color-brand-muted); text-decoration: underline; }
-  .privacy a:hover { color: var(--color-brand-ink); }
+  .privacy a { color: var(--brand-muted); text-decoration: underline; }
+  .privacy a:hover { color: var(--brand-ink); }
 
   .error {
     margin: 0;
     padding: 0.7rem 0.85rem;
-    border-radius: 9px;
-    border: 1px solid color-mix(in srgb, #c0392b 30%, var(--color-brand-line));
+    border-radius: 11px;
+    border: 1px solid color-mix(in srgb, #c0392b 30%, var(--brand-line));
     background: color-mix(in srgb, #c0392b 6%, transparent);
     font-size: 0.85rem;
-    color: var(--color-brand-ink);
+    color: var(--brand-ink);
   }
   .error[hidden] { display: none; }
 
@@ -333,26 +299,25 @@ const reassurances = [
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: color-mix(in srgb, var(--color-brand-accent) 15%, transparent);
-    color: var(--color-brand-accent);
+    background: var(--brand-purple-soft);
+    color: var(--brand-purple);
     margin-bottom: 1rem;
   }
   .success-title {
-    font-family: var(--font-heading);
     font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--color-brand-ink);
+    font-weight: 700;
+    color: var(--brand-ink);
     margin: 0 0 0.5rem;
   }
   .success-body {
     font-size: 0.94rem;
     line-height: 1.6;
-    color: var(--color-brand-muted);
+    color: var(--brand-muted);
     margin: 0;
   }
 
   @media (max-width: 900px) {
-    .contact { padding: 7.5rem 1.25rem 3.5rem; }
+    .contact { padding: 2.5rem 1.25rem 3.5rem; }
     .contact-inner { grid-template-columns: minmax(0, 1fr); gap: 2.5rem; }
     .lede { max-width: none; }
     .form-card { padding: 1.5rem 1.25rem; }
