@@ -73,6 +73,82 @@ function isPremierHousingDemo(relPath) {
   return relPath.split('/').some((part) => part.startsWith('premier-housing-demo'));
 }
 
+function decodeAttr(value) {
+  return decodeHtmlEntities(value)
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>');
+}
+
+export function anchors(html) {
+  const found = [];
+  const re = /<a\b([^>]*)>([\s\S]*?)<\/a>/gi;
+  for (const match of html.matchAll(re)) {
+    const hrefMatch = match[1].match(/href\s*=\s*(["'])(.*?)\1/i);
+    if (!hrefMatch) continue;
+    const text = decodeHtmlEntities(match[2].replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+    found.push({ href: decodeAttr(hrefMatch[2]), text });
+  }
+  return found;
+}
+
+function anchorHref(html, label) {
+  const found = anchors(html).filter((anchor) => anchor.text === label);
+  if (found.length !== 1) {
+    throw new Error(`expected one "${label}" link, found ${found.length}`);
+  }
+  return found[0].href;
+}
+
+// Homepage hero contract: teardown goes to the contact page, and the trial
+// link carries homepage UTM tags plus a placement in utm_content.
+export function heroLinkProblems(html) {
+  const problems = [];
+  let teardown = '';
+  let trialHref = '';
+  try {
+    teardown = anchorHref(html, 'Book a 15-minute teardown');
+  } catch (error) {
+    problems.push(error.message);
+  }
+  try {
+    trialHref = anchorHref(html, 'Start a free trial');
+  } catch (error) {
+    problems.push(error.message);
+  }
+  if (teardown && teardown !== '/contact/') {
+    problems.push(`teardown button points at ${teardown}, expected /contact/`);
+  }
+  if (trialHref) {
+    let trial;
+    try {
+      trial = new URL(trialHref);
+    } catch {
+      problems.push(`trial button is not an absolute URL: ${trialHref}`);
+      trial = null;
+    }
+    if (trial) {
+      const path = trial.pathname.replace(/\/$/, '') || '/';
+      if (trial.origin !== 'https://dashboard.brackstonedigital.co.uk' || path !== '/trial-request') {
+        problems.push(`trial button points at ${trial.origin}${path}, expected the dashboard trial request`);
+      }
+      if (trial.searchParams.get('utm_source') !== 'website') {
+        problems.push('trial link is missing utm_source=website');
+      }
+      if (trial.searchParams.get('utm_medium') !== 'homepage') {
+        problems.push('trial link is missing utm_medium=homepage');
+      }
+      const placement = trial.searchParams.get('utm_content');
+      if (!placement || !placement.trim()) {
+        problems.push('trial link is missing a placement utm_content');
+      }
+    }
+  }
+  return problems;
+}
+
 function isCopiedFromPublic(relPath) {
   const top = relPath.split('/')[0];
   if (!top || top === 'index.html') return false;
@@ -94,6 +170,30 @@ test('copy scanner flags em dashes, emoji, and banned tool names', () => {
   assert.deepEqual(copyProblems('we make admin easier'), []);
   assert.ok(copyProblems('We use Make here.').some((problem) => problem.includes('Make')));
   assert.deepEqual(copyProblems('Hello \u2014 there', 'privacy/index.html'), []);
+});
+
+test('hero link checker rejects a bad teardown or a trial link without UTM tags', () => {
+  const good = [
+    '<a href="/contact/">Book a 15-minute teardown</a>',
+    '<a href="https://dashboard.brackstonedigital.co.uk/trial-request?utm_source=website&amp;utm_medium=homepage&amp;utm_content=hero">Start a free trial</a>',
+  ].join('');
+  assert.deepEqual(heroLinkProblems(good), []);
+  assert.deepEqual(heroLinkProblems(good.replaceAll('&amp;', '&#38;')), []);
+
+  const wrongTeardown = good.replace('href="/contact/"', 'href="/book/"');
+  assert.ok(heroLinkProblems(wrongTeardown).some((problem) => problem.includes('/contact/')));
+
+  const wrongTrial = good.replace('/trial-request', '/login');
+  assert.ok(heroLinkProblems(wrongTrial).some((problem) => problem.includes('trial request')));
+
+  const missingPlacement = good.replace('&amp;utm_content=hero', '');
+  assert.ok(heroLinkProblems(missingPlacement).some((problem) => problem.includes('utm_content')));
+
+  const missingMedium = good.replace('utm_medium=homepage', 'utm_medium=email');
+  assert.ok(heroLinkProblems(missingMedium).some((problem) => problem.includes('utm_medium')));
+
+  const missingSource = good.replace('utm_source=website', 'utm_source=google');
+  assert.ok(heroLinkProblems(missingSource).some((problem) => problem.includes('utm_source')));
 });
 
 test('built site hides the preview and keeps copy clean', () => {
@@ -123,6 +223,16 @@ test('built site hides the preview and keeps copy clean', () => {
   assert.match(previewHtml, /\/fonts\/GeistMono-Variable\.woff2/);
   assert.doesNotMatch(previewHtml, /fonts\.googleapis\.com/);
   assert.doesNotMatch(previewHtml, /<script\b/i);
+  assert.deepEqual(heroLinkProblems(previewHtml), []);
+  assert.match(previewHtml, /Every enquiry handled/);
+  assert.match(previewHtml, /Running on its own/);
+  assert.match(previewHtml, /Calls, emails, web forms/);
+  assert.match(previewHtml, /Quote for a rewire/);
+  assert.match(previewHtml, /Book a viewing/);
+  assert.match(previewHtml, /Booking line, how can I help/);
+  assert.match(previewHtml, /Email read/);
+  assert.match(previewHtml, /Form received/);
+  assert.match(previewHtml, /Answered on first ring/);
 
   const homeHtml = readFileSync(join(dist, 'index.html'), 'utf8');
   assert.match(homeHtml, /fonts\.googleapis\.com/);
