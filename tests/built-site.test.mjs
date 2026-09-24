@@ -223,10 +223,6 @@ test('ads links and demo line follow the page settings', async () => {
   assert.equal(new URL(attrs.get('href')).searchParams.get('utm_content'), 'hero');
 });
 
-function decodeAttr(value) {
-  return decodeHtmlEntities(value).replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
-}
-
 function trialHrefs(html) {
   const hrefs = [];
   const re = /href="(https:\/\/dashboard\.brackstonedigital\.co\.uk\/trial-request[^"]*)"/g;
