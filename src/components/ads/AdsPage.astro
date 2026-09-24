@@ -1,0 +1,1027 @@
+---
+import IllustrativeCaption from '../brand/IllustrativeCaption.astro';
+import { adsSettings } from '../../data/ads/settings.mjs';
+import { adsVisibility, trialHref } from '../../lib/ads-page.mjs';
+
+const { content } = Astro.props;
+const visibility = adsVisibility(adsSettings);
+const year = 2026;
+
+function trialAttrs(placement) {
+  return {
+    href: trialHref({
+      campaign: content.utmCampaign,
+      placement,
+      vertical: content.vertical,
+    }),
+    'data-trial': placement,
+    'data-campaign': content.utmCampaign,
+    'data-vertical': content.vertical,
+  };
+}
+---
+
+<div class="page">
+  <header class="hd">
+    <div class="wrap bar">
+      <a class="logo" href={`/${content.slug}/`}>
+        <span class="mark" aria-hidden="true">B</span>
+        Brackstone
+      </a>
+      <div class="actions">
+        {visibility.showCall && (
+          <a class="call" href={visibility.callHref}>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"></path>
+            </svg>
+            <span>Call {visibility.phone}</span>
+          </a>
+        )}
+        <a class="btn solid header-trial" {...trialAttrs('header')}>Start free trial</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <p class="kick">{content.eyebrow}</p>
+          <h1>{content.headline}. <span>{content.headlineAccent}</span></h1>
+          <p class="sub">{content.intro}</p>
+          <ul class="ticks">
+            {content.trialPromise.map((point) => <li>{point}</li>)}
+          </ul>
+          <div class="ctas">
+            <a class="btn solid" {...trialAttrs('hero')}>Start a free trial</a>
+            <a class="btn line" href="#example">See an example call</a>
+          </div>
+          <ul class="micro">
+            {content.micro.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+        <div class="example" id="example">
+          <div class="phone">
+            <div class="screen">
+              <div class="callhead">
+                <p class="live">{content.example.status}</p>
+                <p class="calltitle">{content.example.title}</p>
+              </div>
+              <div class="transcript">
+                {content.example.lines.map((line) => (
+                  <p class:list={['line', line.from]}>{line.text}</p>
+                ))}
+              </div>
+              <dl class="booking">
+                {content.example.booking.map((item) => (
+                  <div>
+                    <dt>{item.label}</dt>
+                    <dd>{item.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </div>
+          <IllustrativeCaption>Names in this call are made up.</IllustrativeCaption>
+        </div>
+      </div>
+    </section>
+
+    <section class="strip" aria-label="What the trial covers">
+      <ul class="wrap strip-grid">
+        {content.strip.map((item) => (
+          <li>
+            <strong>{item.title}</strong>
+            <span>{item.text}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="block">
+      <div class="wrap split">
+        <div>
+          <p class="eyebrow">The problem</p>
+          <h2>{content.problem.heading}</h2>
+          <p class="lead">{content.problem.text}</p>
+        </div>
+        <div>
+          <ul class="missed">
+            {content.problem.missed.map((item) => (
+              <li>
+                <span>
+                  <strong>{item.title}</strong>
+                  <small>{item.when}</small>
+                </span>
+                <em>Missed</em>
+              </li>
+            ))}
+          </ul>
+          <IllustrativeCaption>These missed calls are made up.</IllustrativeCaption>
+        </div>
+      </div>
+    </section>
+
+    <section class="block tight">
+      <div class="wrap">
+        <p class="eyebrow">How it works</p>
+        <h2>{content.howItWorks.heading}</h2>
+        <ol class="steps">
+          {content.howItWorks.steps.map((step, index) => (
+            <li>
+              <span class="num">{index + 1}</span>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <section class="block tight">
+      <div class="wrap">
+        <p class="eyebrow">Built for garages</p>
+        <h2>It knows what a garage caller needs.</h2>
+        <ul class="features">
+          {content.featureCards.map((card) => (
+            <li>
+              <span class="kicker">{card.kicker}</span>
+              <h3>{card.title}</h3>
+              <p>{card.text}</p>
+            </li>
+          ))}
+        </ul>
+        {content.setupOffer && (
+          <p class="setup"><span>Setup offer.</span> {content.setupOffer}</p>
+        )}
+      </div>
+    </section>
+
+    {visibility.showPrice && (
+      <section class="block tight">
+        <div class="wrap">
+          <div class="price">
+            <div>
+              <p class="eyebrow">Simple pricing</p>
+              <p class="amount">From £{visibility.price} <small>a month</small></p>
+              <p class="lead">Try it free first. No card needed, and we set it up for you.</p>
+              <a class="btn solid" {...trialAttrs('pricing')}>Start a free trial</a>
+            </div>
+            <ul class="includes">
+              {(content.priceIncludes ?? []).map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+        </div>
+      </section>
+    )}
+
+    <section class="block tight">
+      <div class="wrap faq">
+        <p class="eyebrow">Questions</p>
+        <h2>Before you try it.</h2>
+        {content.faq.map((item, index) => (
+          <details open={index === 0}>
+            <summary>{item.question}</summary>
+            <p>{item.answer}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <section class="final">
+      <div class="wrap">
+        <h2>{content.final.heading}</h2>
+        <p>{content.final.text}</p>
+        <a class="btn solid final-btn" {...trialAttrs('final')}>Start a free trial</a>
+        <p class="more">Want more than calls? <a href="/contact">Book a 15-minute teardown</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">
+      <p>&copy; {year} Brackstone Digital Limited. Registered in England and Wales, company no. 17159711.</p>
+      <p class="foot-links">
+        <a href="/privacy">Privacy</a>
+        <a href="/contact">Book a teardown</a>
+      </p>
+    </div>
+  </footer>
+
+  <div class:list={['mbar', visibility.showCall && 'has-call']} role="region" aria-label="Free trial">
+    {visibility.showCall && (
+      <a class="btn line" href={visibility.callHref}>Call {visibility.phone}</a>
+    )}
+    <a class="btn solid" {...trialAttrs('mobile-bar')}>Start a free trial, no card</a>
+  </div>
+</div>
+
+<script>
+  import { applyLandingUtms } from '../../lib/ads-page.mjs';
+
+  applyLandingUtms(document, window.location.search);
+</script>
+
+<style>
+  .page {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    padding-bottom: 5.75rem;
+    overflow-x: clip;
+  }
+
+  .wrap {
+    width: min(1120px, 100%);
+    margin: 0 auto;
+    padding: 0 1.25rem;
+    min-width: 0;
+  }
+
+  .hd {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgba(250, 250, 251, 0.92);
+    border-bottom: 1px solid var(--brand-line);
+    backdrop-filter: blur(12px);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    min-height: 4rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--brand-ink);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+  }
+
+  .mark {
+    display: grid;
+    width: 1.625rem;
+    height: 1.625rem;
+    place-items: center;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--brand-purple), #8b6cff);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 800;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  .call {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--brand-ink);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: 0.7rem 1.15rem;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  .btn:focus-visible,
+  .call:focus-visible,
+  .logo:focus-visible,
+  summary:focus-visible,
+  .foot a:focus-visible,
+  .more a:focus-visible {
+    outline: 2px solid var(--brand-purple);
+    outline-offset: 3px;
+  }
+
+  .solid {
+    background: var(--brand-purple);
+    color: #fff;
+    box-shadow: 0 8px 24px -8px rgba(110, 72, 240, 0.8);
+  }
+
+  .solid:hover {
+    background: var(--brand-purple-deep);
+  }
+
+  .line {
+    background: #fff;
+    border-color: var(--brand-line);
+    color: var(--brand-ink);
+  }
+
+  .line:hover {
+    border-color: #cfc6f7;
+  }
+
+  .header-trial {
+    min-height: 2.4rem;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.875rem;
+  }
+
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 3.25rem 0 3.75rem;
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    top: -12rem;
+    left: 50%;
+    width: min(900px, 140%);
+    height: 36rem;
+    transform: translateX(-50%);
+    background:
+      radial-gradient(closest-side, rgba(110, 72, 240, 0.2), transparent),
+      radial-gradient(closest-side at 80% 70%, rgba(0, 200, 150, 0.14), transparent);
+    pointer-events: none;
+  }
+
+  .hero-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .kick,
+  .eyebrow {
+    margin: 0;
+    color: var(--brand-purple);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .kick {
+    display: inline-flex;
+    padding: 0.35rem 0.75rem;
+    border-radius: 99px;
+    background: var(--brand-purple-soft);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  p {
+    margin: 0;
+  }
+
+  h1 {
+    margin-top: 1.1rem;
+    font-size: clamp(2.25rem, 5.4vw, 3.75rem);
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 1.03;
+    overflow-wrap: break-word;
+  }
+
+  h1 span {
+    color: var(--brand-purple);
+  }
+
+  @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+    h1 span {
+      background: linear-gradient(100deg, var(--brand-purple), var(--brand-mint));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+  }
+
+  .sub,
+  .lead {
+    color: var(--brand-muted);
+  }
+
+  .sub {
+    max-width: 36rem;
+    margin-top: 1rem;
+    font-size: 1.15rem;
+  }
+
+  .ticks,
+  .micro,
+  .strip-grid,
+  .missed,
+  .steps,
+  .features,
+  .includes {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ticks {
+    display: grid;
+    gap: 0.55rem;
+    margin: 1.35rem 0 1.6rem;
+  }
+
+  .ticks li,
+  .includes li {
+    display: flex;
+    gap: 0.65rem;
+    align-items: flex-start;
+  }
+
+  .ticks li::before,
+  .includes li::before {
+    content: "";
+    flex: none;
+    width: 0.4rem;
+    height: 0.7rem;
+    margin-top: 0.35rem;
+    border: solid #047857;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+  }
+
+  .micro {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+    margin-top: 0.9rem;
+    color: var(--brand-muted);
+    font-size: 0.85rem;
+  }
+
+  .micro li::before {
+    content: "";
+    display: inline-block;
+    width: 0.4rem;
+    height: 0.4rem;
+    margin-right: 0.4rem;
+    border-radius: 99px;
+    background: var(--brand-mint);
+  }
+
+  .example {
+    min-width: 0;
+  }
+
+  .phone {
+    width: min(100%, 22.5rem);
+    margin: 0 auto;
+    padding: 0.75rem;
+    border-radius: 2.75rem;
+    background: var(--brand-ink);
+    box-shadow: 0 40px 80px -30px rgba(60, 30, 160, 0.5);
+  }
+
+  .screen {
+    display: flex;
+    min-height: 32rem;
+    flex-direction: column;
+    padding: 1.35rem 1rem 1rem;
+    border-radius: 2.1rem;
+    background: #fff;
+  }
+
+  .callhead {
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid var(--brand-line);
+    text-align: center;
+  }
+
+  .live {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    color: #b91c1c;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .live::before {
+    content: "";
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 99px;
+    background: #ef4444;
+    animation: pulse 1.5s infinite;
+  }
+
+  .calltitle {
+    margin-top: 0.25rem;
+    font-weight: 700;
+  }
+
+  .transcript {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 0.9rem 0;
+  }
+
+  .line {
+    max-width: 86%;
+    padding: 0.55rem 0.75rem;
+    border-radius: 14px;
+    font-size: 0.85rem;
+    overflow-wrap: break-word;
+    animation: rise 0.45s both;
+  }
+
+  .line:nth-child(2) { animation-delay: 0.08s; }
+  .line:nth-child(3) { animation-delay: 0.16s; }
+  .line:nth-child(4) { animation-delay: 0.24s; }
+  .line:nth-child(5) { animation-delay: 0.32s; }
+  .line:nth-child(6) { animation-delay: 0.4s; }
+  .line:nth-child(7) { animation-delay: 0.48s; }
+
+  .ai {
+    border-bottom-left-radius: 4px;
+    background: var(--brand-purple-soft);
+  }
+
+  .caller {
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+    background: #f1f1f4;
+  }
+
+  .booking {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0.75rem;
+    border: 1px solid rgba(0, 200, 150, 0.5);
+    border-radius: 14px;
+    background: #e6faf3;
+  }
+
+  .booking div {
+    min-width: 0;
+  }
+
+  .booking dt {
+    color: var(--brand-muted);
+    font-size: 0.7rem;
+  }
+
+  .booking dd {
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .example :global(.caption) {
+    margin: 0.75rem auto 0;
+    text-align: center;
+  }
+
+  .strip {
+    background: var(--brand-ink);
+    color: #fff;
+    padding: 1.6rem 0;
+  }
+
+  .strip-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.1rem;
+  }
+
+  .strip strong {
+    display: block;
+    font-size: 1.125rem;
+    letter-spacing: -0.02em;
+  }
+
+  .strip span {
+    color: #a5a5b4;
+    font-size: 0.8125rem;
+  }
+
+  .block {
+    padding: 5rem 0;
+  }
+
+  .tight {
+    padding-top: 0;
+  }
+
+  h2 {
+    max-width: 44rem;
+    margin: 0.65rem 0 0.85rem;
+    font-size: clamp(1.75rem, 3.8vw, 2.6rem);
+    font-weight: 760;
+    letter-spacing: -0.04em;
+    line-height: 1.08;
+  }
+
+  .lead {
+    max-width: 38rem;
+    font-size: 1.08rem;
+  }
+
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 2.5rem;
+    align-items: center;
+  }
+
+  .missed {
+    display: grid;
+    gap: 0.65rem;
+  }
+
+  .missed li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 14px;
+    background: #fff;
+  }
+
+  .missed li > span {
+    min-width: 0;
+  }
+
+  .missed strong,
+  .missed small {
+    display: block;
+  }
+
+  .missed small {
+    color: var(--brand-muted);
+    font-size: 0.78rem;
+  }
+
+  .missed em {
+    flex: none;
+    padding: 0.25rem 0.65rem;
+    border-radius: 99px;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-size: 0.75rem;
+    font-style: normal;
+    font-weight: 700;
+  }
+
+  .split :global(.caption) {
+    margin-top: 0.75rem;
+  }
+
+  .steps,
+  .features {
+    display: grid;
+    gap: 0.9rem;
+    margin-top: 2.2rem;
+  }
+
+  .steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .steps li,
+  .features li {
+    min-width: 0;
+    padding: 1.35rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(10, 10, 20, 0.04), 0 8px 30px -8px rgba(40, 20, 120, 0.14);
+  }
+
+  .features li {
+    padding: 1.2rem;
+    border-radius: 18px;
+    box-shadow: none;
+  }
+
+  .num,
+  .kicker {
+    display: grid;
+    width: 2.4rem;
+    height: 2.4rem;
+    place-items: center;
+    border-radius: 11px;
+    background: var(--brand-purple-soft);
+    color: var(--brand-purple);
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+
+  .steps h3,
+  .features h3 {
+    margin: 0.85rem 0 0.35rem;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+  }
+
+  .steps p,
+  .features p,
+  .faq p {
+    color: var(--brand-muted);
+    font-size: 0.95rem;
+  }
+
+  .features {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .setup {
+    max-width: 40rem;
+    margin-top: 1.25rem;
+    padding: 0.9rem 1rem;
+    border: 1px dashed var(--brand-line);
+    border-radius: 14px;
+    background: #fff;
+  }
+
+  .setup span {
+    display: block;
+    margin-bottom: 0.2rem;
+    color: var(--brand-purple);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .price {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 2.5rem;
+    align-items: center;
+    padding: 2.5rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 26px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(10, 10, 20, 0.04), 0 8px 30px -8px rgba(40, 20, 120, 0.14);
+  }
+
+  .amount {
+    margin: 0.75rem 0;
+    font-size: 3.25rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .amount small {
+    color: var(--brand-muted);
+    font-size: 1.05rem;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  .price .btn {
+    margin-top: 1.25rem;
+  }
+
+  .faq {
+    max-width: 50rem;
+  }
+
+  details {
+    margin-top: 0.5rem;
+    padding: 0 1.1rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 14px;
+    background: #fff;
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    padding: 1rem 0;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary::after {
+    content: "+";
+    color: var(--brand-purple);
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  details[open] summary::after {
+    content: "\2212";
+  }
+
+  .faq p {
+    padding-bottom: 1rem;
+  }
+
+  .final {
+    margin: 0 0.75rem 0.75rem;
+    padding: 5rem 0;
+    border-radius: 28px;
+    background: radial-gradient(ellipse at 20% 0%, #8b6cff 0%, #5a35e0 45%, #2b1580 100%);
+    color: #fff;
+    text-align: center;
+  }
+
+  .final h2 {
+    margin-right: auto;
+    margin-left: auto;
+    color: #fff;
+  }
+
+  .final p {
+    max-width: 34rem;
+    margin: 0 auto 1.6rem;
+    color: #dcd3ff;
+    font-size: 1.05rem;
+  }
+
+  .final-btn {
+    min-height: 3.1rem;
+    padding: 0.9rem 1.5rem;
+    background: #fff;
+    color: var(--brand-ink);
+    box-shadow: none;
+  }
+
+  .final-btn:hover {
+    background: #f4f1ff;
+  }
+
+  .final-btn:focus-visible {
+    outline-color: #fff;
+  }
+
+  .more {
+    margin-top: 1.1rem !important;
+    margin-bottom: 0 !important;
+    font-size: 0.9rem;
+  }
+
+  .more a,
+  .foot a {
+    color: inherit;
+  }
+
+  .more a {
+    text-decoration: underline;
+  }
+
+  .foot {
+    padding: 1.6rem 0 1.8rem;
+    color: var(--brand-muted);
+    font-size: 0.78rem;
+    text-align: center;
+  }
+
+  .foot-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem 1rem;
+    margin-top: 0.4rem;
+  }
+
+  .foot a {
+    text-decoration: underline;
+  }
+
+  .mbar {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 0.65rem 0.75rem calc(0.65rem + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--brand-line);
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(10px);
+  }
+
+  .mbar.has-call {
+    grid-template-columns: auto 1fr;
+  }
+
+  .mbar .btn {
+    min-height: 3rem;
+  }
+
+  @keyframes rise {
+    from {
+      transform: translateY(8px);
+    }
+    to {
+      transform: none;
+    }
+  }
+
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+    70% { box-shadow: 0 0 0 7px rgba(239, 68, 68, 0); }
+    100% { box-shadow: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .line,
+    .live::before,
+    .btn {
+      animation: none;
+      transition: none;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .hero-grid,
+    .split,
+    .steps,
+    .price {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .strip-grid,
+    .features {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .screen {
+      min-height: 0;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .header-trial {
+      display: none;
+    }
+
+    .features {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (min-width: 861px) {
+    .page {
+      padding-bottom: 0;
+    }
+
+    .mbar {
+      display: none;
+    }
+  }
+</style>
