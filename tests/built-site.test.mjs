@@ -156,6 +156,80 @@ function isCopiedFromPublic(relPath) {
   return existsSync(publicPath) && statSync(publicPath).isDirectory();
 }
 
+test('ads links and demo line follow the page settings', async () => {
+  const { trialHref, adsVisibility, applyLandingUtms } = await import('../src/lib/ads-page.mjs');
+  const { adsSettings } = await import('../src/data/ads/settings.mjs');
+  const { garagesAd } = await import('../src/data/ads/garages.mjs');
+
+  assert.equal(adsSettings.demoLine, '');
+  assert.equal(adsSettings.startingPrice, '');
+  assert.equal(garagesAd.searchIntent, 'AI receptionist for garages');
+  assert.equal(garagesAd.slug, 'garages');
+  assert.equal(garagesAd.utmCampaign, 'garages');
+  assert.equal(garagesAd.vertical, 'garage');
+  assert.equal(garagesAd.headline.includes(garagesAd.searchIntent), true);
+  assert.equal(garagesAd.setupOffer, '');
+  for (const key of ['intro', 'trialPromise', 'featureCards', 'faq']) {
+    assert.ok(garagesAd[key], `garages entry is missing ${key}`);
+  }
+
+  assert.deepEqual(adsVisibility({ demoLine: '', startingPrice: '  ' }), {
+    showCall: false,
+    phone: '',
+    callHref: '',
+    showPrice: false,
+    price: '',
+  });
+  assert.deepEqual(adsVisibility({ demoLine: ' 0800 111 222 ', startingPrice: '149' }), {
+    showCall: true,
+    phone: '0800 111 222',
+    callHref: 'tel:0800111222',
+    showPrice: true,
+    price: '149',
+  });
+  assert.equal(adsVisibility({ demoLine: '+44 1274 000000', startingPrice: '90' }).callHref, 'tel:+441274000000');
+
+  const hero = trialHref({ campaign: 'garages', placement: 'hero', vertical: 'garage' });
+  assert.equal(
+    hero,
+    'https://dashboard.brackstonedigital.co.uk/trial-request?utm_source=google&utm_medium=cpc&utm_campaign=garages&utm_content=hero&vertical=garage',
+  );
+
+  const overridden = new URL(trialHref({
+    campaign: 'garages',
+    placement: 'hero',
+    vertical: 'garage',
+    landing: 'https://brackstonedigital.co.uk/garages/?utm_source=newsletter&utm_campaign=spring&utm_content=ad-1&utm_term=mot&utm_medium=',
+  }));
+  assert.equal(overridden.searchParams.get('utm_source'), 'newsletter');
+  assert.equal(overridden.searchParams.get('utm_medium'), 'cpc');
+  assert.equal(overridden.searchParams.get('utm_campaign'), 'spring');
+  assert.equal(overridden.searchParams.get('utm_content'), 'ad-1');
+  assert.equal(overridden.searchParams.get('utm_term'), 'mot');
+  assert.equal(overridden.searchParams.get('vertical'), 'garage');
+
+  const attrs = new Map([
+    ['href', hero],
+    ['data-trial', 'hero'],
+    ['data-campaign', 'garages'],
+    ['data-vertical', 'garage'],
+  ]);
+  const node = {
+    getAttribute: (name) => attrs.get(name) ?? null,
+    setAttribute: (name, value) => attrs.set(name, value),
+  };
+  applyLandingUtms({ querySelectorAll: () => [node] }, '?utm_campaign=spring');
+  assert.equal(new URL(attrs.get('href')).searchParams.get('utm_campaign'), 'spring');
+  assert.equal(new URL(attrs.get('href')).searchParams.get('utm_content'), 'hero');
+});
+
+function trialHrefs(html) {
+  const hrefs = [];
+  const re = /href="(https:\/\/dashboard\.brackstonedigital\.co\.uk\/trial-request[^"]*)"/g;
+  for (const match of html.matchAll(re)) hrefs.push(decodeAttr(match[1]));
+  return hrefs;
+}
+
 test('copy scanner flags em dashes, emoji, and banned tool names', () => {
   assert.deepEqual(copyProblems('Book a teardown'), []);
   assert.ok(copyProblems('A real line \u2014 and more').length > 0);
@@ -238,12 +312,57 @@ test('built site hides the preview and keeps copy clean', () => {
   assert.match(homeHtml, /fonts\.googleapis\.com/);
   assert.doesNotMatch(homeHtml, /Geist-Variable\.woff2/);
 
+  const garagesPath = join(dist, 'garages', 'index.html');
+  let garagesHtml;
+  try {
+    garagesHtml = readFileSync(garagesPath, 'utf8');
+  } catch {
+    assert.fail('/garages/ does not exist yet');
+  }
+
+  assert.match(
+    garagesHtml,
+    /<h1\b[^>]*>[\s\S]*AI receptionist for garages[\s\S]*<\/h1>/i,
+    'garages headline does not repeat the search',
+  );
+  assert.doesNotMatch(garagesHtml, /noindex/i, 'garages page must be indexed');
+  assert.doesNotMatch(garagesHtml, /tel:/i, 'empty demo line still renders a call link');
+  assert.doesNotMatch(garagesHtml, /£/, 'empty starting price still renders a price');
+  assert.doesNotMatch(garagesHtml, /fonts\.googleapis\.com/);
+  assert.match(garagesHtml, /Illustrative/);
+  assert.match(garagesHtml, /\/fonts\/Geist-Variable\.woff2/);
+
+  const hrefs = trialHrefs(garagesHtml);
+  assert.ok(hrefs.length > 0, 'garages page has no trial links');
+  const placements = hrefs.map((href) => new URL(href).searchParams.get('utm_content')).sort();
+  assert.deepEqual(placements, ['final', 'header', 'hero', 'mobile-bar']);
+  for (const href of hrefs) {
+    const url = new URL(href);
+    assert.equal(`${url.origin}${url.pathname}`, 'https://dashboard.brackstonedigital.co.uk/trial-request');
+    assert.equal(url.searchParams.get('utm_source'), 'google');
+    assert.equal(url.searchParams.get('utm_medium'), 'cpc');
+    assert.equal(url.searchParams.get('utm_campaign'), 'garages');
+    assert.equal(url.searchParams.get('vertical'), 'garage');
+  }
+
+  const styles = [...garagesHtml.matchAll(/<(?:link[^>]+href="([^"]+\.css)"|style\b[^>]*>)/g)];
+  const cssParts = [garagesHtml];
+  for (const match of garagesHtml.matchAll(/href="([^"]+\.css)"/g)) {
+    const relUrl = match[1].replace(/^\//, '');
+    cssParts.push(readFileSync(join(dist, relUrl), 'utf8'));
+  }
+  assert.match(cssParts.join('\n'), /prefers-reduced-motion/, 'ads page CSS drops reduced-motion support');
+  assert.equal(styles.length > 0, true);
+
   const sitemapFiles = readdirSync(dist).filter((name) => /^sitemap.*\.xml$/.test(name));
   assert.ok(sitemapFiles.length > 0, 'expected a sitemap in dist');
+  let sitemapText = '';
   for (const name of sitemapFiles) {
     const xml = readFileSync(join(dist, name), 'utf8');
+    sitemapText += xml;
     assert.doesNotMatch(xml, /\/preview\/?/i, `${name} includes the preview URL`);
   }
+  assert.match(sitemapText, /\/garages\/?/, 'sitemap is missing /garages/');
 
   const pages = walkHtml(dist).filter((path) => {
     const rel = relative(dist, path);
