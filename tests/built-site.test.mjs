@@ -19,11 +19,6 @@ const bannedToolNames = [
   'WhatsApp',
 ];
 
-// Live privacy copy still uses em dashes. This ticket must not edit
-// src/pages/privacy.astro, so the em dash gate skips that frozen page.
-// Emoji and banned tool names are still checked there.
-const emDashExceptions = new Set(['privacy/index.html']);
-
 const namedEntities = {
   mdash: '\u2014',
 };
@@ -45,7 +40,7 @@ function decodeHtmlEntities(value) {
 export function copyProblems(html, relPath = 'page.html') {
   const text = decodeHtmlEntities(html);
   const problems = [];
-  if (!emDashExceptions.has(relPath) && text.includes('\u2014')) {
+  if (text.includes('\u2014')) {
     problems.push(`${relPath} contains an em dash`);
   }
   if (/\p{Extended_Pictographic}/u.test(text)) {
@@ -243,7 +238,33 @@ test('copy scanner flags em dashes, emoji, and banned tool names', () => {
   }
   assert.deepEqual(copyProblems('we make admin easier'), []);
   assert.ok(copyProblems('We use Make here.').some((problem) => problem.includes('Make')));
-  assert.deepEqual(copyProblems('Hello \u2014 there', 'privacy/index.html'), []);
+});
+
+test('built contact page keeps the form endpoint and field names', () => {
+  let html;
+  try {
+    html = readFileSync(join(dist, 'contact', 'index.html'), 'utf8');
+  } catch {
+    assert.fail('/contact/ does not exist yet');
+  }
+
+  assert.match(
+    html,
+    /premier-housing-demo\.pages\.dev\/api\/contact/,
+    'contact form must post to the same endpoint',
+  );
+
+  for (const field of ['name', 'email', 'business', 'message', 'website']) {
+    assert.match(
+      html,
+      new RegExp(`name=["']${field}["']`),
+      `contact form is missing the ${field} field`,
+    );
+  }
+
+  assert.match(html, /cf-turnstile-response/, 'contact form must send the Turnstile token field');
+  assert.match(html, /data-sitekey=/, 'contact page must render the Turnstile widget');
+  assert.match(html, /challenges\.cloudflare\.com\/turnstile/, 'contact page must load Turnstile');
 });
 
 test('hero link checker rejects a bad teardown or a trial link without UTM tags', () => {
@@ -274,7 +295,12 @@ test('built site hides the preview and keeps copy clean', () => {
   execFileSync('npm', ['run', 'build'], {
     cwd: root,
     stdio: 'inherit',
-    env: process.env,
+    // A dummy site key keeps the Turnstile widget in the built contact page
+    // even when the real key is not configured locally.
+    env: {
+      ...process.env,
+      PUBLIC_TURNSTILE_SITE_KEY: process.env.PUBLIC_TURNSTILE_SITE_KEY || 'test-site-key',
+    },
   });
 
   const previewPath = join(dist, 'preview', 'index.html');
