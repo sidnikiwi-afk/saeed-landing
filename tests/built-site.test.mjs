@@ -240,33 +240,6 @@ test('copy scanner flags em dashes, emoji, and banned tool names', () => {
   assert.ok(copyProblems('We use Make here.').some((problem) => problem.includes('Make')));
 });
 
-test('built contact page keeps the form endpoint and field names', () => {
-  let html;
-  try {
-    html = readFileSync(join(dist, 'contact', 'index.html'), 'utf8');
-  } catch {
-    assert.fail('/contact/ does not exist yet');
-  }
-
-  assert.match(
-    html,
-    /premier-housing-demo\.pages\.dev\/api\/contact/,
-    'contact form must post to the same endpoint',
-  );
-
-  for (const field of ['name', 'email', 'business', 'message', 'website']) {
-    assert.match(
-      html,
-      new RegExp(`name=["']${field}["']`),
-      `contact form is missing the ${field} field`,
-    );
-  }
-
-  assert.match(html, /cf-turnstile-response/, 'contact form must send the Turnstile token field');
-  assert.match(html, /data-sitekey=/, 'contact page must render the Turnstile widget');
-  assert.match(html, /challenges\.cloudflare\.com\/turnstile/, 'contact page must load Turnstile');
-});
-
 test('hero link checker rejects a bad teardown or a trial link without UTM tags', () => {
   const good = [
     '<a href="/contact/">Book a 15-minute teardown</a>',
@@ -310,6 +283,25 @@ test('built site hides the preview and keeps copy clean', () => {
   } catch {
     assert.fail('/preview/ does not exist yet');
   }
+
+  // The contact form must keep posting to the same endpoint with the same
+  // fields, so the redesign cannot silently break enquiries.
+  const contactHtml = readFileSync(join(dist, 'contact', 'index.html'), 'utf8');
+  assert.match(
+    contactHtml,
+    /premier-housing-demo\.pages\.dev\/api\/contact/,
+    'contact form must post to the same endpoint',
+  );
+  for (const field of ['name', 'email', 'business', 'message', 'website']) {
+    assert.match(
+      contactHtml,
+      new RegExp(`name=["']${field}["']`),
+      `contact form is missing the ${field} field`,
+    );
+  }
+  assert.match(contactHtml, /cf-turnstile-response/, 'contact form must send the Turnstile token field');
+  assert.match(contactHtml, /data-sitekey=/, 'contact page must render the Turnstile widget');
+  assert.match(contactHtml, /challenges\.cloudflare\.com\/turnstile/, 'contact page must load Turnstile');
 
   assert.match(
     previewHtml,
