@@ -1,20 +1,14 @@
-name: Deploy Astro to GitHub Pages
+name: Pull request checks
 
 on:
-  push:
+  pull_request:
     branches: [master]
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: true
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     env:
       PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.PUBLIC_TURNSTILE_SITE_KEY }}
@@ -29,16 +23,3 @@ jobs:
       - run: npm run test:contact
       - run: npm run test:built-site
       - run: npm run verify:premier-enquire
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4

@@ -1,0 +1,72 @@
+---
+const year = 2026;
+---
+
+<footer class="footer">
+  <div class="inner">
+    <p class="name">Brackstone Digital</p>
+    <nav class="links" aria-label="Footer">
+      <a href="/contact">Book a teardown</a>
+      <a href="/privacy">Privacy</a>
+    </nav>
+  </div>
+  <p class="legal">
+    &copy; {year} Brackstone Digital Limited. Registered in England and Wales, company no. 17159711.
+    Registered office: 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ.
+  </p>
+</footer>
+
+<style>
+  .footer {
+    margin-top: auto;
+    padding: 2.5rem 1.25rem 2rem;
+    border-top: 1px solid var(--brand-line);
+    color: var(--brand-muted);
+    font-size: 0.8125rem;
+    min-width: 0;
+  }
+
+  .inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    width: min(1140px, 100%);
+    margin: 0 auto 1rem;
+  }
+
+  .name {
+    margin: 0;
+    color: var(--brand-ink);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+  }
+
+  .links a {
+    color: var(--brand-muted);
+    text-decoration: none;
+  }
+
+  .links a:hover {
+    color: var(--brand-ink);
+  }
+
+  .legal {
+    width: min(1140px, 100%);
+    margin: 0 auto;
+  }
+
+  @media (max-width: 720px) {
+    .inner,
+    .links {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

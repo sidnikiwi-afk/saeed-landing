@@ -1,0 +1,124 @@
+---
+import Button from './Button.astro';
+
+interface Props {
+  home?: string;
+}
+
+const { home = '/preview/' } = Astro.props;
+const links = [
+  ['What we do', `${home}#what`],
+  ['Your tools', `${home}#tools`],
+  ['Our work', `${home}#built`],
+  ['How we work', `${home}#how`],
+  ['FAQ', `${home}#faq`],
+];
+---
+
+<header class="bar">
+  <nav class="nav" aria-label="Primary">
+    <a class="logo" href={home}>
+      <span class="mark" aria-hidden="true">B</span>
+      <span>Brackstone</span>
+    </a>
+    <div class="links">
+      {links.map(([label, href]) => <a href={href}>{label}</a>)}
+      <a href="https://dashboard.brackstonedigital.co.uk/login">Sign in</a>
+      <Button href="/contact">Book a teardown</Button>
+    </div>
+  </nav>
+</header>
+
+<style>
+  .bar {
+    position: sticky;
+    top: 0.75rem;
+    z-index: 20;
+    width: min(1140px, calc(100% - 1.5rem));
+    max-width: calc(100% - 1.5rem);
+    min-width: 0;
+    margin: 0.75rem auto 0;
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1rem;
+    padding: 0.5rem 0.5rem 0.5rem 1rem;
+    border: 1px solid rgba(232, 232, 238, 0.95);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: 0 1px 2px rgba(10, 10, 20, 0.04), 0 8px 30px -8px rgba(40, 20, 120, 0.14);
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    color: var(--brand-ink);
+  }
+
+  .mark {
+    display: grid;
+    width: 26px;
+    height: 26px;
+    place-items: center;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--brand-purple), #8b6cff);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 800;
+    font-style: normal;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.15rem;
+    min-width: 0;
+    max-width: 100%;
+    font-size: 0.875rem;
+    color: var(--brand-muted);
+  }
+
+  .links a {
+    padding: 0.5rem 0.75rem;
+    border-radius: 9px;
+    text-decoration: none;
+  }
+
+  .links a:hover {
+    background: var(--brand-purple-soft);
+    color: var(--brand-ink);
+  }
+
+  .links :global(.btn) {
+    padding: 0.55rem 0.9rem;
+  }
+
+  @media (max-width: 860px) {
+    .bar {
+      width: calc(100% - 1.5rem);
+    }
+
+    .nav {
+      align-items: flex-start;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .links {
+      display: grid;
+      grid-template-columns: 1fr;
+      justify-content: start;
+      justify-items: start;
+      width: 100%;
+    }
+  }
+</style>

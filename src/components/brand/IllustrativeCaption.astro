@@ -1,0 +1,37 @@
+---
+---
+
+<p class="caption">
+  <span class="label"><span class="dot" aria-hidden="true"></span>Illustrative.</span>
+  <slot />
+</p>
+
+<style>
+  .caption {
+    max-width: 40rem;
+    margin: 0;
+    color: var(--brand-muted);
+    font-size: 0.95rem;
+    overflow-wrap: break-word;
+  }
+
+  .label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-right: 0.35rem;
+    color: var(--brand-purple);
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 99px;
+    background: var(--brand-mint);
+  }
+</style>

@@ -1,0 +1,26 @@
+---
+import BrandLayout from '../../layouts/BrandLayout.astro';
+import IllustrativeCaption from '../../components/brand/IllustrativeCaption.astro';
+---
+
+<BrandLayout
+  title="Preview | Brackstone Digital"
+  description="Hidden preview of the new Brackstone Digital homepage. This page is not for search engines."
+  noindex
+>
+  <main class="shell">
+    <IllustrativeCaption>
+      A made-up caption, so anything on this preview that is not a real customer, transcript, or result can be marked the same way.
+    </IllustrativeCaption>
+  </main>
+</BrandLayout>
+
+<style>
+  .shell {
+    width: 100%;
+    max-width: 72rem;
+    min-width: 0;
+    margin: 0 auto;
+    padding: 4.5rem 1.25rem 6rem;
+  }
+</style>

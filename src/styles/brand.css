@@ -1,0 +1,71 @@
+@font-face {
+  font-family: "Geist";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/Geist-Variable.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/GeistMono-Variable.woff2") format("woff2");
+}
+
+:root {
+  --brand-purple: #6e48f0;
+  --brand-mint: #00c896;
+  --brand-ink: #0a0a0b;
+  --brand-bg: #fafafb;
+  --brand-line: #e8e8ee;
+  --brand-muted: #5b5b66;
+  --brand-purple-deep: #5f3ae6;
+  --brand-purple-soft: #f1edff;
+}
+
+html {
+  background: var(--brand-bg);
+  color: var(--brand-ink);
+  font-family: "Geist", system-ui, sans-serif;
+  scroll-behavior: smooth;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: clip;
+  background: var(--brand-bg);
+  color: var(--brand-ink);
+  font-family: "Geist", system-ui, sans-serif;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
