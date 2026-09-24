@@ -1,0 +1,885 @@
+---
+import Button from './Button.astro';
+import IllustrativeCaption from './IllustrativeCaption.astro';
+
+const trialHref =
+  'https://dashboard.brackstonedigital.co.uk/trial-request?utm_source=website&utm_medium=homepage&utm_content=hero';
+
+const scenes = [
+  {
+    id: 'email',
+    label: 'An email',
+    source: 'Email',
+    window: 'quotes@ inbox',
+    incomingTitle: 'Incoming email',
+    enquiryTag: 'New quote',
+    name: 'Sarah Mills',
+    initials: 'SM',
+    via: 'Email, quotes inbox',
+    fields: [
+      ['Job', 'Full rewire'],
+      ['Property', '3 bed semi, M20'],
+      ['Wants', 'Survey next week'],
+      ['Next step', 'Survey offered Tue or Wed'],
+    ],
+    note: 'Customer mentioned an old fuse box. Flagged for the surveyor.',
+    steps: [
+      ['Email read', 'Understood as a new quote request'],
+      ['Details pulled out', 'Name, job, address and timing'],
+      ['Job created', 'Added to your job-management system'],
+      ['Reply sent', 'Two survey slots offered'],
+      ['Chase scheduled', 'Monday 09:00 if no reply'],
+      ['Dashboard updated', 'Visible to the whole team'],
+    ],
+  },
+  {
+    id: 'form',
+    label: 'A web enquiry',
+    source: 'Web form',
+    window: 'Website viewing form',
+    incomingTitle: 'Incoming web form',
+    enquiryTag: 'Hot applicant',
+    name: 'Priya Shah',
+    initials: 'PS',
+    via: 'Website, viewing form',
+    fields: [
+      ['Property', '14 Oak Road, 2 bed'],
+      ['Applicant', 'Employed, moving in 6 weeks'],
+      ['Wants', 'Viewing this weekend'],
+      ['Next step', 'Sat 11:00, chase Mon'],
+    ],
+    note: 'Asked about parking. Added to the viewing notes.',
+    steps: [
+      ['Form received', 'From the website viewing form'],
+      ['Matched to listing', '14 Oak Road, 2 bed flat'],
+      ['Applicant checked', 'Employed, moving in 6 weeks'],
+      ['Viewing held', 'Saturday 11:00 with Tom'],
+      ['Confirmation sent', 'By text and email'],
+      ['Negotiator notified', 'Tom sees it first thing'],
+    ],
+  },
+  {
+    id: 'call',
+    label: 'A phone call',
+    source: 'Phone call',
+    window: 'Booking line',
+    incomingTitle: 'Incoming call',
+    enquiryTag: 'MOT due in 6 days',
+    name: 'James Hartley',
+    initials: 'JH',
+    via: 'Call, booking line',
+    fields: [
+      ['Vehicle', '2018 Ford Focus'],
+      ['Job', 'MOT and service'],
+      ['Wants', 'Courtesy car if possible'],
+      ['Next step', 'Thu 09:00, text confirmation'],
+    ],
+    note: 'Regular customer. Prefers texts to calls.',
+    steps: [
+      ['Answered on first ring', 'UK-tuned AI receptionist'],
+      ['Vehicle looked up', 'From the reg, MOT date checked'],
+      ['Slot found', 'Thursday 09:00, two bays free'],
+      ['Booked', 'Written into the diary'],
+      ['Text sent', 'Confirmation with a change option'],
+      ['Summary saved', 'Recording and transcript in the dashboard'],
+    ],
+  },
+];
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="glow" aria-hidden="true"></div>
+  <div class="intro">
+    <p class="ann">
+      <b>Automation for UK teams</b>
+      <span>that run on a phone, an inbox and a diary</span>
+    </p>
+    <h1 id="hero-title">
+      Every enquiry handled. Every job moved on.
+      <span class="grad">Running on its own.</span>
+    </h1>
+    <p class="sub">
+      Calls, emails, web forms and the admin behind them. We build the systems that answer, capture, book and chase, and connect them to the tools you already use.
+    </p>
+    <div class="picker">
+      <p id="hero-watch">Watch it handle</p>
+      <div class="choices" role="radiogroup" aria-labelledby="hero-watch">
+        {
+          scenes.map((scene) => (
+            <label class:list={['choice', scene.id]}>
+              <input type="radio" name="hero-channel" value={scene.id} />
+              <span>{scene.label}</span>
+            </label>
+          ))
+        }
+      </div>
+    </div>
+    <div class="ctas">
+      <Button href="/contact/" variant="purple">Book a 15-minute teardown</Button>
+      <Button href={trialHref} variant="line">Start a free trial</Button>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="win">
+      {
+        scenes.map((scene) => (
+          <article class:list={['frame', scene.id]} aria-label={`Illustrative ${scene.source.toLowerCase()}`}>
+            <div class="wbar">
+              <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="url">{scene.window}</span>
+              <span class="src">{scene.source}</span>
+            </div>
+            <div class="wgrid">
+              <div class="col">
+                <h2>{scene.incomingTitle}</h2>
+                {scene.id === 'email' && (
+                  <div class="mail">
+                    <p class="mh">
+                      <strong>Quote for a rewire</strong>
+                      <span>From: Sarah Mills</span>
+                      <span>To: quotes@</span>
+                    </p>
+                    <p class="mb">
+                      Hi, we have just bought a <mark>3 bed semi in M20</mark> and need a <mark>full rewire</mark> before we move in. The fuse box looks ancient. Could someone come and look <mark>next week</mark>? Thanks, <mark>Sarah</mark>
+                    </p>
+                  </div>
+                )}
+                {scene.id === 'form' && (
+                  <div class="form">
+                    <p class="ft"><span>Book a viewing</span><span>website</span></p>
+                    <p class="inp"><small>Name</small>Priya Shah</p>
+                    <p class="inp"><small>Property</small>14 Oak Road, 2 bed</p>
+                    <p class="inp"><small>About you</small>Employed, moving in 6 weeks</p>
+                    <p class="inp"><small>When</small>This weekend if possible</p>
+                    <p class="sent">Enquiry sent</p>
+                  </div>
+                )}
+                {scene.id === 'call' && (
+                  <div class="tx">
+                    <p class="m ai"><small>AI receptionist</small>Booking line, how can I help?</p>
+                    <p class="m cu"><small>Caller</small>My MOT is due next week, and it needs a service.</p>
+                    <p class="m ai"><small>AI receptionist</small>No problem. Can I take your name and the reg?</p>
+                    <p class="m cu"><small>Caller</small>James Hartley. It is the Focus, you have had it before.</p>
+                    <p class="m ai"><small>AI receptionist</small>Thanks James. Thursday at 9 is free. Shall I book it?</p>
+                    <p class="m cu"><small>Caller</small>Perfect, yes.</p>
+                  </div>
+                )}
+              </div>
+              <div class="col">
+                <h2>Enquiry <span class="tag">{scene.enquiryTag}</span></h2>
+                <div class="enq">
+                  <p class="who">
+                    <span class="av" aria-hidden="true">{scene.initials}</span>
+                    <span><strong>{scene.name}</strong><small>{scene.via}</small></span>
+                  </p>
+                  {
+                    scene.fields.map(([label, value]) => (
+                      <p class="fl"><span>{label}</span><strong>{value}</strong></p>
+                    ))
+                  }
+                </div>
+                <p class="note">{scene.note}</p>
+              </div>
+              <div class="col">
+                <h2>Automation</h2>
+                <ol class="runlog">
+                  {
+                    scene.steps.map(([title, detail]) => (
+                      <li class="step">
+                        <span class="mark" aria-hidden="true"></span>
+                        <span><strong>{title}</strong><small>{detail}</small></span>
+                      </li>
+                    ))
+                  }
+                </ol>
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+    <IllustrativeCaption>
+      Names, messages and details are made up.
+    </IllustrativeCaption>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 2.75rem 0 4.5rem;
+    text-align: center;
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, #d9d6e8 1px, transparent 1px);
+    background-size: 22px 22px;
+    mask-image: radial-gradient(ellipse 60% 50% at 50% 18%, #000 20%, transparent 72%);
+    pointer-events: none;
+  }
+
+  .glow {
+    position: absolute;
+    left: 50%;
+    top: -16rem;
+    width: min(68rem, 140vw);
+    height: 36rem;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background: conic-gradient(
+      from 180deg at 50% 50%,
+      rgba(110, 72, 240, 0),
+      rgba(110, 72, 240, 0.35),
+      rgba(0, 200, 150, 0.22),
+      rgba(139, 108, 255, 0.3),
+      rgba(110, 72, 240, 0)
+    );
+    filter: blur(80px);
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .intro,
+  .stage {
+    position: relative;
+    width: min(1140px, calc(100% - 3rem));
+    margin: 0 auto;
+  }
+
+  .ann {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    max-width: 100%;
+    margin: 0;
+    padding: 0.3rem 0.9rem 0.3rem 0.3rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--brand-muted);
+    font-size: 0.82rem;
+    box-shadow: 0 1px 2px rgba(10, 10, 20, 0.04), 0 8px 30px -8px rgba(40, 20, 120, 0.14);
+  }
+
+  .ann b {
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    background: var(--brand-ink);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  h1 {
+    max-width: min(16em, 100%);
+    margin: 1.4rem auto 1rem;
+    color: var(--brand-ink);
+    font-size: clamp(2.35rem, 5.4vw, 4.7rem);
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+
+  .grad {
+    color: var(--brand-purple);
+  }
+
+  @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+    .grad {
+      background: linear-gradient(100deg, var(--brand-purple) 10%, #b06cff 50%, var(--brand-mint) 95%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+  }
+
+  .sub {
+    max-width: 40rem;
+    margin: 0 auto;
+    color: var(--brand-muted);
+    font-size: 1.15rem;
+  }
+
+  .picker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem 0.7rem;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 1.8rem;
+  }
+
+  .picker p {
+    margin: 0;
+    color: var(--brand-muted);
+    font-size: 0.85rem;
+  }
+
+  .choices {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem;
+    max-width: 100%;
+    padding: 0.35rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(10, 10, 20, 0.04), 0 8px 30px -8px rgba(40, 20, 120, 0.14);
+  }
+
+  .choice {
+    position: relative;
+    display: inline-flex;
+    overflow: hidden;
+    border-radius: 11px;
+    cursor: pointer;
+  }
+
+  .choice input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .choice span {
+    padding: 0.55rem 0.9rem;
+    border-radius: 11px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .choice:hover span,
+  .choice:focus-within span {
+    background: #f5f4fa;
+  }
+
+  .choice:has(input:checked) span {
+    background: var(--brand-purple-soft);
+    color: #4a28d6;
+  }
+
+  .choice:has(input:focus-visible) span {
+    outline: 2px solid var(--brand-purple);
+    outline-offset: 2px;
+  }
+
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    max-width: 100%;
+    margin-top: 1.35rem;
+  }
+
+  .stage {
+    margin-top: 3.2rem;
+  }
+
+  .win {
+    border: 1px solid var(--brand-line);
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 50px 100px -40px rgba(60, 30, 160, 0.35), 0 1px 2px rgba(10, 10, 20, 0.05);
+    text-align: left;
+    overflow: hidden;
+  }
+
+  .wbar {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--brand-line);
+    background: #fcfcfd;
+  }
+
+  .dots {
+    display: inline-flex;
+    gap: 0.35rem;
+  }
+
+  .dots i {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: #e5e5ea;
+  }
+
+  .url {
+    margin-right: auto;
+    padding: 0.25rem 0.7rem;
+    border-radius: 7px;
+    background: #f3f3f6;
+    color: var(--brand-muted);
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 0.75rem;
+  }
+
+  .src,
+  .tag {
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    background: #f3f3f6;
+    color: var(--brand-ink);
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  .tag {
+    background: #fff4e5;
+    color: #b45309;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .wgrid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr 1fr;
+    min-height: 28rem;
+  }
+
+  .col {
+    min-width: 0;
+    padding: 1.15rem 1.15rem 1.3rem;
+    border-right: 1px solid var(--brand-line);
+  }
+
+  .col:last-child {
+    border-right: 0;
+  }
+
+  .col h2 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin: 0 0 0.85rem;
+    color: var(--brand-muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .mail,
+  .form,
+  .enq,
+  .step {
+    border: 1px solid var(--brand-line);
+    border-radius: 14px;
+    background: #fff;
+  }
+
+  .mh,
+  .mb,
+  .ft,
+  .inp,
+  .sent,
+  .note,
+  .who,
+  .fl,
+  .m {
+    margin: 0;
+  }
+
+  .mh {
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.75rem 0.9rem;
+    border-bottom: 1px solid var(--brand-line);
+    background: #fcfcfd;
+    font-size: 0.78rem;
+  }
+
+  .mh strong,
+  .who strong {
+    color: var(--brand-ink);
+    font-size: 0.92rem;
+  }
+
+  .mh span,
+  .who small,
+  .ft,
+  .inp small,
+  .m small,
+  .step small,
+  .fl span,
+  .note {
+    color: var(--brand-muted);
+  }
+
+  .mb {
+    padding: 0.9rem;
+    color: #2d2d35;
+    font-size: 0.86rem;
+    line-height: 1.6;
+  }
+
+  mark {
+    padding: 0 0.15rem;
+    border-radius: 4px;
+    background: #e9e3ff;
+    box-shadow: inset 0 -2px 0 var(--brand-purple);
+    color: inherit;
+  }
+
+  .form {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.85rem;
+  }
+
+  .ft,
+  .inp small,
+  .m small,
+  .step small,
+  .who small {
+    display: block;
+    font-size: 0.68rem;
+  }
+
+  .ft {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .inp {
+    padding: 0.45rem 0.7rem;
+    border: 1px solid #cfc6f7;
+    border-radius: 9px;
+    font-size: 0.86rem;
+  }
+
+  .sent {
+    padding: 0.6rem;
+    border-radius: 9px;
+    background: var(--brand-mint);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .tx {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .m {
+    max-width: 92%;
+    padding: 0.5rem 0.7rem;
+    border-radius: 13px;
+    font-size: 0.84rem;
+  }
+
+  .m.ai {
+    background: var(--brand-purple-soft);
+    border-bottom-left-radius: 4px;
+  }
+
+  .m.cu {
+    align-self: flex-end;
+    background: #f3f3f6;
+    border-bottom-right-radius: 4px;
+  }
+
+  .who {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.85rem 0.9rem;
+    border-bottom: 1px solid var(--brand-line);
+  }
+
+  .av {
+    display: grid;
+    width: 2.25rem;
+    height: 2.25rem;
+    place-items: center;
+    flex: none;
+    border-radius: 10px;
+    background: var(--brand-purple);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  .fl {
+    display: grid;
+    grid-template-columns: 5.4rem 1fr;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0.7rem 0.9rem;
+    border-bottom: 1px solid var(--brand-line);
+    font-size: 0.86rem;
+  }
+
+  .fl:last-child {
+    border-bottom: 0;
+  }
+
+  .fl strong {
+    font-weight: 600;
+  }
+
+  .note {
+    margin-top: 0.75rem;
+    font-size: 0.82rem;
+  }
+
+  .runlog {
+    display: grid;
+    gap: 0.45rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .step {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    padding: 0.6rem 0.7rem;
+    font-size: 0.82rem;
+  }
+
+  .step strong {
+    display: block;
+    font-weight: 600;
+  }
+
+  .mark {
+    flex: none;
+    width: 1.15rem;
+    height: 1.15rem;
+    margin-top: 0.1rem;
+    border: 2px solid var(--brand-mint);
+    border-radius: 50%;
+    background: var(--brand-mint);
+    box-shadow: inset 0 0 0 2px #fff;
+  }
+
+  .stage :global(.caption) {
+    max-width: none;
+    margin-top: 0.9rem;
+    text-align: center;
+  }
+
+  @media (max-width: 960px) {
+    .intro,
+    .stage {
+      width: min(1140px, calc(100% - 2rem));
+    }
+
+    .ann,
+    .sub,
+    h1,
+    .picker,
+    .choices,
+    .ctas {
+      min-width: 0;
+    }
+
+    .choices {
+      width: min(100%, 28rem);
+    }
+
+    .wgrid {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+
+    .col {
+      border-right: 0;
+      border-bottom: 1px solid var(--brand-line);
+    }
+
+    .col:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .ctas {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .ctas :global(.btn) {
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .glow {
+      animation: glow-spin 20s linear infinite;
+    }
+
+    .hero:not(:has(input:checked)) .win {
+      display: grid;
+    }
+
+    .hero:not(:has(input:checked)) .frame {
+      grid-area: 1 / 1;
+      animation: cycle 24s infinite linear;
+    }
+
+    .hero:not(:has(input:checked)) .frame.form {
+      animation-delay: -16s;
+    }
+
+    .hero:not(:has(input:checked)) .frame.call {
+      animation-delay: -8s;
+    }
+
+    .hero:not(:has(input:checked)) .choice {
+      animation: pick 24s infinite linear;
+    }
+
+    .hero:not(:has(input:checked)) .choice.form {
+      animation-delay: 8s;
+    }
+
+    .hero:not(:has(input:checked)) .choice.call {
+      animation-delay: 16s;
+    }
+
+    .hero:not(:has(input:checked)) .choice::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--brand-purple);
+      transform: scaleX(0);
+      transform-origin: left center;
+      animation: prog 24s infinite linear;
+    }
+
+    .hero:not(:has(input:checked)) .choice.form::after {
+      animation-delay: 8s;
+    }
+
+    .hero:not(:has(input:checked)) .choice.call::after {
+      animation-delay: 16s;
+    }
+
+    .frame.email { --shift: 0s; }
+    .frame.form { --shift: 8s; }
+    .frame.call { --shift: 16s; }
+
+    .step:nth-child(1) { --d: 0.3s; }
+    .step:nth-child(2) { --d: 1.4s; }
+    .step:nth-child(3) { --d: 2.5s; }
+    .step:nth-child(4) { --d: 3.6s; }
+    .step:nth-child(5) { --d: 4.7s; }
+    .step:nth-child(6) { --d: 5.8s; }
+
+    .hero:not(:has(input:checked)) .step {
+      animation: step 24s calc(var(--shift) + var(--d)) infinite linear backwards;
+    }
+
+    .hero:not(:has(input:checked)) .mark {
+      animation: mark 24s calc(var(--shift) + var(--d)) infinite linear backwards;
+    }
+  }
+
+  .hero:has(input:checked) .win {
+    display: grid;
+  }
+
+  .hero:has(input:checked) .frame {
+    grid-area: 1 / 1;
+    visibility: hidden;
+  }
+
+  .hero:has(input[value="email"]:checked) .frame.email,
+  .hero:has(input[value="form"]:checked) .frame.form,
+  .hero:has(input[value="call"]:checked) .frame.call {
+    visibility: visible;
+  }
+
+  @keyframes glow-spin {
+    to { transform: translateX(-50%) rotate(360deg); }
+  }
+
+  @keyframes cycle {
+    0%, 33.2% { visibility: visible; }
+    33.3%, 100% { visibility: hidden; }
+  }
+
+  @keyframes pick {
+    0%, 33% { background: var(--brand-purple-soft); color: #4a28d6; }
+    34%, 100% { background: transparent; color: inherit; }
+  }
+
+  @keyframes prog {
+    0% { transform: scaleX(0); }
+    33% { transform: scaleX(1); }
+    34%, 100% { transform: scaleX(0); }
+  }
+
+  @keyframes step {
+    0%, 1% {
+      opacity: 0.38;
+      border-color: var(--brand-line);
+    }
+    2%, 6% {
+      opacity: 1;
+      border-color: #cfc6f7;
+    }
+    8%, 33% {
+      opacity: 1;
+      border-color: var(--brand-line);
+    }
+    34%, 100% {
+      opacity: 0.38;
+      border-color: var(--brand-line);
+    }
+  }
+
+  @keyframes mark {
+    0%, 6% {
+      background: transparent;
+      border-color: #d4d4dc;
+      box-shadow: none;
+    }
+    8%, 33% {
+      background: var(--brand-mint);
+      border-color: var(--brand-mint);
+      box-shadow: inset 0 0 0 2px #fff;
+    }
+    34%, 100% {
+      background: transparent;
+      border-color: #d4d4dc;
+      box-shadow: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .glow,
+    .frame,
+    .choice,
+    .choice::after,
+    .step,
+    .mark {
+      animation: none;
+    }
+  }
+</style>
