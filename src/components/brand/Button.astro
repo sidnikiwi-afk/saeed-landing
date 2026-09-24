@@ -1,0 +1,73 @@
+---
+interface Props {
+  href: string;
+  variant?: 'ink' | 'purple' | 'line';
+}
+
+const { href, variant = 'ink' } = Astro.props;
+---
+
+<a href={href} class:list={['btn', variant]}><slot /></a>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.125rem;
+    border-radius: 11px;
+    border: 1px solid transparent;
+    font-weight: 600;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid var(--brand-purple);
+    outline-offset: 2px;
+  }
+
+  .ink {
+    background: var(--brand-ink);
+    color: #fff;
+    box-shadow: 0 6px 20px -6px rgba(10, 10, 20, 0.5);
+  }
+
+  .ink:hover {
+    background: #1f1c33;
+  }
+
+  .purple {
+    background: var(--brand-purple);
+    color: #fff;
+    box-shadow: 0 8px 24px -8px rgba(110, 72, 240, 0.8);
+  }
+
+  .purple:hover {
+    background: var(--brand-purple-deep);
+  }
+
+  .line {
+    background: #fff;
+    color: var(--brand-ink);
+    border-color: var(--brand-line);
+  }
+
+  .line:hover {
+    border-color: #cfc6f7;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn,
+    .btn:hover {
+      transform: none;
+    }
+  }
+</style>

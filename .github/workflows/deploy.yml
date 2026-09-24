@@ -27,6 +27,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run test:contact
+      - run: npm run test:built-site
       - run: npm run verify:premier-enquire
       - uses: actions/upload-pages-artifact@v3
         with:
