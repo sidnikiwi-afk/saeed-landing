@@ -1,51 +1,32 @@
-# Brackstone Digital Landing Page
+# Brackstone Digital marketing site
 
-brackstonedigital.co.uk — UK B2B lead gen agency site. Static HTML, GitHub Pages.
+brackstonedigital.co.uk. The public site for Brackstone Digital: small UK businesses, three pillars (enquiries on every channel, admin automation, custom dashboards and integrations).
+
+Read `CONTEXT.md` for the domain language and `docs/adr/` for decisions before changing anything.
 
 ## Knowledge Base
 Research wiki at `../wikis/`. Check before making changes:
-- `../wikis/domains/cold-email/pages/` — Campaign strategy, lead sourcing, personalisation
-- `../wikis/domains/data-infrastructure/pages/` — Webhook security, n8n patterns, Postgres
+- `../wikis/domains/cold-email/pages/` for campaign strategy, lead sourcing, personalisation
+- `../wikis/domains/data-infrastructure/pages/` for webhook security, n8n patterns, Postgres
 
-## Detail
+## Stack and deploy
 
-Public-facing website for the lead generation business. Static HTML, hosted via GitHub Pages.
+- Astro 6, `output: 'static'`, Tailwind 4, React islands where needed.
+- Deploys to **GitHub Pages**: `.github/workflows/deploy.yml` builds on every push to `master` and publishes `dist`. DNS is at Namecheap. See `docs/adr/0001-stay-on-github-pages.md`.
+- There are no preview URLs. Merging to `master` is a production release.
+- `functions/api/contact.js` is the contact form's Cloudflare Pages Function. It runs on the separate `premier-housing-demo` Cloudflare Pages project (`https://premier-housing-demo.pages.dev/api/contact`), not on the live domain. `wrangler.jsonc` is not used by the live site. See `README.md` for its secrets.
+- CI runs `npm run test:contact` and `npm run verify:premier-enquire` before deploying.
 
-**Domain:** `brackstonedigital.co.uk` (CNAME configured)
-**Design:** Navy hero (#1A2332), light body (#F8F9FA), teal accent (#16A085). Inter + DM Sans fonts.
+## Layout
 
-**Files:**
-- `index.html` — Main landing page (9 sections: Nav, Hero, Problems, How It Works, Services, Industries, Results, CTA+Quiz, Footer)
-- `thank-you.html` — Post-form submission page with Meta Pixel Lead event
-- `privacy.html` — UK GDPR privacy policy
-- `CNAME` — Domain mapping file
+- `src/pages/`: `index`, `contact`, `privacy`, and the `premier-housing-demo` pages.
+- `src/components/home/`: homepage sections. `src/components/direction-2/` is unused.
+- `src/styles/theme.css`: design tokens. `src/layouts/Layout.astro`: shared head and SEO.
+- Do not touch the `premier-housing-demo` pages, `functions/api/enquire*`, or `scripts/build-premier-housing-pages.mjs`.
 
-**Quiz Funnel (built 2026-02-26):** 3-step multi-step quiz replaces old 2-field form.
-- Step 1: Industry (6 clickable cards) + Postcode
-- Step 2: Biggest challenge (4 options) + Team size (3 pills)
-- Step 3: First name + Work email + GDPR consent
-- POSTs 6 data points to `/webhook/brackstone-lead`, redirects to thank-you.html
+## Conventions
 
-**n8n Webhook (LIVE 2026-02-26):** Workflow `iL6PCYVnJNDAqMgU` ("Brackstone Lead Intake"), 5 nodes:
-- Webhook → Code (prepare data + generate lead_id) → Postgres INSERT → Telegram notify → Respond OK
-- Tested end-to-end successfully
-- Postgres table: `brackstone_leads` (13 columns, upsert on email)
-
-**Follow-up Sequence (drafted 2026-02-26):** 3 emails over 21 days:
-- E1 (immediate): Report delivery + area highlights
-- E2 (day 7): Insight nudge + soft 15-min call offer
-- E3 (day 21): Area data refresh offer + soft close
-- Not yet set up in Instantly
-
-**Implementation Plan:** `meta-campaign-v0.2.0/brackstone-digital-implementation-plan-v3.md`
-- 3 revenue streams: B2B outreach service (primary), homebuyer data for tradespeople, energy grant leads
-- Focus on Stream 1 first (accountancy vertical)
-- Pricing: £200-500/month retainer for done-with-you outreach
-
-**Not yet done:**
-- Meta Pixel ID (placeholder `YOUR_PIXEL_ID_HERE` in code)
-- OG image (1200x630, placeholder in meta tags)
-- `hello@brackstonedigital.co.uk` email setup
-- Social proof (testimonials, sample report screenshots)
-- Instantly follow-up campaign setup (3 emails drafted, not yet configured)
-- Calendly/Cal.com booking link for sales calls
+- UK English. No em dashes in user-facing copy. No emojis in code or copy.
+- Only name tools actually built with. Do not name clients. Label made-up examples as illustrative. The approved lists are in the redesign handoff (`brackstone-dashboard` repo, `demos/cloudflare-demo-pages/site-redesign/HANDOFF.md`).
+- Respect `prefers-reduced-motion`. Content must be visible without JavaScript.
+- Agents must not touch Google Ads, spend money, provision phone numbers, or change live Retell or Twilio config.
