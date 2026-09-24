@@ -12,7 +12,7 @@ Brackstone's homepage no longer matches what Brackstone sells. It reads as a nar
 
 Rebuild the homepage in the chosen Design B ("Product-led, balanced") so that it sells the three pillars and leads with the teardown. Build it on a hidden preview route, section by section, and swap it in as the homepage in one release. Restyle the contact and privacy pages to match.
 
-Add ads pages, one per search intent, from one shared template: garages first, then estate agents, then a general AI receptionist page. Each ads page repeats the search in its headline, sells only the AI receptionist, and leads with the free trial. The demo line and the starting price appear only once they exist.
+Add ads pages, one per search intent, from one shared template: garages first, then estate agents, then a general AI receptionist page. Each ads page repeats the search in its headline, sells only the AI receptionist, and leads with the free trial. The starting price appears once it is set. The first release has no demo line: the page shows an illustrative example call instead, and the template keeps a demo line setting, empty, for later.
 
 Add cookie consent and tracking so that each free trial request submitted on the dashboard counts as the primary conversion for the ad that brought the visitor, and taps on the trial button and the demo line count as secondary conversions.
 
@@ -45,7 +45,7 @@ Add cookie consent and tracking so that each free trial request submitted on the
 20. As a garage owner who searched for an AI receptionist for garages, I want the headline to repeat what I searched for, so that I know I am in the right place.
 21. As an ads page visitor, I want the main button to start a free trial with no card, so that I can try it with no risk.
 22. As a mobile ads page visitor, I want a sticky bar with the trial button and a call button, so that the next step is always one tap away.
-23. As an ads page visitor, I want to tap to call the demo line and hear the receptionist take a call, so that I can judge the voice myself.
+23. As an ads page visitor, I want to see an illustrative example of the receptionist taking a call, so that I can judge how it handles a caller. (A tap-to-call demo line is deferred; see Further Notes.)
 24. As an ads page visitor, I want to see a starting price, so that I know if it is in my budget before I sign up.
 25. As an ads page visitor, I want a short FAQ, so that my last doubts are answered on the page.
 26. As an ads page visitor, I want the page to load fast on a phone signal, so that I do not bounce back to Google.
@@ -107,7 +107,7 @@ Add cookie consent and tracking so that each free trial request submitted on the
 - URLs: garages at `/garages/`, estate agents at `/estate-agents/`, general at `/ai-receptionist/`. All are indexed and in the sitemap.
 - The header shows only the logo, the call button and the trial button. There is no site menu. The footer is minimal (privacy and teardown link).
 - Every trial link carries `utm_source=google`, `utm_medium=cpc`, `utm_campaign` set to the page's campaign value, and `utm_content` set to the placement (header, hero, pricing, final, mobile-bar). Real UTM tags already on the landing URL take precedence over the defaults, so ad-level tags survive.
-- The demo line number and the starting price are site-wide settings. When a setting is empty, every element that uses it is left out of the page, not shown as a placeholder.
+- The demo line number and the starting price are site-wide settings. When a setting is empty, every element that uses it is left out of the page, not shown as a placeholder. The demo line setting stays empty for the first release.
 - The estate agents page leads with the trial promise (captures viewing requests and valuation leads, tells you who to call first). Booking viewings into a diary appears only as a separately labelled setup offer. It never says the trial books viewings.
 - Ads pages ship no heavy JavaScript. Animation is light, respects reduced motion, and must not delay the largest contentful paint.
 
@@ -147,13 +147,15 @@ Add cookie consent and tracking so that each free trial request submitted on the
 - Industry pages other than the ads pages (ADR 0002).
 - The missed-calls calculator.
 - Making viewing booking part of every estate agent's free trial. It is dashboard product work.
-- Creating or editing Google Ads campaigns, conversion actions or budgets. Provisioning the demo line. Changing live Retell or Twilio config. Any spend.
+- Creating or editing Google Ads campaigns, conversion actions or budgets. Changing live Retell or Twilio config. Any spend.
+- A live demo line. Saeed decided on 2026-09-24 not to add one for now, because a public number costs money per minute and there are no cost guards for public callers yet.
 - Lettings-only or trades ads pages. They wait for conversion data from the first three.
 - The premier-housing demo pages and their functions.
 - Changes to the contact form's backend.
 
 ## Further Notes
 
-- Human-only inputs, each tracked as an Approval Inbox card: the demo line number, the public starting price, and the GA4 property plus Google Ads conversion ID and labels. Pages can ship before these exist. Ads must not start until the demo line, the price and tracking are all live.
+- Human-only inputs, each tracked as an Approval Inbox card: the public starting price, and the GA4 property plus Google Ads conversion ID and labels. Pages can ship before these exist. Ads must not start until the price and tracking are both live.
+- Demo line, deferred: decide again after the ads have run and there is data. If added later, it needs cost guards before it goes public (a short maximum call length, a Twilio spending alert, a limit on simultaneous calls, a block on repeat callers). The dashboard's concurrent call limit is only a design today, and no guard for a public demo line was found in the code. The existing shared demo number is set up for another demo and must not be pointed at ad traffic without Saeed's approval. The setup would be a /wizard job for Saeed.
 - Past work may only be hinted at from the approved list. "Booking viewings from calls and emails" is confirmed as built for one estate agency and may appear only as a setup offer.
 - Suggested model routing: a strong model for the hero, the day scroll and review; a cheaper model is fine for well-specified section ports and content instances. Do not use the byesu relay sandbox for this repo.
