@@ -13,8 +13,9 @@ Research wiki at `../wikis/`. Check before making changes:
 
 - Astro 6, `output: 'static'`, Tailwind 4, React islands where needed.
 - Deploys to **GitHub Pages**: `.github/workflows/deploy.yml` builds on every push to `master` and publishes `dist`. DNS is at Namecheap. See `docs/adr/0001-stay-on-github-pages.md`.
-- There are no preview URLs. Merging to `master` is a production release.
-- `functions/api/contact.js` is the contact form's Cloudflare Pages Function. It runs on the separate `premier-housing-demo` Cloudflare Pages project (`https://premier-housing-demo.pages.dev/api/contact`), not on the live domain. `wrangler.jsonc` is not used by the live site. See `README.md` for its secrets.
+- Merging to `master` is a production release.
+- Previews: the repo is connected to the Cloudflare Pages project `brackstone-digital`, which builds every branch and pull request. The PR's "Cloudflare Pages" check links the preview (`https://<branch>.brackstone-digital.pages.dev`). It does not serve the live domain.
+- `functions/api/contact.js` is the contact form's Cloudflare Pages Function. The live form calls it on the separate `premier-housing-demo` Cloudflare Pages project (`https://premier-housing-demo.pages.dev/api/contact`). See `README.md` for its secrets.
 - CI runs `npm run test:contact` and `npm run verify:premier-enquire` before deploying.
 
 ## Layout

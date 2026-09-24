@@ -82,7 +82,7 @@ Add cookie consent and tracking so that each free trial request submitted on the
 
 ### Hosting and release
 
-- The site stays on GitHub Pages (ADR 0001). Merging to master is a production release, so unfinished work must be hidden rather than on a branch preview.
+- The site stays on GitHub Pages (ADR 0001). Merging to master is a production release, so merged but unfinished work must be hidden. Every pull request gets a Cloudflare Pages preview URL, which is where each ticket is reviewed before merge.
 - The new homepage is built at a hidden preview route that is set to noindex and left out of the sitemap. Each homepage ticket merges to master behind that route. A final swap ticket makes it the homepage and removes the preview route.
 
 ### Design system
