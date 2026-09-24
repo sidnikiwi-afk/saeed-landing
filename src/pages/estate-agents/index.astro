@@ -1,0 +1,9 @@
+---
+import AdsLayout from '../../layouts/AdsLayout.astro';
+import AdsPage from '../../components/ads/AdsPage.astro';
+import { estateAgentsAd } from '../../data/ads/estate-agents.mjs';
+---
+
+<AdsLayout title={`${estateAgentsAd.searchIntent} | Brackstone`} description={estateAgentsAd.description}>
+  <AdsPage content={estateAgentsAd} />
+</AdsLayout>
