@@ -1,0 +1,440 @@
+---
+import Button from './Button.astro';
+import IllustrativeCaption from './IllustrativeCaption.astro';
+
+const moments = [
+  {
+    time: '08:12',
+    channel: 'Email',
+    title: 'A quote request lands in a busy inbox',
+    without: 'It sits under forty other emails until Friday.',
+    with: 'Read, job created, reply sent with survey slots.',
+  },
+  {
+    time: '10:40',
+    channel: 'Web form',
+    title: 'A viewing request comes through the website',
+    without: 'Nobody sees it until lunch. They have booked elsewhere.',
+    with: 'Viewing held in the diary and confirmed by text.',
+  },
+  {
+    time: '13:05',
+    channel: 'Call',
+    title: 'A customer rings while everyone is on a job',
+    without: 'Missed call, no voicemail. They ring the next firm.',
+    with: 'Answered on the first ring and booked in.',
+  },
+  {
+    time: '16:47',
+    channel: 'Follow-up',
+    title: 'A quote from last week has gone quiet',
+    without: 'Nobody remembers to chase. The work goes cold.',
+    with: 'Chased on schedule, visible until someone closes it.',
+  },
+  {
+    time: '21:19',
+    channel: 'Call',
+    title: 'The phone rings after you have gone home',
+    without: 'Phone off. The enquiry is gone by morning.',
+    with: 'Answered, captured and waiting in the morning summary.',
+  },
+];
+---
+
+<section id="day" data-day-story aria-labelledby="day-title">
+  <div class="pin">
+    <div class="wrap">
+      <div class="top">
+        <div>
+          <p class="eyebrow">One day, one small team</p>
+          <h2 id="day-title">You are not losing work to better firms.</h2>
+          <p class="lead">
+            You are losing it to the inbox, the phone and the follow-up nobody had time for. Scroll through a normal day.
+          </p>
+          <IllustrativeCaption>A made-up working day, not a client.</IllustrativeCaption>
+        </div>
+        <p class="clock">08:12 to the next morning</p>
+      </div>
+      <div class="rail" aria-hidden="true"><span></span></div>
+    </div>
+    <div class="track">
+      {
+        moments.map((moment) => (
+          <article class="moment">
+            <p class="when">
+              <time datetime={moment.time}>{moment.time}</time>
+              <span>{moment.channel}</span>
+            </p>
+            <h3>{moment.title}</h3>
+            <div class="states">
+              <p class="state bad">
+                <b>Without</b>
+                {moment.without}
+              </p>
+              <p class="state good">
+                <b>With Brackstone</b>
+                {moment.with}
+              </p>
+            </div>
+          </article>
+        ))
+      }
+      <article class="moment closer">
+        <p class="when"><time datetime="08:00">08:00 next day</time></p>
+        <h3>Five enquiries across three channels. None dropped.</h3>
+        <p class="closer-copy">
+          Most small teams do not have an enquiry problem. They have a Tuesday-afternoon problem.
+        </p>
+        <Button href="/contact/" variant="line">Find your leaks</Button>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  [data-day-story] {
+    height: auto;
+    padding: 5.5rem 0;
+  }
+
+  .pin {
+    position: relative;
+    height: auto;
+  }
+
+  .wrap {
+    width: min(1200px, calc(100% - 3rem));
+    margin: 0 auto;
+  }
+
+  .top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--brand-purple);
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    max-width: 14em;
+    margin: 0.75rem 0 0.6rem;
+    font-size: clamp(2rem, 4.2vw, 3.25rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  .lead {
+    max-width: 38rem;
+    margin: 0 0 1rem;
+    color: var(--brand-muted);
+    font-size: 1.125rem;
+  }
+
+  .clock {
+    margin: 0;
+    color: var(--brand-purple);
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+  }
+
+  .rail {
+    display: none;
+    height: 4px;
+    margin-top: 1.75rem;
+    border-radius: 9px;
+    background: var(--brand-line);
+  }
+
+  .rail span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--brand-purple), var(--brand-mint));
+  }
+
+  .track {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    width: min(1200px, calc(100% - 3rem));
+    margin: 1.75rem auto 0;
+  }
+
+  .moment {
+    min-width: 0;
+    padding: 1.35rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(10, 10, 20, 0.04), 0 8px 30px -8px rgba(40, 20, 120, 0.14);
+  }
+
+  .when {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin: 0;
+    color: var(--brand-muted);
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 0.82rem;
+  }
+
+  .when span {
+    padding: 0.15rem 0.55rem;
+    border-radius: 99px;
+    background: #f3f3f6;
+    color: var(--brand-ink);
+    font-family: "Geist", system-ui, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  h3 {
+    margin: 0.7rem 0 1rem;
+    font-size: 1.25rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    text-wrap: balance;
+  }
+
+  .states {
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .state {
+    position: relative;
+    margin: 0;
+    padding: 0.9rem;
+    border-radius: 14px;
+    opacity: 1;
+    font-size: 0.92rem;
+    transform: none;
+  }
+
+  .state b {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .bad {
+    background: #fef2f2;
+    color: #991b1b;
+  }
+
+  .good {
+    background: #e6faf3;
+    color: #065f46;
+  }
+
+  .closer {
+    background: var(--brand-ink);
+    color: #fff;
+    border-color: var(--brand-ink);
+  }
+
+  .closer .when {
+    color: #a5a5b4;
+  }
+
+  .closer-copy {
+    margin: 0 0 1.1rem;
+    color: #c9c9d6;
+    font-size: 0.95rem;
+  }
+
+  .closer :global(.btn) {
+    background: #fff;
+    color: var(--brand-ink);
+  }
+
+  @media (max-width: 860px) {
+    [data-day-story] .track {
+      flex-direction: column;
+      transform: none;
+    }
+
+    [data-day-story] .state {
+      position: static;
+      opacity: 1;
+      transform: none;
+    }
+
+    [data-day-story] .rail {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-day-story] {
+      height: auto;
+    }
+
+    [data-day-story] .pin {
+      position: relative;
+      height: auto;
+      overflow: visible;
+    }
+
+    [data-day-story] .track {
+      flex-direction: column;
+      transform: none;
+    }
+
+    [data-day-story] .state {
+      position: static;
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (min-width: 861px) and (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      [data-day-story] {
+        height: 320vh;
+        padding: 0;
+        view-timeline-name: --day;
+        view-timeline-axis: block;
+      }
+
+      [data-day-story] .pin {
+        position: sticky;
+        top: 4.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: calc(100vh - 4.5rem);
+        overflow: hidden;
+      }
+
+      [data-day-story] .rail {
+        display: block;
+      }
+
+      [data-day-story] .rail span {
+        width: 0;
+        animation: day-rail linear both;
+        animation-timeline: --day;
+        animation-range: contain 0% contain 100%;
+      }
+
+      [data-day-story] .track {
+        flex-direction: row;
+        align-items: stretch;
+        width: max-content;
+        max-width: none;
+        margin-top: 1.5rem;
+        padding-left: max(1.5rem, calc((100vw - 1200px) / 2 + 1.5rem));
+        animation: day-slide linear both;
+        animation-timeline: --day;
+        animation-range: contain 0% contain 100%;
+      }
+
+      [data-day-story] .moment {
+        flex: none;
+        width: min(23rem, 78vw);
+      }
+
+      [data-day-story] .states {
+        position: relative;
+        height: 7.4rem;
+      }
+
+      [data-day-story] .state {
+        position: absolute;
+        inset: 0;
+      }
+
+      [data-day-story] .moment:not(.closer) {
+        animation: day-card linear both;
+        animation-timeline: view(inline);
+        animation-range: cover 32% cover 50%;
+      }
+
+      [data-day-story] .state.bad {
+        animation: day-out linear both;
+        animation-timeline: view(inline);
+        animation-range: cover 32% cover 50%;
+      }
+
+      [data-day-story] .state.good {
+        opacity: 0;
+        animation: day-in linear both;
+        animation-timeline: view(inline);
+        animation-range: cover 32% cover 50%;
+      }
+    }
+  }
+
+  @keyframes day-slide {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(calc(-100% + 100vw - 1.5rem));
+    }
+  }
+
+  @keyframes day-rail {
+    from {
+      width: 0;
+    }
+
+    to {
+      width: 100%;
+    }
+  }
+
+  @keyframes day-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes day-out {
+    from {
+      opacity: 1;
+      transform: none;
+    }
+
+    to {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+
+  @keyframes day-card {
+    to {
+      border-color: rgba(0, 200, 150, 0.45);
+      box-shadow: 0 20px 50px -24px rgba(0, 160, 120, 0.45);
+    }
+  }
+</style>

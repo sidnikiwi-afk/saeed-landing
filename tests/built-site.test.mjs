@@ -68,6 +68,80 @@ function isPremierHousingDemo(relPath) {
   return relPath.split('/').some((part) => part.startsWith('premier-housing-demo'));
 }
 
+export function mediaBlocks(css) {
+  const blocks = [];
+  const start = /@media[^{]*\{/g;
+  let match;
+  while ((match = start.exec(css))) {
+    let index = match.index + match[0].length;
+    let depth = 1;
+    while (index < css.length && depth > 0) {
+      if (css[index] === '{') depth += 1;
+      else if (css[index] === '}') depth -= 1;
+      index += 1;
+    }
+    blocks.push({
+      query: match[0].slice(0, -1),
+      body: css.slice(match.index + match[0].length, index - 1),
+    });
+  }
+  return blocks;
+}
+
+function linkedCss(html) {
+  const parts = [];
+  for (const match of html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/gi)) {
+    parts.push(match[1]);
+  }
+  for (const match of html.matchAll(/href="([^"]+\.css)"/g)) {
+    const relUrl = decodeAttr(match[1]).replace(/^\//, '');
+    parts.push(readFileSync(join(dist, relUrl), 'utf8'));
+  }
+  return parts.join('\n');
+}
+
+export function sectionLayoutProblems(css) {
+  const problems = [];
+  const blocks = mediaBlocks(css);
+  const pillarRule = /\[data-pillars\][^{]*\{[^}]*repeat\(3,\s*minmax\(0,\s*1fr\)\)/;
+  if (!pillarRule.test(css)) {
+    problems.push('pillars are not three equal columns');
+  }
+  const pillarPhone = blocks.filter(
+    (block) => /max-width:\s*960px/.test(block.query) && block.body.includes('data-pillars'),
+  );
+  if (!pillarPhone.some((block) => /grid-template-columns:\s*1fr\s*[;}]/.test(block.body))) {
+    problems.push('pillars do not stack on a phone');
+  }
+
+  const phone = blocks.filter(
+    (block) => /max-width:\s*860px/.test(block.query) && block.body.includes('data-day-story'),
+  );
+  const phoneCss = phone.map((block) => block.body).join('\n');
+  if (!/flex-direction:\s*column/.test(phoneCss) || !/opacity:\s*1/.test(phoneCss)) {
+    problems.push('day story is not readable on a phone');
+  }
+
+  const reduced = blocks.filter(
+    (block) => /prefers-reduced-motion:\s*reduce/.test(block.query) && block.body.includes('data-day-story'),
+  );
+  const reducedCss = reduced.map((block) => block.body).join('\n');
+  if (!/opacity:\s*1/.test(reducedCss) || /opacity:\s*0/.test(reducedCss) || /height:\s*320vh/.test(reducedCss)) {
+    problems.push('day story needs motion to be read');
+  }
+
+  const motion = blocks.filter(
+    (block) =>
+      /min-width:\s*861px/.test(block.query) &&
+      /prefers-reduced-motion:\s*no-preference/.test(block.query) &&
+      block.body.includes('data-day-story'),
+  );
+  if (motion.length === 0) {
+    problems.push('day story motion is not limited to wide screens that allow motion');
+  }
+  return problems;
+}
+
 function decodeAttr(value) {
   return decodeHtmlEntities(value)
     .replace(/&amp;/g, '&')
@@ -325,6 +399,56 @@ test('built site hides the preview and keeps copy clean', () => {
   assert.match(previewHtml, /Email read/);
   assert.match(previewHtml, /Form received/);
   assert.match(previewHtml, /Answered on first ring/);
+
+  assert.match(previewHtml, /id="what"/);
+  assert.match(previewHtml, /Every enquiry answered, whatever the channel/);
+  assert.match(previewHtml, /The admin moves itself on/);
+  assert.match(previewHtml, /One dashboard for all of it/);
+  assert.match(previewHtml, /AI phone receptionist[\s\S]{0,240}Most popular/);
+  assert.match(previewHtml, /Email enquiry handling/);
+  assert.match(previewHtml, /Web form and portal enquiries/);
+  assert.match(previewHtml, /Bookings and confirmations/);
+  assert.match(previewHtml, /Custom dashboards/);
+
+  assert.match(previewHtml, /id="day"/);
+  assert.match(previewHtml, /You are not losing work to better firms/);
+  assert.match(previewHtml, /Tuesday-afternoon problem/);
+  for (const line of [
+    'A quote request lands in a busy inbox',
+    'A viewing request comes through the website',
+    'A customer rings while everyone is on a job',
+    'A quote from last week has gone quiet',
+    'The phone rings after you have gone home',
+    'It sits under forty other emails until Friday.',
+    'Read, job created, reply sent with survey slots.',
+    'Five enquiries across three channels. None dropped.',
+  ]) {
+    assert.match(previewHtml, new RegExp(line.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+  assert.ok((previewHtml.match(/>Without</g) ?? []).length >= 5, 'day story is missing the without state');
+  assert.ok((previewHtml.match(/>With Brackstone</g) ?? []).length >= 5, 'day story is missing the with state');
+
+  assert.match(previewHtml, /id="tools"/);
+  assert.match(previewHtml, /Keep the software you run on/);
+  for (const tool of ['ServiceM8', 'Stripe', 'Twilio', 'Square', 'DVLA']) {
+    assert.match(previewHtml, new RegExp(`\\b${tool}\\b`));
+  }
+
+  assert.match(previewHtml, /id="built"/);
+  for (const hint of [
+    'An AI receptionist that books MOTs and services',
+    'A dealer website with an AI line that knows the stock',
+    'Portal enquiries turned into booked viewings',
+    'Reporting straight from a job-management system',
+    'A quoting helper that works from drawings',
+    'A multi-business dashboard with billing built in',
+  ]) {
+    assert.match(previewHtml, new RegExp(hint.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+  assert.match(previewHtml, /Things we have built[\s\S]{0,1600}Illustrative/);
+
+  const previewCss = linkedCss(previewHtml);
+  assert.deepEqual(sectionLayoutProblems(previewCss), []);
 
   const homeHtml = readFileSync(join(dist, 'index.html'), 'utf8');
   assert.match(homeHtml, /fonts\.googleapis\.com/);
