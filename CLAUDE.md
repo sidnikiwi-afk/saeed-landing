@@ -16,7 +16,7 @@ Research wiki at `../wikis/`. Check before making changes:
 - Merging to `master` is a production release.
 - Previews: the repo is connected to the Cloudflare Pages project `brackstone-digital`, which builds every branch and pull request. The PR's "Cloudflare Pages" check links the preview (`https://<branch>.brackstone-digital.pages.dev`). It does not serve the live domain.
 - `functions/api/contact.js` is the contact form's Cloudflare Pages Function. The live form calls it on the separate `premier-housing-demo` Cloudflare Pages project (`https://premier-housing-demo.pages.dev/api/contact`). See `README.md` for its secrets.
-- CI runs `npm run test:contact`, `npm run test:built-site`, and `npm run verify:premier-enquire` before deploying.
+- CI runs `npm run test:contact`, `npm run test:built-site`, and `npm run verify:premier-enquire` on every pull request to `master`, and again before deploying.
 
 ## Layout
 
