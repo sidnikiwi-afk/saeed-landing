@@ -143,11 +143,11 @@ const scenes = [
                 {scene.id === 'form' && (
                   <div class="form">
                     <p class="ft"><span>Book a viewing</span><span>website</span></p>
-                    <p class="inp"><small>Name</small>Priya Shah</p>
-                    <p class="inp"><small>Property</small>14 Oak Road, 2 bed</p>
-                    <p class="inp"><small>About you</small>Employed, moving in 6 weeks</p>
-                    <p class="inp"><small>When</small>This weekend if possible</p>
-                    <p class="sent">Enquiry sent</p>
+                    <p class="inp"><small>Name</small><b>Priya Shah</b></p>
+                    <p class="inp"><small>Property</small><b>14 Oak Road, 2 bed</b></p>
+                    <p class="inp"><small>About you</small><b>Employed, moving in 6 weeks</b></p>
+                    <p class="inp"><small>When</small><b>This weekend if possible</b></p>
+                    <p class="sent"><span class="idle">Send enquiry</span><span class="gone">Enquiry sent</span></p>
                   </div>
                 )}
                 {scene.id === 'call' && (
@@ -162,11 +162,11 @@ const scenes = [
                 )}
               </div>
               <div class="col">
-                <h2>Enquiry <span class="tag">{scene.enquiryTag}</span></h2>
+                <h2>Enquiry <span class="tag swap"><span class="reading">Reading</span><span class="urg">{scene.enquiryTag}</span></span></h2>
                 <div class="enq">
                   <p class="who">
-                    <span class="av" aria-hidden="true">{scene.initials}</span>
-                    <span><strong>{scene.name}</strong><small>{scene.via}</small></span>
+                    <span class="av" aria-hidden="true"><span class="q">?</span><span class="init">{scene.initials}</span></span>
+                    <span><strong class="nm">{scene.name}</strong><small>{scene.via}</small></span>
                   </p>
                   {
                     scene.fields.map(([label, value]) => (
@@ -177,7 +177,7 @@ const scenes = [
                 <p class="note">{scene.note}</p>
               </div>
               <div class="col">
-                <h2>Automation <span class="tag run">Running</span></h2>
+                <h2>Automation <span class="tag run swap"><span class="running">Running</span><span class="done">Done</span></span></h2>
                 <ol class="runlog">
                   {
                     scene.steps.map(([title, detail]) => (
@@ -396,9 +396,11 @@ const scenes = [
 
   .stage {
     margin-top: 3.2rem;
+    perspective: 1400px;
   }
 
   .win {
+    transform-origin: center top;
     border: 1px solid var(--brand-line);
     border-radius: 22px;
     background: #fff;
@@ -579,6 +581,7 @@ const scenes = [
   }
 
   .sent {
+    display: grid;
     padding: 0.6rem;
     border-radius: 9px;
     background: var(--brand-mint);
@@ -586,6 +589,18 @@ const scenes = [
     font-size: 0.82rem;
     font-weight: 600;
     text-align: center;
+  }
+
+  .sent span {
+    grid-area: 1 / 1;
+  }
+
+  .idle {
+    visibility: hidden;
+  }
+
+  .inp b {
+    font-weight: 600;
   }
 
   .tx {
@@ -624,13 +639,33 @@ const scenes = [
     display: grid;
     width: 2.25rem;
     height: 2.25rem;
-    place-items: center;
     flex: none;
     border-radius: 10px;
     background: var(--brand-purple);
     color: #fff;
     font-size: 0.78rem;
     font-weight: 700;
+  }
+
+  .av span,
+  .tag.swap span {
+    grid-area: 1 / 1;
+  }
+
+  .av span {
+    display: grid;
+    place-items: center;
+  }
+
+  .q,
+  .reading,
+  .running {
+    visibility: hidden;
+  }
+
+  .tag.swap {
+    display: inline-grid;
+    justify-items: center;
   }
 
   .fl {
@@ -751,6 +786,14 @@ const scenes = [
       animation: glow-spin 20s linear infinite;
     }
 
+    @supports (animation-timeline: view()) {
+      .win {
+        animation: hero-tilt linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 40%;
+      }
+    }
+
     .hero:not(:has(input:checked)) .win {
       display: grid;
     }
@@ -801,23 +844,189 @@ const scenes = [
       animation-delay: 16s;
     }
 
-    .frame[data-scene="email"] { --shift: 0s; }
-    .frame[data-scene="form"] { --shift: 8s; }
-    .frame[data-scene="call"] { --shift: 16s; }
-
-    .step:nth-child(1) { --d: 0.3s; }
-    .step:nth-child(2) { --d: 1.4s; }
-    .step:nth-child(3) { --d: 2.5s; }
-    .step:nth-child(4) { --d: 3.6s; }
-    .step:nth-child(5) { --d: 4.7s; }
-    .step:nth-child(6) { --d: 5.8s; }
-
-    .hero:not(:has(input:checked)) .step {
-      animation: step 24s calc(var(--shift) + var(--d)) infinite linear backwards;
+    .choice:has(input:checked)::after {
+      transform-origin: left center;
+      animation: prog-pick 15s linear infinite;
     }
 
-    .hero:not(:has(input:checked)) .mark {
-      animation: mark 24s calc(var(--shift) + var(--d)) infinite linear backwards;
+    .step:nth-child(1) { animation-name: step-live-1; }
+    .step:nth-child(2) { animation-name: step-live-2; }
+    .step:nth-child(3) { animation-name: step-live-3; }
+    .step:nth-child(4) { animation-name: step-live-4; }
+    .step:nth-child(5) { animation-name: step-live-5; }
+    .step:nth-child(6) { animation-name: step-live-6; }
+    .mark:nth-child(1) { animation-name: mark-live-1; }
+    .step:nth-child(2) .mark { animation-name: mark-live-2; }
+    .step:nth-child(3) .mark { animation-name: mark-live-3; }
+    .step:nth-child(4) .mark { animation-name: mark-live-4; }
+    .step:nth-child(5) .mark { animation-name: mark-live-5; }
+    .step:nth-child(6) .mark { animation-name: mark-live-6; }
+
+    .frame[data-scene="email"] mark:nth-of-type(1) { animation-name: hl-1; }
+    .frame[data-scene="email"] mark:nth-of-type(2) { animation-name: hl-2; }
+    .frame[data-scene="email"] mark:nth-of-type(3) { animation-name: hl-3; }
+    .frame[data-scene="email"] mark:nth-of-type(4) { animation-name: hl-4; }
+    .frame[data-scene="form"] .inp:nth-child(2) b { animation-name: show-8; }
+    .frame[data-scene="form"] .inp:nth-child(3) b { animation-name: show-18; }
+    .frame[data-scene="form"] .inp:nth-child(4) b { animation-name: show-28; }
+    .frame[data-scene="form"] .inp:nth-child(5) b { animation-name: show-40; }
+    .frame[data-scene="form"] .idle { animation-name: vis-until-46; }
+    .frame[data-scene="form"] .gone { animation-name: vis-from-46; }
+    .frame[data-scene="call"] .m:nth-child(1) { animation-name: show-4; }
+    .frame[data-scene="call"] .m:nth-child(2) { animation-name: show-12; }
+    .frame[data-scene="call"] .m:nth-child(3) { animation-name: show-20; }
+    .frame[data-scene="call"] .m:nth-child(4) { animation-name: show-28; }
+    .frame[data-scene="call"] .m:nth-child(5) { animation-name: show-36; }
+    .frame[data-scene="call"] .m:nth-child(6) { animation-name: show-44; }
+
+    .reading { animation-name: vis-until-32; }
+    .urg { animation-name: vis-from-32; }
+    .running { animation-name: vis-until-68; }
+    .done { animation-name: vis-from-68; }
+    .note { animation-name: show-68; }
+
+    .frame[data-scene="email"] .q,
+    .frame[data-scene="call"] .q { animation-name: vis-until-20; }
+    .frame[data-scene="email"] .init,
+    .frame[data-scene="call"] .init { animation-name: vis-from-20; }
+    .frame[data-scene="email"] .av,
+    .frame[data-scene="call"] .av { animation-name: av-20; }
+    .frame[data-scene="email"] .nm,
+    .frame[data-scene="call"] .nm { animation-name: show-20; }
+    .frame[data-scene="form"] .q { animation-name: vis-until-8; }
+    .frame[data-scene="form"] .init { animation-name: vis-from-8; }
+    .frame[data-scene="form"] .av { animation-name: av-8; }
+    .frame[data-scene="form"] .nm { animation-name: show-8; }
+
+    .frame[data-scene="email"] .fl:nth-child(2) strong,
+    .frame[data-scene="email"] .fl:nth-child(3) strong,
+    .frame[data-scene="email"] .fl:nth-child(4) strong { animation-name: show-20; }
+    .frame[data-scene="email"] .fl:nth-child(5) strong { animation-name: show-44; }
+    .frame[data-scene="form"] .fl:nth-child(2) strong { animation-name: show-20; }
+    .frame[data-scene="form"] .fl:nth-child(3) strong { animation-name: show-32; }
+    .frame[data-scene="form"] .fl:nth-child(4) strong,
+    .frame[data-scene="form"] .fl:nth-child(5) strong { animation-name: show-44; }
+    .frame[data-scene="call"] .fl:nth-child(2) strong { animation-name: show-20; }
+    .frame[data-scene="call"] .fl:nth-child(3) strong { animation-name: show-32; }
+    .frame[data-scene="call"] .fl:nth-child(4) strong,
+    .frame[data-scene="call"] .fl:nth-child(5) strong { animation-name: show-44; }
+
+    .hero:not(:has(input:checked)) :is(
+      .step,
+      .mark,
+      mark,
+      .m,
+      .inp b,
+      .idle,
+      .gone,
+      .av,
+      .q,
+      .init,
+      .nm,
+      .fl strong,
+      .note,
+      .reading,
+      .urg,
+      .running,
+      .done
+    ) {
+      animation-duration: 8s;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      animation-fill-mode: both;
+    }
+
+    .hero:not(:has(input:checked)) .frame[data-scene="form"] :is(
+      .step,
+      .mark,
+      .inp b,
+      .idle,
+      .gone,
+      .av,
+      .q,
+      .init,
+      .nm,
+      .fl strong,
+      .note,
+      .reading,
+      .urg,
+      .running,
+      .done
+    ) {
+      animation-delay: 8s;
+    }
+
+    .hero:not(:has(input:checked)) .frame[data-scene="call"] :is(
+      .step,
+      .mark,
+      .m,
+      .av,
+      .q,
+      .init,
+      .nm,
+      .fl strong,
+      .note,
+      .reading,
+      .urg,
+      .running,
+      .done
+    ) {
+      animation-delay: 16s;
+    }
+
+    /* A clicked channel replays from the first step. The rules above do not apply once a radio is checked. */
+    .hero:has(input[value="email"]:checked) .frame[data-scene="email"] :is(
+      .step,
+      .mark,
+      mark,
+      .av,
+      .q,
+      .init,
+      .nm,
+      .fl strong,
+      .note,
+      .reading,
+      .urg,
+      .running,
+      .done
+    ),
+    .hero:has(input[value="form"]:checked) .frame[data-scene="form"] :is(
+      .step,
+      .mark,
+      .inp b,
+      .idle,
+      .gone,
+      .av,
+      .q,
+      .init,
+      .nm,
+      .fl strong,
+      .note,
+      .reading,
+      .urg,
+      .running,
+      .done
+    ),
+    .hero:has(input[value="call"]:checked) .frame[data-scene="call"] :is(
+      .step,
+      .mark,
+      .m,
+      .av,
+      .q,
+      .init,
+      .nm,
+      .fl strong,
+      .note,
+      .reading,
+      .urg,
+      .running,
+      .done
+    ) {
+      animation-duration: 15s;
+      animation-delay: 0s;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      animation-fill-mode: both;
     }
   }
 
@@ -888,41 +1097,137 @@ const scenes = [
     34%, 100% { transform: scaleX(0); }
   }
 
-  @keyframes step {
-    0%, 1% {
-      opacity: 0.38;
-      border-color: var(--brand-line);
-    }
-    2%, 6% {
-      opacity: 1;
-      border-color: #cfc6f7;
-    }
-    8%, 33% {
-      opacity: 1;
-      border-color: var(--brand-line);
-    }
-    34%, 100% {
-      opacity: 0.38;
-      border-color: var(--brand-line);
-    }
+  @keyframes hero-tilt {
+    from { transform: perspective(1400px) rotateX(20deg) scale(0.92); }
+    to { transform: perspective(1400px) rotateX(0deg) scale(1); }
   }
 
-  @keyframes mark {
-    0%, 6% {
-      background: transparent;
-      border-color: #d4d4dc;
-      box-shadow: none;
-    }
-    8%, 33% {
-      background: var(--brand-mint);
-      border-color: var(--brand-mint);
-      box-shadow: inset 0 0 0 2px #fff;
-    }
-    34%, 100% {
-      background: transparent;
-      border-color: #d4d4dc;
-      box-shadow: none;
-    }
+  @keyframes prog-pick {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  @keyframes step-live-1 {
+    0%, 7% { opacity: 0.38; border-color: var(--brand-line); }
+    8%, 14% { opacity: 1; border-color: #cfc6f7; }
+    15%, 90% { opacity: 1; border-color: var(--brand-line); }
+    96%, 100% { opacity: 0.38; border-color: var(--brand-line); }
+  }
+  @keyframes step-live-2 {
+    0%, 19% { opacity: 0.38; border-color: var(--brand-line); }
+    20%, 26% { opacity: 1; border-color: #cfc6f7; }
+    27%, 90% { opacity: 1; border-color: var(--brand-line); }
+    96%, 100% { opacity: 0.38; border-color: var(--brand-line); }
+  }
+  @keyframes step-live-3 {
+    0%, 31% { opacity: 0.38; border-color: var(--brand-line); }
+    32%, 38% { opacity: 1; border-color: #cfc6f7; }
+    39%, 90% { opacity: 1; border-color: var(--brand-line); }
+    96%, 100% { opacity: 0.38; border-color: var(--brand-line); }
+  }
+  @keyframes step-live-4 {
+    0%, 43% { opacity: 0.38; border-color: var(--brand-line); }
+    44%, 50% { opacity: 1; border-color: #cfc6f7; }
+    51%, 90% { opacity: 1; border-color: var(--brand-line); }
+    96%, 100% { opacity: 0.38; border-color: var(--brand-line); }
+  }
+  @keyframes step-live-5 {
+    0%, 55% { opacity: 0.38; border-color: var(--brand-line); }
+    56%, 62% { opacity: 1; border-color: #cfc6f7; }
+    63%, 90% { opacity: 1; border-color: var(--brand-line); }
+    96%, 100% { opacity: 0.38; border-color: var(--brand-line); }
+  }
+  @keyframes step-live-6 {
+    0%, 67% { opacity: 0.38; border-color: var(--brand-line); }
+    68%, 74% { opacity: 1; border-color: #cfc6f7; }
+    75%, 90% { opacity: 1; border-color: var(--brand-line); }
+    96%, 100% { opacity: 0.38; border-color: var(--brand-line); }
+  }
+
+  @keyframes mark-live-1 {
+    0%, 14% { background: transparent; border-color: #d4d4dc; box-shadow: none; }
+    15%, 90% { background: var(--brand-mint); border-color: var(--brand-mint); box-shadow: inset 0 0 0 2px #fff; }
+    96%, 100% { background: transparent; border-color: #d4d4dc; box-shadow: none; }
+  }
+  @keyframes mark-live-2 {
+    0%, 26% { background: transparent; border-color: #d4d4dc; box-shadow: none; }
+    27%, 90% { background: var(--brand-mint); border-color: var(--brand-mint); box-shadow: inset 0 0 0 2px #fff; }
+    96%, 100% { background: transparent; border-color: #d4d4dc; box-shadow: none; }
+  }
+  @keyframes mark-live-3 {
+    0%, 38% { background: transparent; border-color: #d4d4dc; box-shadow: none; }
+    39%, 90% { background: var(--brand-mint); border-color: var(--brand-mint); box-shadow: inset 0 0 0 2px #fff; }
+    96%, 100% { background: transparent; border-color: #d4d4dc; box-shadow: none; }
+  }
+  @keyframes mark-live-4 {
+    0%, 50% { background: transparent; border-color: #d4d4dc; box-shadow: none; }
+    51%, 90% { background: var(--brand-mint); border-color: var(--brand-mint); box-shadow: inset 0 0 0 2px #fff; }
+    96%, 100% { background: transparent; border-color: #d4d4dc; box-shadow: none; }
+  }
+  @keyframes mark-live-5 {
+    0%, 62% { background: transparent; border-color: #d4d4dc; box-shadow: none; }
+    63%, 90% { background: var(--brand-mint); border-color: var(--brand-mint); box-shadow: inset 0 0 0 2px #fff; }
+    96%, 100% { background: transparent; border-color: #d4d4dc; box-shadow: none; }
+  }
+  @keyframes mark-live-6 {
+    0%, 74% { background: transparent; border-color: #d4d4dc; box-shadow: none; }
+    75%, 90% { background: var(--brand-mint); border-color: var(--brand-mint); box-shadow: inset 0 0 0 2px #fff; }
+    96%, 100% { background: transparent; border-color: #d4d4dc; box-shadow: none; }
+  }
+
+  @keyframes hl-1 {
+    0%, 2% { background: transparent; box-shadow: none; }
+    5%, 90% { background: #e9e3ff; box-shadow: inset 0 -2px 0 var(--brand-purple); }
+    96%, 100% { background: transparent; box-shadow: none; }
+  }
+  @keyframes hl-2 {
+    0%, 6% { background: transparent; box-shadow: none; }
+    9%, 90% { background: #e9e3ff; box-shadow: inset 0 -2px 0 var(--brand-purple); }
+    96%, 100% { background: transparent; box-shadow: none; }
+  }
+  @keyframes hl-3 {
+    0%, 10% { background: transparent; box-shadow: none; }
+    13%, 90% { background: #e9e3ff; box-shadow: inset 0 -2px 0 var(--brand-purple); }
+    96%, 100% { background: transparent; box-shadow: none; }
+  }
+  @keyframes hl-4 {
+    0%, 14% { background: transparent; box-shadow: none; }
+    17%, 90% { background: #e9e3ff; box-shadow: inset 0 -2px 0 var(--brand-purple); }
+    96%, 100% { background: transparent; box-shadow: none; }
+  }
+
+  @keyframes show-4 { 0%, 3% { opacity: 0; } 6%, 90% { opacity: 1; } 96%, 100% { opacity: 0; } }
+  @keyframes show-8 { 0%, 7% { opacity: 0; } 10%, 90% { opacity: 1; } 96%, 100% { opacity: 0; } }
+  @keyframes show-12 { 0%, 11% { opacity: 0; } 14%, 90% { opacity: 1; } 96%, 100% { opacity: 0; } }
+  @keyframes show-18 { 0%, 17% { opacity: 0; } 20%, 90% { opacity: 1; } 96%, 100% { opacity: 0; } }
+  @keyframes show-20 { 0%, 19% { opacity: 0; } 22%, 90% { opacity: 1; } 96%, 100% { opacity: 0; } }
+  @keyframes show-28 { 0%, 27% { opacity: 0; } 30%, 90% { opacity: 1; } 96%, 100% { opacity: 0; } }
+  @keyframes show-32 { 0%, 31% { opacity: 0; } 34%, 90% { opacity: 1; } 96%, 100% { opacity: 0; } }
+  @keyframes show-36 { 0%, 35% { opacity: 0; } 38%, 90% { opacity: 1; } 96%, 100% { opacity: 0; } }
+  @keyframes show-40 { 0%, 39% { opacity: 0; } 42%, 90% { opacity: 1; } 96%, 100% { opacity: 0; } }
+  @keyframes show-44 { 0%, 43% { opacity: 0; } 46%, 90% { opacity: 1; } 96%, 100% { opacity: 0; } }
+  @keyframes show-68 { 0%, 67% { opacity: 0; } 70%, 90% { opacity: 1; } 96%, 100% { opacity: 0; } }
+
+  @keyframes vis-until-8 { 0%, 7% { visibility: visible; } 10%, 90% { visibility: hidden; } 96%, 100% { visibility: visible; } }
+  @keyframes vis-from-8 { 0%, 7% { visibility: hidden; } 10%, 90% { visibility: visible; } 96%, 100% { visibility: hidden; } }
+  @keyframes vis-until-20 { 0%, 19% { visibility: visible; } 22%, 90% { visibility: hidden; } 96%, 100% { visibility: visible; } }
+  @keyframes vis-from-20 { 0%, 19% { visibility: hidden; } 22%, 90% { visibility: visible; } 96%, 100% { visibility: hidden; } }
+  @keyframes vis-until-32 { 0%, 31% { visibility: visible; } 34%, 90% { visibility: hidden; } 96%, 100% { visibility: visible; } }
+  @keyframes vis-from-32 { 0%, 31% { visibility: hidden; } 34%, 90% { visibility: visible; } 96%, 100% { visibility: hidden; } }
+  @keyframes vis-until-46 { 0%, 45% { visibility: visible; } 48%, 90% { visibility: hidden; } 96%, 100% { visibility: visible; } }
+  @keyframes vis-from-46 { 0%, 45% { visibility: hidden; } 48%, 90% { visibility: visible; } 96%, 100% { visibility: hidden; } }
+  @keyframes vis-until-68 { 0%, 67% { visibility: visible; } 70%, 90% { visibility: hidden; } 96%, 100% { visibility: visible; } }
+  @keyframes vis-from-68 { 0%, 67% { visibility: hidden; } 70%, 90% { visibility: visible; } 96%, 100% { visibility: hidden; } }
+
+  @keyframes av-8 {
+    0%, 7% { background: #c9c9d6; }
+    10%, 90% { background: var(--brand-purple); }
+    96%, 100% { background: #c9c9d6; }
+  }
+  @keyframes av-20 {
+    0%, 19% { background: #c9c9d6; }
+    22%, 90% { background: var(--brand-purple); }
+    96%, 100% { background: #c9c9d6; }
   }
 
   @media (prefers-reduced-motion: reduce) {

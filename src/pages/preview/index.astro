@@ -19,7 +19,7 @@ import ToolsMap from '../../components/brand/ToolsMap.astro';
   description="Hidden preview of the new Brackstone Digital homepage. This page is not for search engines."
   noindex
 >
-  <main>
+  <main class="preview">
     <Hero />
     <Pillars />
     <DayStory />
@@ -34,3 +34,30 @@ import ToolsMap from '../../components/brand/ToolsMap.astro';
     <Closing />
   </main>
 </BrandLayout>
+
+<style is:global>
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .preview h1,
+      .preview h2,
+      .preview section:not(#day) article:not(.frame),
+      .preview #how .step,
+      .preview #both-sides .panel,
+      .preview #tools .hub,
+      .preview #comparison .table-wrap,
+      .preview #tested .tester,
+      .preview #faq details,
+      .preview #closing .option,
+      .preview .trust {
+        animation: preview-rise linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 28%;
+      }
+    }
+  }
+
+  @keyframes preview-rise {
+    from { opacity: 0; transform: translateY(1.4rem); }
+    to { opacity: 1; transform: none; }
+  }
+</style>
