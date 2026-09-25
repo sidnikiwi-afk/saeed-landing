@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 import { SEO } from 'astro-seo';
+import ConsentBanner from '../components/consent/ConsentBanner.astro';
+import ConsentDefault from '../components/consent/ConsentDefault.astro';
 
 interface Props {
   title: string;
@@ -18,6 +20,7 @@ const canonicalUrl = canonical || new URL(Astro.url.pathname, siteUrl).toString(
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <ConsentDefault />
     <SEO
       title={title}
       description={description}
@@ -50,5 +53,6 @@ const canonicalUrl = canonical || new URL(Astro.url.pathname, siteUrl).toString(
   </head>
   <body>
     <slot />
+    <ConsentBanner />
   </body>
 </html>
