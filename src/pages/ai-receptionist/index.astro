@@ -1,0 +1,9 @@
+---
+import AdsLayout from '../../layouts/AdsLayout.astro';
+import AdsPage from '../../components/ads/AdsPage.astro';
+import { aiReceptionistAd } from '../../data/ads/ai-receptionist.mjs';
+---
+
+<AdsLayout title={`${aiReceptionistAd.searchIntent} | Brackstone`} description={aiReceptionistAd.description}>
+  <AdsPage content={aiReceptionistAd} />
+</AdsLayout>
