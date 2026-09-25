@@ -1,0 +1,160 @@
+---
+import IllustrativeCaption from './IllustrativeCaption.astro';
+
+// Kinds of test cases only, adapted from the redesign prototype's tester. The
+// prototype scored each run; the packet rules that out, so these are the case
+// names and what a pass looks like, with no scores or verdicts. The cases are
+// made up and labelled with the Illustrative caption.
+const cases = [
+  {
+    tag: 'Email',
+    title: 'Email with no address',
+    detail: 'A quote request that forgets the postcode',
+    pass: 'It asks for the missing detail instead of guessing, and holds the job as a draft until the address arrives.',
+  },
+  {
+    tag: 'Workflow',
+    title: 'The same enquiry twice',
+    detail: 'The customer sends the form, then emails too',
+    pass: 'It matches on the details and merges them into one enquiry, so one confirmation goes out, not two.',
+  },
+  {
+    tag: 'Call',
+    title: 'Caller changes their mind',
+    detail: 'Books Thursday, then wants Friday',
+    pass: 'It releases the first slot and books the new one, without leaving both in the diary.',
+  },
+  {
+    tag: 'Call',
+    title: 'Asks for a price we cannot give',
+    detail: 'Wants an exact repair cost',
+    pass: 'It says the price needs a look rather than guessing, and books a callback with a person.',
+  },
+];
+---
+
+<section id="tested" aria-labelledby="tested-title">
+  <div class="wrap">
+    <p class="eyebrow">Before it goes live</p>
+    <h2 id="tested-title">We try to break it before your customers can.</h2>
+    <p class="lead">
+      The risk with automation is not that it fails loudly. It is that it quietly does something daft and
+      nobody notices for a month. These are the kinds of awkward cases we test against.
+    </p>
+    <div class="grid">
+      {
+        cases.map((testCase) => (
+          <article class="card">
+            <p class="tag">{testCase.tag}</p>
+            <h3>{testCase.title}</h3>
+            <p class="detail">{testCase.detail}</p>
+            <p class="pass">{testCase.pass}</p>
+          </article>
+        ))
+      }
+    </div>
+    <IllustrativeCaption>
+      The cases above are made up, chosen to show the kinds of things our internal tests cover before
+      anything is switched on. Anything that cannot handle them stays off and goes to a person.
+    </IllustrativeCaption>
+  </div>
+</section>
+
+<style>
+  section {
+    padding: 6.5rem 0;
+    background: var(--brand-bg);
+  }
+
+  .wrap {
+    width: min(1200px, calc(100% - 3rem));
+    margin: 0 auto;
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--brand-purple);
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    max-width: 16em;
+    margin: 0.75rem 0 1rem;
+    font-size: clamp(2rem, 4.2vw, 3.25rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  .lead {
+    max-width: 38rem;
+    margin: 0;
+    color: var(--brand-muted);
+    font-size: 1.125rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.875rem;
+    margin: 2.75rem 0 1.5rem;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.375rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 20px;
+    background: #fff;
+  }
+
+  .tag {
+    margin: 0;
+    color: var(--brand-purple);
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.13rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
+
+  .detail {
+    margin: 0;
+    color: var(--brand-muted);
+    font-size: 0.88rem;
+  }
+
+  .pass {
+    margin: auto 0 0;
+    padding-top: 0.75rem;
+    border-top: 1px dashed var(--brand-line);
+    font-size: 0.88rem;
+  }
+
+  @media (max-width: 1000px) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

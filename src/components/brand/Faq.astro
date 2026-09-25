@@ -1,0 +1,128 @@
+---
+// Questions adapted from the redesign prototype's FAQ. Native details elements
+// so every answer is readable without JavaScript. No claims of results.
+const questions = [
+  {
+    q: 'Do I have to change the software I use?',
+    a: 'Usually not. We connect to what you already run, such as your job system, inbox, phone line and payments, and build around it.',
+  },
+  {
+    q: 'What if my software has no API?',
+    a: 'There is often another way in, such as email, exports or forms. We will tell you plainly in the teardown if there is not.',
+  },
+  {
+    q: 'Is this just an AI receptionist?',
+    a: 'The receptionist is our most popular starting point, but it is one piece. We also automate email enquiries, follow-ups and admin, and build custom dashboards.',
+  },
+  {
+    q: 'What happens with something it cannot handle?',
+    a: 'It passes it to a person with the detail already written down. We would rather it say "someone will get back to you" than guess.',
+  },
+  {
+    q: 'Who owns the systems and the data?',
+    a: 'You do. Records are kept per business, with deletion on request and a retention period you set. If you leave, you take them.',
+  },
+  {
+    q: 'What is the teardown?',
+    a: 'Fifteen minutes. We map where your work goes missing, show you what we would automate first, and say plainly if we are not the right fit. No pitch deck.',
+  },
+];
+---
+
+<section id="faq" aria-labelledby="faq-title">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Questions</p>
+      <h2 id="faq-title">What people ask on the second call.</h2>
+    </div>
+    <div class="list">
+      {questions.map((item, index) => (
+        <details open={index === 0}>
+          <summary>{item.q}</summary>
+          <p>{item.a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  section {
+    padding: 6.5rem 0;
+    background: var(--brand-bg);
+  }
+
+  .wrap {
+    width: min(820px, calc(100% - 3rem));
+    margin: 0 auto;
+  }
+
+  .head {
+    margin-bottom: 2.5rem;
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--brand-purple);
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    max-width: 16em;
+    margin: 0.75rem 0 0;
+    font-size: clamp(2rem, 4.2vw, 3.25rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  details {
+    margin-bottom: 0.625rem;
+    padding: 0 1.375rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 16px;
+    background: #fff;
+  }
+
+  details[open] {
+    border-color: #cfc6f7;
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary::after {
+    content: '+';
+    font-size: 1.375rem;
+    line-height: 1;
+    color: var(--brand-purple);
+  }
+
+  details[open] summary::after {
+    content: '\2212';
+  }
+
+  details p {
+    margin: 0;
+    padding-bottom: 1.25rem;
+    color: var(--brand-muted);
+  }
+</style>

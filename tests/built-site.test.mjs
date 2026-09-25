@@ -163,8 +163,13 @@ export function anchors(html) {
   return found;
 }
 
+function heroRegion(html) {
+  const match = html.match(/<section\b[^>]*class="[^"]*\bhero\b[^"]*"[\s\S]*?<\/section>/);
+  return match ? match[0] : html;
+}
+
 function anchorHref(html, label) {
-  const found = anchors(html).filter((anchor) => anchor.text === label);
+  const found = anchors(heroRegion(html)).filter((anchor) => anchor.text === label);
   if (found.length !== 1) {
     throw new Error(`expected one "${label}" link, found ${found.length}`);
   }

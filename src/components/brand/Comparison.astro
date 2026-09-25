@@ -1,0 +1,156 @@
+---
+// The honest comparison, adapted from the redesign prototype. Static table so
+// every row reads without JavaScript. Each cell carries visually hidden text so
+// screen readers get the meaning, not just the glyph.
+const columns = ['By hand', 'Off-the-shelf tool', 'Built by Brackstone'];
+
+const rows = [
+  { label: 'Calls, email and forms in one place', marks: ['no', 'partly', 'yes'] },
+  { label: 'Fits how your business actually works', marks: ['yes', 'no', 'yes'] },
+  { label: 'Connects the tools you already use', marks: ['no', 'partly', 'yes'] },
+  { label: 'Works out of hours', marks: ['no', 'partly', 'yes'] },
+  { label: 'Chases on a schedule', marks: ['partly', 'partly', 'yes'] },
+  { label: 'Hands to a person when it should', marks: ['yes', 'no', 'yes'] },
+  { label: 'Someone to call when it needs changing', marks: ['no', 'no', 'yes'] },
+];
+
+const glyphs = { yes: '✓', no: '✕', partly: '~' };
+---
+
+<section id="comparison" aria-labelledby="comparison-title">
+  <div class="wrap">
+    <p class="eyebrow">The honest comparison</p>
+    <h2 id="comparison-title">Doing it by hand, buying a tool, or having it built.</h2>
+    <div class="table-wrap">
+      <table>
+        <caption class="sr-only">Comparison of doing the work by hand, buying an off-the-shelf tool, and having it built by Brackstone.</caption>
+        <thead>
+          <tr>
+            <th scope="col"><span class="sr-only">What matters</span></th>
+            {columns.map((column) => (
+              <th scope="col" class:list={[{ us: column === 'Built by Brackstone' }]}>{column}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr>
+              <th scope="row">{row.label}</th>
+              {row.marks.map((mark, index) => (
+                <td class:list={[mark, { us: index === 2 }]}>
+                  <span aria-hidden="true">{glyphs[mark]}</span>
+                  <span class="sr-only">{mark === 'partly' ? 'Partly' : mark === 'yes' ? 'Yes' : 'No'}</span>
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<style>
+  section {
+    padding: 6.5rem 0;
+    border-block: 1px solid var(--brand-line);
+    background: #fff;
+  }
+
+  .wrap {
+    width: min(1200px, calc(100% - 3rem));
+    margin: 0 auto;
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--brand-purple);
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    max-width: 16em;
+    margin: 0.75rem 0 2rem;
+    font-size: clamp(2rem, 4.2vw, 3.25rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--brand-line);
+    border-radius: 20px;
+  }
+
+  table {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+    font-size: 0.94rem;
+  }
+
+  thead th {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--brand-line);
+    background: var(--brand-bg);
+    text-align: center;
+    font-size: 0.88rem;
+    font-weight: 650;
+  }
+
+  thead th:first-child {
+    text-align: left;
+  }
+
+  thead th.us {
+    color: var(--brand-purple);
+  }
+
+  tbody th {
+    padding: 0.9rem 1.25rem;
+    text-align: left;
+    font-weight: 500;
+    color: var(--brand-ink);
+  }
+
+  tbody td {
+    padding: 0.9rem 1.25rem;
+    text-align: center;
+    color: var(--brand-muted);
+    font-weight: 700;
+  }
+
+  tbody tr + tr {
+    border-top: 1px solid var(--brand-line);
+  }
+
+  td.us {
+    background: var(--brand-purple-soft);
+  }
+
+  td.yes span[aria-hidden] {
+    color: var(--brand-mint);
+  }
+
+  td.no span[aria-hidden] {
+    color: #b9b9c4;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
