@@ -11,24 +11,28 @@ const industries = [
     title: 'Garages and car sales',
     body: 'Bookings, MOTs and stock questions handled, day or night.',
     points: ['MOT and service calls booked', 'Vehicle looked up from the reg', 'Stock and test drive enquiries'],
+    icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></svg>',
     ad: garagesAd,
   },
   {
     title: 'Estate agents and lettings',
     body: 'Portal, email and phone enquiries turned into viewings.',
     points: ['Portal emails read and matched', 'Viewings held and confirmed', 'Applicants chased on schedule'],
+    icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
     ad: estateAgentsAd,
   },
   {
     title: 'Trades and field service',
     body: 'Quotes, callbacks and jobs moved on while your hands are full.',
     points: ['Quote emails turned into jobs', 'Urgent work flagged first', 'Quotes chased until won or lost'],
+    icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>',
     ad: null,
   },
   {
-    title: 'Any business with a phone',
-    body: 'A receptionist that answers every call, whatever you do.',
-    points: ['Answers the calls when you cannot', 'Urgent calls flagged to you', 'Bookings confirmed by text'],
+    title: 'Service businesses',
+    body: 'Hire desks, clinics, venues and makers with a diary to fill.',
+    points: ['Enquiries captured on every channel', 'Job system reporting', 'Reminders and follow-ups'],
+    icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
     ad: aiReceptionistAd,
   },
 ];
@@ -43,6 +47,7 @@ const industries = [
       {
         industries.map((industry) => (
           <article class="card">
+            <span class="ico" aria-hidden="true"><Fragment set:html={industry.icon} /></span>
             <h3>{industry.title}</h3>
             <p class="body">{industry.body}</p>
             <ul>
@@ -50,11 +55,11 @@ const industries = [
                 <li>{point}</li>
               ))}
             </ul>
-            {industry.ad && (
-              <p class="more">
+            <p class="more">
+              {industry.ad && (
                 <a href={`/${industry.ad.slug}/`}>{industry.ad.headline} &rarr;</a>
-              </p>
-            )}
+              )}
+            </p>
           </article>
         ))
       }
@@ -119,12 +124,24 @@ const industries = [
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
+    height: 100%;
     min-width: 0;
     padding: 1.375rem;
     border: 1px solid var(--brand-line);
     border-radius: 20px;
     background: #fff;
     transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+
+  .ico {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    margin-bottom: 0.6rem;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--brand-purple-soft);
+    color: var(--brand-purple);
   }
 
   .card:hover {
@@ -167,6 +184,7 @@ const industries = [
   }
 
   .more {
+    min-height: 2.4rem;
     margin: auto 0 0;
     padding-top: 0.9rem;
     font-size: 0.85rem;

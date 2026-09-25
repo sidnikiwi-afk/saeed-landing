@@ -10,8 +10,7 @@ const scenes = [
     id: 'email',
     label: 'An email',
     source: 'Email',
-    window: 'quotes@ inbox',
-    incomingTitle: 'Incoming email',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>',
     enquiryTag: 'New quote',
     name: 'Sarah Mills',
     initials: 'SM',
@@ -36,8 +35,7 @@ const scenes = [
     id: 'form',
     label: 'A web enquiry',
     source: 'Web form',
-    window: 'Website viewing form',
-    incomingTitle: 'Incoming web form',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
     enquiryTag: 'Hot applicant',
     name: 'Priya Shah',
     initials: 'PS',
@@ -62,8 +60,7 @@ const scenes = [
     id: 'call',
     label: 'A phone call',
     source: 'Phone call',
-    window: 'Booking line',
-    incomingTitle: 'Incoming call',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>',
     enquiryTag: 'MOT due in 6 days',
     name: 'James Hartley',
     initials: 'JH',
@@ -101,18 +98,17 @@ const scenes = [
     <p class="sub">
       Calls, emails, web forms and the admin behind them. We build the systems that answer, capture, book and chase, and connect them to the tools you already use.
     </p>
-    <div class="picker">
+    <div class="picker" role="radiogroup" aria-labelledby="hero-watch">
       <p id="hero-watch">Watch it handle</p>
-      <div class="choices" role="radiogroup" aria-labelledby="hero-watch">
-        {
-          scenes.map((scene) => (
-            <label class:list={['choice', scene.id]}>
-              <input type="radio" name="hero-channel" value={scene.id} />
-              <span>{scene.label}</span>
-            </label>
-          ))
-        }
-      </div>
+      {
+        scenes.map((scene) => (
+          <label class="choice" data-scene={scene.id}>
+            <input type="radio" name="hero-channel" value={scene.id} />
+            <Fragment set:html={scene.icon} />
+            <span>{scene.label}</span>
+          </label>
+        ))
+      }
     </div>
     <div class="ctas">
       <Button href="/contact/" variant="purple">Book a 15-minute teardown</Button>
@@ -124,15 +120,14 @@ const scenes = [
     <div class="win">
       {
         scenes.map((scene) => (
-          <article class:list={['frame', scene.id]} aria-label={`Illustrative ${scene.source.toLowerCase()}`}>
+          <article class="frame" data-scene={scene.id} aria-label={`Illustrative ${scene.source.toLowerCase()}`}>
             <div class="wbar">
               <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-              <span class="url">{scene.window}</span>
-              <span class="src">{scene.source}</span>
+              <span class="url">your-business.brackstone dashboard</span>
             </div>
             <div class="wgrid">
               <div class="col">
-                <h2>{scene.incomingTitle}</h2>
+                <h2>Incoming <span class="src">{scene.source}</span></h2>
                 {scene.id === 'email' && (
                   <div class="mail">
                     <p class="mh">
@@ -182,7 +177,7 @@ const scenes = [
                 <p class="note">{scene.note}</p>
               </div>
               <div class="col">
-                <h2>Automation</h2>
+                <h2>Automation <span class="tag run">Running</span></h2>
                 <ol class="runlog">
                   {
                     scene.steps.map(([title, detail]) => (
@@ -202,6 +197,12 @@ const scenes = [
     <IllustrativeCaption>
       Names, messages and details are made up.
     </IllustrativeCaption>
+    <div class="trust">
+      <div><b>Calls, email, forms</b><small>Handled in one place</small></div>
+      <div><b>Your tools</b><small>Connected, not replaced</small></div>
+      <div><b>Every action</b><small>Logged and visible</small></div>
+      <div><b>Yours</b><small>Numbers, data and systems</small></div>
+    </div>
   </div>
 </section>
 
@@ -313,24 +314,10 @@ const scenes = [
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 0.35rem 0.7rem;
-    width: 100%;
+    gap: 0.35rem;
+    width: max-content;
     max-width: 100%;
-    margin-top: 1.8rem;
-  }
-
-  .picker p {
-    margin: 0;
-    color: var(--brand-muted);
-    font-size: 0.85rem;
-  }
-
-  .choices {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.25rem;
-    max-width: 100%;
+    margin: 1.8rem auto 0;
     padding: 0.35rem;
     border: 1px solid var(--brand-line);
     border-radius: 16px;
@@ -338,11 +325,24 @@ const scenes = [
     box-shadow: 0 1px 2px rgba(10, 10, 20, 0.04), 0 8px 30px -8px rgba(40, 20, 120, 0.14);
   }
 
+  .picker p {
+    margin: 0;
+    padding: 0 0.55rem 0 0.4rem;
+    color: var(--brand-muted);
+    font-size: 0.85rem;
+  }
+
   .choice {
     position: relative;
     display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 0.4rem;
     overflow: hidden;
+    padding: 0.55rem 0.9rem;
     border-radius: 11px;
+    font-size: 0.9rem;
+    font-weight: 500;
     cursor: pointer;
   }
 
@@ -354,24 +354,33 @@ const scenes = [
     cursor: pointer;
   }
 
-  .choice span {
-    padding: 0.55rem 0.9rem;
-    border-radius: 11px;
-    font-size: 0.9rem;
-    font-weight: 500;
+  .choice :global(svg) {
+    width: 16px;
+    height: 16px;
+    flex: none;
   }
 
-  .choice:hover span,
-  .choice:focus-within span {
+  .choice:hover,
+  .choice:focus-within {
     background: #f5f4fa;
   }
 
-  .choice:has(input:checked) span {
+  .choice:has(input:checked) {
     background: var(--brand-purple-soft);
     color: #4a28d6;
   }
 
-  .choice:has(input:focus-visible) span {
+  .choice:has(input:checked)::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: var(--brand-purple);
+  }
+
+  .choice:has(input:focus-visible) {
     outline: 2px solid var(--brand-purple);
     outline-offset: 2px;
   }
@@ -399,7 +408,8 @@ const scenes = [
   }
 
   .wbar {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
     gap: 0.6rem;
     padding: 0.75rem 1rem;
@@ -409,6 +419,7 @@ const scenes = [
 
   .dots {
     display: inline-flex;
+    grid-column: 1;
     gap: 0.35rem;
   }
 
@@ -420,7 +431,8 @@ const scenes = [
   }
 
   .url {
-    margin-right: auto;
+    justify-self: center;
+    grid-column: 2;
     padding: 0.25rem 0.7rem;
     border-radius: 7px;
     background: #f3f3f6;
@@ -437,6 +449,8 @@ const scenes = [
     color: var(--brand-ink);
     font-size: 0.72rem;
     font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
   }
 
   .tag {
@@ -690,13 +704,8 @@ const scenes = [
     .sub,
     h1,
     .picker,
-    .choices,
     .ctas {
       min-width: 0;
-    }
-
-    .choices {
-      width: min(100%, 28rem);
     }
 
     .wgrid {
@@ -711,6 +720,18 @@ const scenes = [
 
     .col:last-child {
       border-bottom: 0;
+    }
+
+    .trust {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .trust div:nth-child(2) {
+      border-right: 0;
+    }
+
+    .trust div:nth-child(-n + 2) {
+      border-bottom: 1px solid var(--brand-line);
     }
   }
 
@@ -739,11 +760,11 @@ const scenes = [
       animation: cycle 24s infinite linear;
     }
 
-    .hero:not(:has(input:checked)) .frame.form {
+    .hero:not(:has(input:checked)) .frame[data-scene="form"] {
       animation-delay: -16s;
     }
 
-    .hero:not(:has(input:checked)) .frame.call {
+    .hero:not(:has(input:checked)) .frame[data-scene="call"] {
       animation-delay: -8s;
     }
 
@@ -751,11 +772,11 @@ const scenes = [
       animation: pick 24s infinite linear;
     }
 
-    .hero:not(:has(input:checked)) .choice.form {
+    .hero:not(:has(input:checked)) .choice[data-scene="form"] {
       animation-delay: 8s;
     }
 
-    .hero:not(:has(input:checked)) .choice.call {
+    .hero:not(:has(input:checked)) .choice[data-scene="call"] {
       animation-delay: 16s;
     }
 
@@ -772,17 +793,17 @@ const scenes = [
       animation: prog 24s infinite linear;
     }
 
-    .hero:not(:has(input:checked)) .choice.form::after {
+    .hero:not(:has(input:checked)) .choice[data-scene="form"]::after {
       animation-delay: 8s;
     }
 
-    .hero:not(:has(input:checked)) .choice.call::after {
+    .hero:not(:has(input:checked)) .choice[data-scene="call"]::after {
       animation-delay: 16s;
     }
 
-    .frame.email { --shift: 0s; }
-    .frame.form { --shift: 8s; }
-    .frame.call { --shift: 16s; }
+    .frame[data-scene="email"] { --shift: 0s; }
+    .frame[data-scene="form"] { --shift: 8s; }
+    .frame[data-scene="call"] { --shift: 16s; }
 
     .step:nth-child(1) { --d: 0.3s; }
     .step:nth-child(2) { --d: 1.4s; }
@@ -809,10 +830,42 @@ const scenes = [
     visibility: hidden;
   }
 
-  .hero:has(input[value="email"]:checked) .frame.email,
-  .hero:has(input[value="form"]:checked) .frame.form,
-  .hero:has(input[value="call"]:checked) .frame.call {
+  .hero:has(input[value="email"]:checked) .frame[data-scene="email"],
+  .hero:has(input[value="form"]:checked) .frame[data-scene="form"],
+  .hero:has(input[value="call"]:checked) .frame[data-scene="call"] {
     visibility: visible;
+  }
+
+  .trust {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 1.5rem;
+    overflow: hidden;
+    border: 1px solid var(--brand-line);
+    border-radius: 18px;
+    background: #fff;
+    text-align: left;
+  }
+
+  .trust div {
+    padding: 1.25rem 1.35rem;
+    border-right: 1px solid var(--brand-line);
+  }
+
+  .trust div:last-child {
+    border-right: 0;
+  }
+
+  .trust b {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  .trust small {
+    color: var(--brand-muted);
+    font-size: 0.82rem;
   }
 
   @keyframes glow-spin {
