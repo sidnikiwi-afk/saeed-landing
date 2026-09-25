@@ -2,6 +2,22 @@
 import Button from './Button.astro';
 import IllustrativeCaption from './IllustrativeCaption.astro';
 
+const flips = [
+  [4, 14],
+  [20, 30],
+  [38, 48],
+  [56, 66],
+  [74, 84],
+];
+
+const clockTimes = [];
+for (let mins = 8 * 60; mins <= 32 * 60; mins += 15) {
+  const wrapped = mins % (24 * 60);
+  const hours = String(Math.floor(wrapped / 60)).padStart(2, '0');
+  const minutes = String(wrapped % 60).padStart(2, '0');
+  clockTimes.push(`${hours}:${minutes}`);
+}
+
 const moments = [
   {
     time: '08:12',
@@ -53,31 +69,52 @@ const moments = [
           </p>
           <IllustrativeCaption>A made-up working day, not a client.</IllustrativeCaption>
         </div>
-        <p class="clock">08:00</p>
+        <p class="clock" aria-hidden="true">
+          <span class="now">08:00</span>
+          {
+            clockTimes.map((time, index) => {
+              const start = (index / (clockTimes.length - 1)) * 100;
+              const end = Math.min(100, ((index + 1) / (clockTimes.length - 1)) * 100);
+              const fill = index === clockTimes.length - 1 ? 'forwards' : 'none';
+              return (
+                <span
+                  class="tick"
+                  style={`animation-range: contain ${start.toFixed(2)}% contain ${end.toFixed(2)}%; animation-fill-mode: ${fill}`}
+                >
+                  {time}
+                </span>
+              );
+            })
+          }
+        </p>
       </div>
       <div class="rail" aria-hidden="true"><span></span></div>
     </div>
     <div class="track">
       {
-        moments.map((moment) => (
-          <article class="moment">
-            <p class="when">
-              <time datetime={moment.time}>{moment.time}</time>
-              <span>{moment.channel}</span>
-            </p>
-            <h3>{moment.title}</h3>
-            <div class="states">
-              <p class="state bad">
-                <b>Without</b>
-                {moment.without}
+        moments.map((moment, index) => {
+          const [start, end] = flips[index];
+          const range = `animation-range: contain ${start}% contain ${end}%`;
+          return (
+            <article class="moment" style={range}>
+              <p class="when">
+                <time datetime={moment.time}>{moment.time}</time>
+                <span>{moment.channel}</span>
               </p>
-              <p class="state good">
-                <b>With Brackstone</b>
-                {moment.with}
-              </p>
-            </div>
-          </article>
-        ))
+              <h3>{moment.title}</h3>
+              <div class="states">
+                <p class="state bad" style={range}>
+                  <b>Without</b>
+                  {moment.without}
+                </p>
+                <p class="state good" style={range}>
+                  <b>With Brackstone</b>
+                  {moment.with}
+                </p>
+              </div>
+            </article>
+          );
+        })
       }
       <article class="moment closer">
         <p class="when"><time datetime="08:00">08:00 next day</time></p>
@@ -143,12 +180,27 @@ const moments = [
   }
 
   .clock {
+    position: relative;
     margin: 0;
     color: var(--brand-purple);
     font-family: "Geist Mono", ui-monospace, monospace;
     font-size: clamp(1.4rem, 3vw, 2rem);
     font-weight: 500;
+    font-variant-numeric: tabular-nums;
     letter-spacing: -0.04em;
+  }
+
+  .now,
+  .tick {
+    margin: 0;
+  }
+
+  .tick {
+    position: absolute;
+    top: 0;
+    right: 0;
+    opacity: 0;
+    background: var(--brand-bg);
   }
 
   .rail {
@@ -361,25 +413,80 @@ const moments = [
         inset: 0;
       }
 
+      [data-day-story] .tick {
+        animation-name: clock-on;
+        animation-timing-function: linear;
+        animation-timeline: --day;
+      }
+
       [data-day-story] .moment:not(.closer) {
         animation: day-card linear both;
-        animation-timeline: view(inline);
-        animation-range: cover 32% cover 50%;
+        animation-timeline: --day;
       }
 
       [data-day-story] .state.bad {
         animation: day-out linear both;
-        animation-timeline: view(inline);
-        animation-range: cover 32% cover 50%;
+        animation-timeline: --day;
       }
 
       [data-day-story] .state.good {
         opacity: 0;
         animation: day-in linear both;
-        animation-timeline: view(inline);
-        animation-range: cover 32% cover 50%;
+        animation-timeline: --day;
+      }
+
+      [data-day-story] .track .moment:nth-child(1),
+      [data-day-story] .track .moment:nth-child(1) .state { animation-range: contain 4% contain 14%; }
+      [data-day-story] .track .moment:nth-child(2),
+      [data-day-story] .track .moment:nth-child(2) .state { animation-range: contain 20% contain 30%; }
+      [data-day-story] .track .moment:nth-child(3),
+      [data-day-story] .track .moment:nth-child(3) .state { animation-range: contain 38% contain 48%; }
+      [data-day-story] .track .moment:nth-child(4),
+      [data-day-story] .track .moment:nth-child(4) .state { animation-range: contain 56% contain 66%; }
+      [data-day-story] .track .moment:nth-child(5),
+      [data-day-story] .track .moment:nth-child(5) .state { animation-range: contain 74% contain 84%; }
+    }
+
+    @supports not (animation-timeline: view()) {
+      [data-day-story] {
+        height: auto;
+        padding: 5.5rem 0;
+      }
+
+      [data-day-story] .pin {
+        position: relative;
+        height: auto;
+        overflow: visible;
+      }
+
+      [data-day-story] .track {
+        flex-direction: column;
+        width: min(1200px, calc(100% - 3rem));
+        transform: none;
+      }
+
+      [data-day-story] .moment {
+        width: auto;
+      }
+
+      [data-day-story] .states {
+        height: auto;
+      }
+
+      [data-day-story] .state {
+        position: static;
+        opacity: 1;
+        transform: none;
+      }
+
+      [data-day-story] .rail {
+        display: none;
       }
     }
+  }
+
+  @keyframes clock-on {
+    0%, 100% { opacity: 1; }
   }
 
   @keyframes day-slide {
