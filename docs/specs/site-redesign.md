@@ -117,10 +117,27 @@ Add cookie consent and tracking so that each free trial request submitted on the
 
 ### Consent and tracking
 
-- Google Consent Mode v2 with every storage type denied by default. A small banner on every page offers accept and decline. No analytics or advertising cookie is set before acceptance.
-- The consent choice is stored in a cookie scoped to the parent domain, so the dashboard's trial request page can read the same choice. Its name and values are a shared contract between the two sites, fixed in the consent ticket.
+- Google Consent Mode v2 with every storage type denied by default. A small banner on every public page offers accept and decline. The hidden preview route stays free of page scripts, so it does not carry the banner. No analytics or advertising cookie is set before acceptance.
+- The consent choice is stored in a cookie scoped to the parent domain, so the dashboard's trial request page can read the same choice. Its name and values are the shared contract below. Do not invent a second name.
 - The marketing site loads GA4 and the Google Ads tag only after consent. It reports secondary conversions: a tap on any free trial link and a tap on the demo line.
 - The ads page reads `gclid` from its own URL and appends it to every trial link, alongside the UTM tags.
+
+### Shared consent and click ID contract
+
+Fixed here for the marketing site and the dashboard. Do not invent a second cookie name or a second click ID parameter.
+
+- Consent cookie name: `brackstone_consent`
+- Accepted value: `accepted`
+- Declined value: `declined`
+- Any other value, or no cookie, means the visitor has not accepted.
+- Domain: `.brackstonedigital.co.uk` (set when the host is `brackstonedigital.co.uk` or a subdomain; other hosts store a host-only cookie so a preview can still remember the choice)
+- Path: `/`
+- SameSite: `Lax`
+- Secure: set when the page is HTTPS
+- Lifetime: 180 days (`Max-Age=15552000`)
+- Click ID parameter: `gclid`, copied from the ads page URL onto every trial link
+
+The dashboard reads this cookie on the trial request success page and fires the primary conversion only when the value is `accepted`.
 - Tag IDs (GA4 measurement ID, Google Ads conversion ID and labels) are site-wide settings. When empty, no tag loads. Agents do not create or edit anything in Google Ads.
 - Dashboard change (ADR 0003): the trial request route stores `gclid` inside the existing attribution data (no schema change), and the success page fires the primary conversion only when the shared consent cookie says accepted. This is a public route, so it needs Codex review.
 

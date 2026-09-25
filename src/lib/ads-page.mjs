@@ -39,6 +39,8 @@ export function trialHref({ campaign, placement, vertical = '', landing = '' } =
   }
   const verticalValue = present(vertical);
   if (verticalValue) url.searchParams.set('vertical', verticalValue);
+  const gclid = present(incoming.get('gclid'));
+  if (gclid) url.searchParams.set('gclid', gclid);
   return url.toString();
 }
 

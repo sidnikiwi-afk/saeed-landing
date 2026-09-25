@@ -3,6 +3,8 @@ import '../styles/brand.css';
 import { SEO } from 'astro-seo';
 import Nav from '../components/brand/Nav.astro';
 import Footer from '../components/brand/Footer.astro';
+import ConsentBanner from '../components/consent/ConsentBanner.astro';
+import ConsentDefault from '../components/consent/ConsentDefault.astro';
 
 interface Props {
   title: string;
@@ -20,6 +22,8 @@ const {
 
 const siteUrl = 'https://brackstonedigital.co.uk';
 const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
+const path = Astro.url.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '') || '/';
+const showConsent = path !== '/preview';
 ---
 
 <!doctype html>
@@ -27,6 +31,7 @@ const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {showConsent && <ConsentDefault />}
     <SEO
       title={title}
       description={description}
@@ -61,5 +66,6 @@ const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
     <Nav home={home} />
     <slot />
     <Footer />
+    {showConsent && <ConsentBanner />}
   </body>
 </html>

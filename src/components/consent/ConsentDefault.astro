@@ -1,0 +1,9 @@
+---
+import { CONSENT_DENIED } from '../../lib/consent.mjs';
+---
+
+<script is:inline define:vars={{ CONSENT_DENIED }}>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('consent', 'default', CONSENT_DENIED);
+</script>

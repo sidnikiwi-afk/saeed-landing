@@ -1,0 +1,98 @@
+---
+---
+
+<div data-consent-banner role="region" aria-label="Cookies">
+  <p>Cookies measure how the site is used and whether an ad led here. Accept to allow that. Decline and we will not measure.</p>
+  <div class="actions">
+    <a href="/privacy">Privacy</a>
+    <button type="button" data-consent-choice="declined">Decline</button>
+    <button type="button" data-consent-choice="accepted">Accept</button>
+  </div>
+</div>
+
+<script>
+  import { startConsent } from '../../lib/consent.mjs';
+  import { trackingSettings } from '../../data/tracking.mjs';
+
+  startConsent(document, trackingSettings);
+</script>
+
+<style>
+  [data-consent-banner] {
+    position: fixed;
+    z-index: 80;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    left: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    width: min(52rem, calc(100% - 1.5rem));
+    margin: 0 auto;
+    padding: 0.8rem 0.95rem;
+    border: 1px solid var(--brand-line, #e8e8ee);
+    border-radius: 14px;
+    background: #fff;
+    color: var(--brand-ink, #0a0a0b);
+    box-shadow: 0 12px 32px rgba(10, 10, 11, 0.12);
+    font-family: inherit;
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+
+  [data-consent-banner][hidden] {
+    display: none;
+  }
+
+  [data-consent-banner] p {
+    margin: 0;
+    flex: 1 1 16rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .actions a {
+    margin-right: 0.25rem;
+    color: var(--brand-muted, #5b5b66);
+    font-size: 0.85rem;
+  }
+
+  .actions button {
+    border-radius: 999px;
+    padding: 0.45rem 0.9rem;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .actions button:focus-visible,
+  .actions a:focus-visible {
+    outline: 2px solid var(--brand-purple, #6e48f0);
+    outline-offset: 2px;
+  }
+
+  [data-consent-choice="declined"] {
+    border: 1px solid var(--brand-line, #e8e8ee);
+    background: transparent;
+    color: var(--brand-ink, #0a0a0b);
+  }
+
+  [data-consent-choice="accepted"] {
+    border: 0;
+    background: var(--brand-purple, #6e48f0);
+    color: #fff;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-consent-banner],
+    [data-consent-banner] button {
+      transition: none;
+    }
+  }
+</style>
