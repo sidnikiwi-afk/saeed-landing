@@ -1,0 +1,128 @@
+---
+import Button from './Button.astro';
+
+// Closing section adapted from the redesign prototype. The main button is the
+// 15-minute teardown to /contact/; the free trial stays as the second option.
+---
+
+<section id="closing" aria-labelledby="closing-title">
+  <div class="wrap">
+    <div class="intro">
+      <p class="eyebrow">Start here</p>
+      <h2 id="closing-title">Tell us what your team keeps doing by hand.</h2>
+      <p class="lead">
+        We will map where the work goes missing, show you what we would automate first, and say so plainly
+        if we are not the right fit.
+      </p>
+    </div>
+    <div class="options">
+      <div class="option">
+        <h3>Book a 15-minute teardown</h3>
+        <p>For anything: enquiries, email, admin, dashboards or integrations.</p>
+        <Button href="/contact/" variant="purple">Book the teardown &rarr;</Button>
+      </div>
+      <div class="option alt">
+        <h3>Just want the AI receptionist?</h3>
+        <p>Start a free trial. No card needed.</p>
+        <Button
+          href="https://dashboard.brackstonedigital.co.uk/trial-request?utm_source=website&utm_medium=homepage&utm_content=closing"
+          variant="line"
+        >
+          Start the free trial
+        </Button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  section {
+    padding: 6.5rem 0;
+    background: var(--brand-ink);
+    color: #fff;
+  }
+
+  .wrap {
+    width: min(1200px, calc(100% - 3rem));
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: #c4b5fd;
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    max-width: 14em;
+    margin: 0.75rem 0 1rem;
+    font-size: clamp(2rem, 4.2vw, 3.25rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    text-wrap: balance;
+    color: #fff;
+  }
+
+  .lead {
+    max-width: 34rem;
+    margin: 0;
+    color: #b6b4c4;
+    font-size: 1.125rem;
+  }
+
+  .options {
+    display: grid;
+    gap: 0.875rem;
+  }
+
+  .option {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    border: 1px solid #26242f;
+    border-radius: 20px;
+    background: #14131c;
+  }
+
+  .option h3 {
+    margin: 0;
+    font-size: 1.13rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+
+  .option p {
+    margin: 0 0 0.75rem;
+    color: #b6b4c4;
+    font-size: 0.9rem;
+  }
+
+  .option.alt {
+    background: transparent;
+  }
+
+  .option :global(.btn.line) {
+    background: #fff;
+    border-color: #fff;
+  }
+
+  .option :global(.btn.line:hover) {
+    border-color: #d9d9e2;
+  }
+
+  @media (max-width: 900px) {
+    .wrap {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
