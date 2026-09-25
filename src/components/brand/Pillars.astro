@@ -1,0 +1,315 @@
+---
+const pillars = [
+  {
+    index: '01',
+    name: 'Enquiries',
+    title: 'Every enquiry answered, whatever the channel',
+    body: 'Calls, emails and web forms are picked up, understood and written down with the detail you would have asked for.',
+    items: [
+      { label: 'AI phone receptionist', popular: true },
+      { label: 'Email enquiry handling' },
+      { label: 'Web form and portal enquiries' },
+    ],
+    visual: 'chips',
+  },
+  {
+    index: '02',
+    name: 'Automation',
+    title: 'The admin moves itself on',
+    body: 'Bookings, quotes, follow-ups and reminders move between your systems without anyone retyping them.',
+    items: [
+      { label: 'Bookings and confirmations' },
+      { label: 'Quote and follow-up chasing' },
+      { label: 'Jobs created in your system' },
+    ],
+    visual: 'flow',
+  },
+  {
+    index: '03',
+    name: 'Visibility',
+    title: 'One dashboard for all of it',
+    body: 'Custom dashboards built on top of your existing tools through their APIs, so you can see what came in, what got done and what needs a person.',
+    items: [
+      { label: 'Custom dashboards' },
+      { label: 'API integrations' },
+      { label: 'Reports from your job system' },
+    ],
+    visual: 'bars',
+  },
+];
+
+const chips = ['Name', 'Job', 'Urgency', 'Next step'];
+const flow = ['Enquiry', 'Job created', 'Quote sent', 'Chased'];
+const bars = [40, 62, 48, 80, 56, 92, 70];
+---
+
+<section id="what" aria-labelledby="pillars-title">
+  <div class="wrap">
+    <div class="center">
+      <p class="eyebrow">What we do</p>
+      <h2 id="pillars-title">Three things every busy team drops. We make them run on their own.</h2>
+      <p class="lead">Start with one. Most teams add the others once they see the first one working.</p>
+    </div>
+    <div class="pillars" data-pillars>
+      {
+        pillars.map((pillar) => (
+          <article class="card">
+            <p class="index">
+              {pillar.index} · {pillar.name}
+            </p>
+            <h3>{pillar.title}</h3>
+            <p>{pillar.body}</p>
+            <ul>
+              {pillar.items.map((item) => (
+                <li>
+                  <span>{item.label}</span>
+                  {item.popular && <span class="badge">Most popular</span>}
+                </li>
+              ))}
+            </ul>
+            <div class="visual">
+              {pillar.visual === 'chips' && (
+                <ul class="chips">
+                  {chips.map((chip) => (
+                    <li>{chip}</li>
+                  ))}
+                </ul>
+              )}
+              {pillar.visual === 'flow' && (
+                <ol class="flow">
+                  {flow.map((step, index) => (
+                    <>
+                      {index > 0 && <li class="then">then</li>}
+                      <li class={index === 0 ? 'step on' : 'step'}>{step}</li>
+                    </>
+                  ))}
+                </ol>
+              )}
+              {pillar.visual === 'bars' && (
+                <div class="bars" aria-hidden="true">
+                  {bars.map((height) => (
+                    <span style={`height: ${height}%`} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  section {
+    padding: 6.5rem 0;
+  }
+
+  .wrap {
+    width: min(1200px, calc(100% - 3rem));
+    margin: 0 auto;
+  }
+
+  .center {
+    text-align: center;
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--brand-purple);
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    max-width: 16em;
+    margin: 0.75rem auto 1rem;
+    font-size: clamp(2rem, 4.2vw, 3.25rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  .lead {
+    max-width: 36rem;
+    margin: 0 auto;
+    color: var(--brand-muted);
+    font-size: 1.125rem;
+  }
+
+  [data-pillars] {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.125rem;
+    margin-top: 3rem;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 1.75rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 24px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(10, 10, 20, 0.04), 0 8px 30px -8px rgba(40, 20, 120, 0.14);
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 50px 100px -40px rgba(60, 30, 160, 0.35), 0 1px 2px rgba(10, 10, 20, 0.05);
+  }
+
+  .index {
+    margin: 0;
+    color: var(--brand-purple);
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  h3 {
+    margin: 0.5rem 0;
+    font-size: 1.55rem;
+    font-weight: 650;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+
+  .card > p {
+    margin: 0;
+    color: var(--brand-muted);
+    font-size: 0.95rem;
+  }
+
+  ul {
+    display: grid;
+    gap: 0.5rem;
+    margin: 1.15rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 11px;
+    background: #f8f8fb;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .badge {
+    flex: none;
+    padding: 0.2rem 0.5rem;
+    border-radius: 99px;
+    background: var(--brand-purple);
+    color: #fff;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+
+  .visual {
+    margin-top: auto;
+    padding-top: 1.25rem;
+    border-top: 1px dashed var(--brand-line);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0;
+  }
+
+  .chips li {
+    display: inline-flex;
+    gap: 0.4rem;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 99px;
+    background: #fff;
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+
+  .chips li::before {
+    content: "";
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--brand-mint);
+  }
+
+  .flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .flow .step {
+    padding: 0.4rem 0.55rem;
+    border-radius: 8px;
+    background: var(--brand-purple-soft);
+    color: #4a28d6;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  .flow .on {
+    background: #d9cffd;
+  }
+
+  .flow .then {
+    padding: 0;
+    background: transparent;
+    color: var(--brand-muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.4rem;
+    height: 4.4rem;
+  }
+
+  .bars span {
+    flex: 1;
+    border-radius: 6px 6px 2px 2px;
+    background: linear-gradient(var(--brand-purple), #8b6cff);
+  }
+
+  .bars span:nth-child(3n) {
+    background: linear-gradient(#5ee0bd, var(--brand-mint));
+  }
+
+  @media (max-width: 960px) {
+    [data-pillars] {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card,
+    .card:hover {
+      transform: none;
+    }
+  }
+</style>
