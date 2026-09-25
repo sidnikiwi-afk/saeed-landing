@@ -121,14 +121,11 @@ test('preview comparison, tested, faq and closing sections follow the packet', a
   }
   assert.doesNotMatch(faq, /\b(claim|guarantee|we deliver)\b/i);
 
-  // Closing: the teardown offer is the main call to action, pointing at
-  // /contact/. The button reads "Book the teardown" because the built-site
-  // test owns the exact page-wide "Book a 15-minute teardown" hero link, so
-  // the heading carries the packet wording.
   const closing = sectionHtml(html, 'closing');
   assertCleanCopy(closing, 'the closing section');
-  assert.match(closing, /Book a 15-minute teardown/);
-  const teardownLinks = anchors(closing).filter((anchor) => /teardown/i.test(anchor.text));
+  const teardownLinks = anchors(closing).filter((anchor) => anchor.text === 'Book a 15-minute teardown');
   assert.equal(teardownLinks.length, 1, 'the closing section should have exactly one teardown button');
   assert.equal(teardownLinks[0].href, '/contact/', 'the teardown button must point at /contact/');
+  const trialLinks = anchors(closing).filter((anchor) => anchor.text === 'Start a free trial');
+  assert.equal(trialLinks.length, 1, 'the closing section should have exactly one trial button');
 });
