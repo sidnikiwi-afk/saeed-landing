@@ -1,0 +1,232 @@
+---
+import Button from './Button.astro';
+import { garagesAd } from '../../data/ads/garages.mjs';
+import { estateAgentsAd } from '../../data/ads/estate-agents.mjs';
+import { aiReceptionistAd } from '../../data/ads/ai-receptionist.mjs';
+
+// Only trades with an ads entry get a link. The href and link text come from
+// the entry, so a trade without a data file renders without a link.
+const industries = [
+  {
+    title: 'Garages and car sales',
+    body: 'Bookings, MOTs and stock questions handled, day or night.',
+    points: ['MOT and service calls booked', 'Vehicle looked up from the reg', 'Stock and test drive enquiries'],
+    ad: garagesAd,
+  },
+  {
+    title: 'Estate agents and lettings',
+    body: 'Portal, email and phone enquiries turned into viewings.',
+    points: ['Portal emails read and matched', 'Viewings held and confirmed', 'Applicants chased on schedule'],
+    ad: estateAgentsAd,
+  },
+  {
+    title: 'Trades and field service',
+    body: 'Quotes, callbacks and jobs moved on while your hands are full.',
+    points: ['Quote emails turned into jobs', 'Urgent work flagged first', 'Quotes chased until won or lost'],
+    ad: null,
+  },
+  {
+    title: 'Any business with a phone',
+    body: 'A receptionist that answers every call, whatever you do.',
+    points: ['Every call answered on the first ring', 'Urgent calls flagged to you', 'Bookings confirmed by text'],
+    ad: aiReceptionistAd,
+  },
+];
+---
+
+<section id="industries" aria-labelledby="industries-title">
+  <div class="wrap">
+    <p class="eyebrow">Where we work</p>
+    <h2 id="industries-title">Built around how your trade actually runs.</h2>
+    <p class="lead">If work reaches you as an enquiry and leaves as a booked job, the same pattern applies.</p>
+    <div class="grid">
+      {
+        industries.map((industry) => (
+          <article class="card">
+            <h3>{industry.title}</h3>
+            <p class="body">{industry.body}</p>
+            <ul>
+              {industry.points.map((point) => (
+                <li>{point}</li>
+              ))}
+            </ul>
+            {industry.ad && (
+              <p class="more">
+                <a href={`/${industry.ad.slug}/`}>{industry.ad.headline} &rarr;</a>
+              </p>
+            )}
+          </article>
+        ))
+      }
+    </div>
+    <div class="not-listed">
+      <p>
+        <strong>Not on the list?</strong> The label matters less than the pattern. Tell us what your team keeps
+        doing by hand and we will say plainly whether we can help.
+      </p>
+      <Button href="/contact/" variant="line">Tell us what slips &rarr;</Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  section {
+    padding: 6.5rem 0;
+    border-block: 1px solid var(--brand-line);
+    background: #fff;
+  }
+
+  .wrap {
+    width: min(1200px, calc(100% - 3rem));
+    margin: 0 auto;
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--brand-purple);
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    max-width: 14em;
+    margin: 0.75rem 0 1rem;
+    font-size: clamp(2rem, 4.2vw, 3.25rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  .lead {
+    max-width: 38rem;
+    margin: 0;
+    color: var(--brand-muted);
+    font-size: 1.125rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.875rem;
+    margin-top: 2.75rem;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+    padding: 1.375rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 20px;
+    background: #fff;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: #cfc6f7;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.13rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
+
+  .body {
+    margin: 0;
+    color: var(--brand-muted);
+    font-size: 0.88rem;
+  }
+
+  ul {
+    display: grid;
+    gap: 0.45rem;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.82rem;
+  }
+
+  li {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  li::before {
+    content: '\2713';
+    color: var(--brand-mint);
+    font-weight: 700;
+  }
+
+  .more {
+    margin: auto 0 0;
+    padding-top: 0.9rem;
+    font-size: 0.85rem;
+  }
+
+  .more a {
+    color: var(--brand-purple);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .more a:hover {
+    text-decoration: underline;
+  }
+
+  .more a:focus-visible {
+    outline: 2px solid var(--brand-purple);
+    outline-offset: 2px;
+  }
+
+  .not-listed {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    margin-top: 1.1rem;
+    padding: 1.375rem 1.625rem;
+    border: 1px dashed #cfc6f7;
+    border-radius: 20px;
+    background: #fff;
+  }
+
+  .not-listed p {
+    max-width: 45rem;
+    margin: 0;
+    color: var(--brand-muted);
+    font-size: 0.94rem;
+  }
+
+  .not-listed strong {
+    color: var(--brand-ink);
+  }
+
+  @media (max-width: 1000px) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card,
+    .card:hover {
+      transform: none;
+    }
+  }
+</style>
