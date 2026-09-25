@@ -1,0 +1,230 @@
+---
+import IllustrativeCaption from './IllustrativeCaption.astro';
+
+const customerMessages = [
+  {
+    title: 'Re: Quote for a rewire',
+    body: 'Thanks Sarah, we can survey on Tue 10:00 or Wed 14:00. Which suits?',
+  },
+  {
+    title: 'Viewing confirmed: 14 Oak Road',
+    body: 'See you Saturday at 11:00. Reply to change.',
+  },
+  {
+    title: 'Text: booked for Thu 09:00',
+    body: 'MOT and service. Reply C to change.',
+  },
+  {
+    title: 'Friendly reminder about your quote',
+    body: 'Happy to answer any questions before you decide.',
+  },
+];
+
+const teamSummary = [
+  { label: 'Rewire quote, Sarah', pill: 'Reply sent', tone: 'sent' },
+  { label: 'Dan Kerr, no power', pill: 'Call back', tone: 'todo' },
+  { label: 'Viewing, 14 Oak Rd', pill: 'Sat 11:00', tone: 'booked' },
+  { label: 'Unpaid invoice, no. 1042', pill: 'Chased', tone: 'sent' },
+];
+---
+
+<section id="both-sides" aria-labelledby="both-sides-title">
+  <div class="wrap">
+    <div class="center">
+      <p class="eyebrow">Both sides</p>
+      <h2 id="both-sides-title">Your customer gets an answer. Your team gets the whole picture.</h2>
+    </div>
+    <div class="duo">
+      <article class="panel">
+        <h3>What your customer gets</h3>
+        <p class="lead">A fast, clear reply, whichever way they got in touch.</p>
+        <div class="thread" role="presentation">
+          <p class="who"><strong>Inbox</strong><span>Replies to your enquiries</span></p>
+          {
+            customerMessages.map((message) => (
+              <div class="message">
+                <strong>{message.title}</strong>
+                <span>{message.body}</span>
+              </div>
+            ))
+          }
+        </div>
+      </article>
+      <article class="panel">
+        <h3>What your team sees at 8am</h3>
+        <p class="lead">What came in, from where, and what still needs a person.</p>
+        <div class="thread" role="presentation">
+          <p class="who"><strong>Good morning</strong><span>Overnight summary</span></p>
+          <ul class="summary">
+            {
+              teamSummary.map((item) => (
+                <li>
+                  <span>{item.label}</span>
+                  <span class:list={['pill', item.tone]}>{item.pill}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </article>
+    </div>
+    <IllustrativeCaption>Made-up replies and a made-up morning summary. Names and details are invented.</IllustrativeCaption>
+  </div>
+</section>
+
+<style>
+  section {
+    padding: 1rem 0 6.5rem;
+  }
+
+  .wrap {
+    width: min(1200px, calc(100% - 3rem));
+    margin: 0 auto;
+  }
+
+  .center {
+    text-align: center;
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--brand-purple);
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    max-width: 22em;
+    margin: 0.75rem auto 0;
+    font-size: clamp(2rem, 4.2vw, 3.25rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  .duo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.75rem;
+    margin-top: 3rem;
+  }
+
+  .panel {
+    padding: 2.25rem 2.25rem 2.25rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 28px;
+    background: linear-gradient(180deg, #fff, #f7f5ff);
+    box-shadow: 0 1px 2px rgba(10, 10, 20, 0.04), 0 8px 30px -8px rgba(40, 20, 120, 0.14);
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 650;
+    letter-spacing: -0.03em;
+  }
+
+  .lead {
+    margin: 0.35rem 0 1.75rem;
+    color: var(--brand-muted);
+    font-size: 0.97rem;
+  }
+
+  .thread {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.1rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 18px;
+    background: #fff;
+  }
+
+  .who {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    margin: 0 0 0.4rem;
+    text-align: center;
+  }
+
+  .who strong {
+    font-size: 0.88rem;
+  }
+
+  .who span {
+    color: var(--brand-muted);
+    font-size: 0.75rem;
+  }
+
+  .message {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.65rem 0.7rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 12px;
+  }
+
+  .message strong {
+    font-size: 0.78rem;
+  }
+
+  .message span {
+    color: var(--brand-muted);
+    font-size: 0.72rem;
+  }
+
+  .summary {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .summary li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.55rem 0.65rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 10px;
+    font-size: 0.75rem;
+  }
+
+  .pill {
+    flex: none;
+    padding: 0.15rem 0.5rem;
+    border-radius: 99px;
+    font-size: 0.66rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .sent {
+    background: var(--brand-purple-soft);
+    color: #4a28d6;
+  }
+
+  .todo {
+    background: #fff4e5;
+    color: #b45309;
+  }
+
+  .booked {
+    background: #e6faf3;
+    color: #047857;
+  }
+
+  @media (max-width: 900px) {
+    .duo {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

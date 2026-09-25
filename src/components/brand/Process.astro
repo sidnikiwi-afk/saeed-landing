@@ -1,0 +1,155 @@
+---
+const steps = [
+  {
+    number: '01',
+    title: 'Teardown',
+    body: 'Fifteen minutes. We find where your enquiries and admin leak, and what to fix first.',
+    note: 'Free. No pitch deck.',
+  },
+  {
+    number: '02',
+    title: 'Build',
+    body: 'We build the first system around how you already work, connected to your tools.',
+    note: 'Usually one thing first',
+  },
+  {
+    number: '03',
+    title: 'Test',
+    body: 'We try to break it with the awkward cases before it goes anywhere near a customer.',
+    note: 'Scored, not eyeballed',
+  },
+  {
+    number: '04',
+    title: 'Run and improve',
+    body: 'It runs, you see everything it does, and we keep tuning it as your business changes.',
+    note: 'Then the next leak',
+  },
+];
+---
+
+<section id="how" aria-labelledby="how-title">
+  <div class="wrap">
+    <p class="eyebrow">How we work</p>
+    <h2 id="how-title">Small first. Proven. Then the next thing.</h2>
+    <div class="grid">
+      {
+        steps.map((step) => (
+          <div class="step">
+            <p class="dot" aria-hidden="true">{step.number}</p>
+            <h3>{step.title}</h3>
+            <p>{step.body}</p>
+            <small>{step.note}</small>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  section {
+    padding: 4rem 0 6.5rem;
+  }
+
+  .wrap {
+    width: min(1200px, calc(100% - 3rem));
+    margin: 0 auto;
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--brand-purple);
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    max-width: 14em;
+    margin: 0.75rem 0 0;
+    font-size: clamp(2rem, 4.2vw, 3.25rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  .grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    margin-top: 2.75rem;
+  }
+
+  .grid::before {
+    content: '';
+    position: absolute;
+    inset: 1.4rem 0 auto;
+    height: 2px;
+    background: linear-gradient(90deg, var(--brand-purple), var(--brand-mint));
+    opacity: 0.25;
+  }
+
+  .step {
+    position: relative;
+    padding-right: 1.5rem;
+  }
+
+  .dot {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    margin: 0;
+    border: 1px solid var(--brand-line);
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(10, 10, 20, 0.04), 0 8px 30px -8px rgba(40, 20, 120, 0.14);
+    color: var(--brand-purple);
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-weight: 500;
+  }
+
+  h3 {
+    margin: 1.1rem 0 0.35rem;
+    font-size: 1.2rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+
+  .step > p:not(.dot) {
+    margin: 0;
+    color: var(--brand-muted);
+    font-size: 0.92rem;
+  }
+
+  small {
+    display: block;
+    margin-top: 0.6rem;
+    color: var(--brand-purple);
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: 0.72rem;
+  }
+
+  @media (max-width: 900px) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .grid::before {
+      display: none;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
