@@ -58,7 +58,7 @@ function assertCleanCopy(sectionHtmlText, label) {
   }
 }
 
-test('preview comparison, tested, faq and closing sections follow the packet', async () => {
+test('homepage comparison, tested, faq and closing sections follow the packet', async () => {
   // Build to a separate outDir so this file and built-site.test.mjs can run
   // their builds in parallel without clobbering each other's dist.
   const outDir = join(root, 'dist-closing');
@@ -71,7 +71,7 @@ test('preview comparison, tested, faq and closing sections follow the packet', a
     },
   });
 
-  const html = readFileSync(join(outDir, 'preview', 'index.html'), 'utf8');
+  const html = readFileSync(join(outDir, 'index.html'), 'utf8');
 
   // Comparison: by hand, buying a tool, having it built.
   const comparison = sectionHtml(html, 'comparison');

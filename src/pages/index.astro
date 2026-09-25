@@ -1,149 +1,36 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { Schema } from 'astro-seo-schema';
-import Nav from '../components/home/Nav.astro';
-import Hero from '../components/home/Hero.astro';
-import Problem from '../components/home/Problem.astro';
-import Industries from '../components/home/Industries.astro';
-import FourJobs from '../components/home/FourJobs.astro';
-import Proof from '../components/home/Proof.astro';
-import Reliability from '../components/home/Reliability.astro';
-import Standards from '../components/home/Standards.astro';
-import Cta from '../components/home/Cta.astro';
-import Footer from '../components/home/Footer.astro';
+import BrandLayout from '../layouts/BrandLayout.astro';
+import BuiltWork from '../components/brand/BuiltWork.astro';
+import Closing from '../components/brand/Closing.astro';
+import Comparison from '../components/brand/Comparison.astro';
+import CustomerAndTeam from '../components/brand/CustomerAndTeam.astro';
+import Faq from '../components/brand/Faq.astro';
+import DayStory from '../components/brand/DayStory.astro';
+import Hero from '../components/brand/Hero.astro';
+import Industries from '../components/brand/Industries.astro';
+import Pillars from '../components/brand/Pillars.astro';
+import Process from '../components/brand/Process.astro';
+import Tested from '../components/brand/Tested.astro';
+import ToolsMap from '../components/brand/ToolsMap.astro';
 ---
 
-<Layout
+<BrandLayout
   title="Brackstone - the work your business drops, running on its own"
   description="Brackstone answers the calls, captures the enquiries, books the work and chases the follow-ups small UK teams never get back to. For businesses that run on a phone and a diary, from garages and letting agents to trades and hire desks."
+  home="/"
 >
-  <style is:global>
-    html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--color-brand-bg) !important;
-      color: var(--color-brand-text) !important;
-      font-family: var(--font-body) !important;
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    h1, h2, h3, h4, h5, h6 {
-      font-family: var(--font-heading) !important;
-    }
-
-    ::selection {
-      background: var(--color-brand-primary);
-      color: #fff;
-    }
-
-    .sr {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-                  transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .sr.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      .sr { opacity: 1; transform: none; transition: none; }
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
-    }
-  </style>
-
-  <Nav />
   <main>
     <Hero />
-    <Problem />
+    <Pillars />
+    <DayStory />
+    <ToolsMap />
+    <BuiltWork />
+    <Process />
+    <CustomerAndTeam />
     <Industries />
-    <FourJobs />
-    <Proof />
-    <Reliability />
-    <Standards />
-    <Cta />
+    <Comparison />
+    <Tested />
+    <Faq />
+    <Closing />
   </main>
-  <Footer />
-
-  <script>
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (!prefersReduced && 'IntersectionObserver' in window) {
-      const targets = Array.from(
-        document.querySelectorAll<HTMLElement>('.card, .job, .check, .std-item')
-      );
-
-      const reveal = (el: Element) => el.classList.add('visible');
-
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              reveal(entry.target);
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
-      );
-
-      targets.forEach((el) => {
-        el.classList.add('sr');
-        observer.observe(el);
-      });
-
-      document.querySelectorAll<HTMLElement>('.card').forEach((el, i) => {
-        el.style.transitionDelay = `${i * 0.07}s`;
-      });
-      document.querySelectorAll<HTMLElement>('.job').forEach((el, i) => {
-        el.style.transitionDelay = `${i * 0.07}s`;
-      });
-
-      // Safety net: never let the reveal animation be the reason content is unreadable.
-      // If the observer has not fired (throttled background tab, restored session, no scroll),
-      // show everything rather than leaving the page blank.
-      window.setTimeout(() => targets.forEach(reveal), 1600);
-    }
-  </script>
-
-  <Schema
-    item={{
-      "@context": "https://schema.org",
-      "@type": "ProfessionalService",
-      "name": "Brackstone Digital",
-      "url": "https://brackstonedigital.co.uk",
-      "description":
-        "Brackstone builds and runs the operational automation small UK businesses drop when they are busy: answering enquiries, capturing them, booking the work and chasing the follow-ups.",
-      "areaServed": {
-        "@type": "Country",
-        "name": "United Kingdom"
-      },
-      "serviceType": [
-        "Business Process Automation",
-        "Enquiry Handling and Lead Capture",
-        "Appointment and Booking Automation",
-        "Follow-up and Pipeline Automation",
-        "AI Receptionist and Call Handling"
-      ],
-      "knowsAbout": [
-        "Garages and vehicle workshops",
-        "Estate agents and lettings",
-        "Trades and field service",
-        "Vehicle hire"
-      ],
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "contactType": "sales",
-        "url": "https://brackstonedigital.co.uk/contact"
-      }
-    }}
-  />
-</Layout>
+</BrandLayout>

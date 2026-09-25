@@ -356,12 +356,7 @@ test('built site hides the preview and keeps copy clean', () => {
   });
 
   const previewPath = join(dist, 'preview', 'index.html');
-  let previewHtml;
-  try {
-    previewHtml = readFileSync(previewPath, 'utf8');
-  } catch {
-    assert.fail('/preview/ does not exist yet');
-  }
+  assert.equal(existsSync(previewPath), false, '/preview/ must not exist');
 
   // The contact form must keep posting to the same endpoint with the same
   // fields, so the redesign cannot silently break enquiries.
@@ -382,42 +377,45 @@ test('built site hides the preview and keeps copy clean', () => {
   assert.match(contactHtml, /data-sitekey=/, 'contact page must render the Turnstile widget');
   assert.match(contactHtml, /challenges\.cloudflare\.com\/turnstile/, 'contact page must load Turnstile');
 
+  const homeHtml = readFileSync(join(dist, 'index.html'), 'utf8');
   assert.match(
-    previewHtml,
-    /<meta\s+name=["']robots["']\s+content=["'][^"']*noindex/i,
-    'preview page is missing noindex',
+    homeHtml,
+    /<title>Brackstone - the work your business drops, running on its own<\/title>/,
   );
-  assert.match(previewHtml, /Book a teardown/);
-  assert.match(previewHtml, /Illustrative/);
-  assert.match(previewHtml, /Privacy/);
-  assert.match(previewHtml, /\/fonts\/Geist-Variable\.woff2/);
-  assert.match(previewHtml, /\/fonts\/GeistMono-Variable\.woff2/);
-  assert.doesNotMatch(previewHtml, /fonts\.googleapis\.com/);
-  assert.doesNotMatch(previewHtml, /<script\b/i);
-  assert.deepEqual(heroLinkProblems(previewHtml), []);
-  assert.match(previewHtml, /Every enquiry handled/);
-  assert.match(previewHtml, /Running on its own/);
-  assert.match(previewHtml, /Calls, emails, web forms/);
-  assert.match(previewHtml, /Quote for a rewire/);
-  assert.match(previewHtml, /Book a viewing/);
-  assert.match(previewHtml, /Booking line, how can I help/);
-  assert.match(previewHtml, /Email read/);
-  assert.match(previewHtml, /Form received/);
-  assert.match(previewHtml, /Answered on first ring/);
+  assert.match(homeHtml, /rel="canonical"[^>]*href="https:\/\/brackstonedigital\.co\.uk\/"/);
+  assert.doesNotMatch(homeHtml, /noindex/i, 'the homepage must be indexed');
+  assert.doesNotMatch(homeHtml, /\/preview\//, 'homepage links must not point at /preview/');
+  assert.match(homeHtml, /href="\/#what"/);
+  assert.match(homeHtml, /Book a teardown/);
+  assert.match(homeHtml, /Illustrative/);
+  assert.match(homeHtml, /Privacy/);
+  assert.match(homeHtml, /\/fonts\/Geist-Variable\.woff2/);
+  assert.match(homeHtml, /\/fonts\/GeistMono-Variable\.woff2/);
+  assert.doesNotMatch(homeHtml, /fonts\.googleapis\.com/);
+  assert.deepEqual(heroLinkProblems(homeHtml), []);
+  assert.match(homeHtml, /Every enquiry handled/);
+  assert.match(homeHtml, /Running on its own/);
+  assert.match(homeHtml, /Calls, emails, web forms/);
+  assert.match(homeHtml, /Quote for a rewire/);
+  assert.match(homeHtml, /Book a viewing/);
+  assert.match(homeHtml, /Booking line, how can I help/);
+  assert.match(homeHtml, /Email read/);
+  assert.match(homeHtml, /Form received/);
+  assert.match(homeHtml, /Answered on first ring/);
 
-  assert.match(previewHtml, /id="what"/);
-  assert.match(previewHtml, /Every enquiry answered, whatever the channel/);
-  assert.match(previewHtml, /The admin moves itself on/);
-  assert.match(previewHtml, /One dashboard for all of it/);
-  assert.match(previewHtml, /AI phone receptionist[\s\S]{0,240}Most popular/);
-  assert.match(previewHtml, /Email enquiry handling/);
-  assert.match(previewHtml, /Web form and portal enquiries/);
-  assert.match(previewHtml, /Bookings and confirmations/);
-  assert.match(previewHtml, /Custom dashboards/);
+  assert.match(homeHtml, /id="what"/);
+  assert.match(homeHtml, /Every enquiry answered, whatever the channel/);
+  assert.match(homeHtml, /The admin moves itself on/);
+  assert.match(homeHtml, /One dashboard for all of it/);
+  assert.match(homeHtml, /AI phone receptionist[\s\S]{0,240}Most popular/);
+  assert.match(homeHtml, /Email enquiry handling/);
+  assert.match(homeHtml, /Web form and portal enquiries/);
+  assert.match(homeHtml, /Bookings and confirmations/);
+  assert.match(homeHtml, /Custom dashboards/);
 
-  assert.match(previewHtml, /id="day"/);
-  assert.match(previewHtml, /You are not losing work to better firms/);
-  assert.match(previewHtml, /Tuesday-afternoon problem/);
+  assert.match(homeHtml, /id="day"/);
+  assert.match(homeHtml, /You are not losing work to better firms/);
+  assert.match(homeHtml, /Tuesday-afternoon problem/);
   for (const line of [
     'A quote request lands in a busy inbox',
     'A viewing request comes through the website',
@@ -428,18 +426,18 @@ test('built site hides the preview and keeps copy clean', () => {
     'Read, job created, reply sent with survey slots.',
     'Five enquiries across three channels. None dropped.',
   ]) {
-    assert.match(previewHtml, new RegExp(line.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    assert.match(homeHtml, new RegExp(line.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
-  assert.ok((previewHtml.match(/>Without</g) ?? []).length >= 5, 'day story is missing the without state');
-  assert.ok((previewHtml.match(/>With Brackstone</g) ?? []).length >= 5, 'day story is missing the with state');
+  assert.ok((homeHtml.match(/>Without</g) ?? []).length >= 5, 'day story is missing the without state');
+  assert.ok((homeHtml.match(/>With Brackstone</g) ?? []).length >= 5, 'day story is missing the with state');
 
-  assert.match(previewHtml, /id="tools"/);
-  assert.match(previewHtml, /Keep the software you run on/);
+  assert.match(homeHtml, /id="tools"/);
+  assert.match(homeHtml, /Keep the software you run on/);
   for (const tool of ['ServiceM8', 'Stripe', 'Twilio', 'Square', 'DVLA']) {
-    assert.match(previewHtml, new RegExp(`\\b${tool}\\b`));
+    assert.match(homeHtml, new RegExp(`\\b${tool}\\b`));
   }
 
-  assert.match(previewHtml, /id="built"/);
+  assert.match(homeHtml, /id="built"/);
   for (const hint of [
     'An AI receptionist that books MOTs and services',
     'A dealer website with an AI line that knows the stock',
@@ -448,16 +446,12 @@ test('built site hides the preview and keeps copy clean', () => {
     'A quoting helper that works from drawings',
     'A multi-business dashboard with billing built in',
   ]) {
-    assert.match(previewHtml, new RegExp(hint.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    assert.match(homeHtml, new RegExp(hint.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
-  assert.match(previewHtml, /Things we have built[\s\S]{0,1600}Illustrative/);
+  assert.match(homeHtml, /Things we have built[\s\S]{0,1600}Illustrative/);
 
-  const previewCss = linkedCss(previewHtml);
+  const previewCss = linkedCss(homeHtml);
   assert.deepEqual(sectionLayoutProblems(previewCss), []);
-
-  const homeHtml = readFileSync(join(dist, 'index.html'), 'utf8');
-  assert.match(homeHtml, /fonts\.googleapis\.com/);
-  assert.doesNotMatch(homeHtml, /Geist-Variable\.woff2/);
 
   const garagesPath = join(dist, 'garages', 'index.html');
   let garagesHtml;
