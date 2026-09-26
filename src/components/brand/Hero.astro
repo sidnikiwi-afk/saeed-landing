@@ -1037,12 +1037,14 @@ const scenes = [
   .hero:has(input:checked) .frame {
     grid-area: 1 / 1;
     visibility: hidden;
+    opacity: 0;
   }
 
   .hero:has(input[value="email"]:checked) .frame[data-scene="email"],
   .hero:has(input[value="form"]:checked) .frame[data-scene="form"],
   .hero:has(input[value="call"]:checked) .frame[data-scene="call"] {
     visibility: visible;
+    opacity: 1;
   }
 
   .trust {
@@ -1081,9 +1083,10 @@ const scenes = [
     to { transform: translateX(-50%) rotate(360deg); }
   }
 
+  /* Opacity as well as visibility: a child animated to visibility: visible would otherwise show through a hidden frame. */
   @keyframes cycle {
-    0%, 33.2% { visibility: visible; }
-    33.3%, 100% { visibility: hidden; }
+    0% { visibility: visible; opacity: 1; animation-timing-function: step-end; }
+    33.3%, 100% { visibility: hidden; opacity: 0; }
   }
 
   @keyframes pick {
@@ -1208,16 +1211,16 @@ const scenes = [
   @keyframes show-44 { 0%, 43% { opacity: 0; } 46%, 90% { opacity: 1; } 96%, 100% { opacity: 0; } }
   @keyframes show-68 { 0%, 67% { opacity: 0; } 70%, 90% { opacity: 1; } 96%, 100% { opacity: 0; } }
 
-  @keyframes vis-until-8 { 0%, 7% { visibility: visible; } 10%, 90% { visibility: hidden; } 96%, 100% { visibility: visible; } }
-  @keyframes vis-from-8 { 0%, 7% { visibility: hidden; } 10%, 90% { visibility: visible; } 96%, 100% { visibility: hidden; } }
-  @keyframes vis-until-20 { 0%, 19% { visibility: visible; } 22%, 90% { visibility: hidden; } 96%, 100% { visibility: visible; } }
-  @keyframes vis-from-20 { 0%, 19% { visibility: hidden; } 22%, 90% { visibility: visible; } 96%, 100% { visibility: hidden; } }
-  @keyframes vis-until-32 { 0%, 31% { visibility: visible; } 34%, 90% { visibility: hidden; } 96%, 100% { visibility: visible; } }
-  @keyframes vis-from-32 { 0%, 31% { visibility: hidden; } 34%, 90% { visibility: visible; } 96%, 100% { visibility: hidden; } }
-  @keyframes vis-until-46 { 0%, 45% { visibility: visible; } 48%, 90% { visibility: hidden; } 96%, 100% { visibility: visible; } }
-  @keyframes vis-from-46 { 0%, 45% { visibility: hidden; } 48%, 90% { visibility: visible; } 96%, 100% { visibility: hidden; } }
-  @keyframes vis-until-68 { 0%, 67% { visibility: visible; } 70%, 90% { visibility: hidden; } 96%, 100% { visibility: visible; } }
-  @keyframes vis-from-68 { 0%, 67% { visibility: hidden; } 70%, 90% { visibility: visible; } 96%, 100% { visibility: hidden; } }
+  @keyframes vis-until-8 { 0% { visibility: visible; animation-timing-function: step-end; } 8% { visibility: hidden; animation-timing-function: step-end; } 93%, 100% { visibility: visible; } }
+  @keyframes vis-from-8 { 0% { visibility: hidden; animation-timing-function: step-end; } 8% { visibility: visible; animation-timing-function: step-end; } 93%, 100% { visibility: hidden; } }
+  @keyframes vis-until-20 { 0% { visibility: visible; animation-timing-function: step-end; } 20% { visibility: hidden; animation-timing-function: step-end; } 93%, 100% { visibility: visible; } }
+  @keyframes vis-from-20 { 0% { visibility: hidden; animation-timing-function: step-end; } 20% { visibility: visible; animation-timing-function: step-end; } 93%, 100% { visibility: hidden; } }
+  @keyframes vis-until-32 { 0% { visibility: visible; animation-timing-function: step-end; } 32% { visibility: hidden; animation-timing-function: step-end; } 93%, 100% { visibility: visible; } }
+  @keyframes vis-from-32 { 0% { visibility: hidden; animation-timing-function: step-end; } 32% { visibility: visible; animation-timing-function: step-end; } 93%, 100% { visibility: hidden; } }
+  @keyframes vis-until-46 { 0% { visibility: visible; animation-timing-function: step-end; } 46% { visibility: hidden; animation-timing-function: step-end; } 93%, 100% { visibility: visible; } }
+  @keyframes vis-from-46 { 0% { visibility: hidden; animation-timing-function: step-end; } 46% { visibility: visible; animation-timing-function: step-end; } 93%, 100% { visibility: hidden; } }
+  @keyframes vis-until-68 { 0% { visibility: visible; animation-timing-function: step-end; } 68% { visibility: hidden; animation-timing-function: step-end; } 93%, 100% { visibility: visible; } }
+  @keyframes vis-from-68 { 0% { visibility: hidden; animation-timing-function: step-end; } 68% { visibility: visible; animation-timing-function: step-end; } 93%, 100% { visibility: hidden; } }
 
   @keyframes av-8 {
     0%, 7% { background: #c9c9d6; }
