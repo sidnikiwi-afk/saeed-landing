@@ -771,6 +771,16 @@ const scenes = [
   }
 
   @media (max-width: 640px) {
+    /* A wrapped flex row keeps the full width, so stack the two parts and size the box to the longer line. */
+    .ann {
+      display: inline-grid;
+      justify-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 0.9rem 0.55rem;
+      border-radius: 1.1rem;
+      text-align: center;
+    }
+
     .ctas {
       flex-direction: column;
       align-items: stretch;
