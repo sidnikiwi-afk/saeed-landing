@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -164,8 +164,7 @@ test('built public pages carry the banner and no tracking tag', () => {
   const premier = readFileSync(join(outDir, 'premier-housing-demo/index.html'), 'utf8');
   assert.doesNotMatch(premier, /data-consent-banner/);
 
-  const preview = readFileSync(join(outDir, 'preview/index.html'), 'utf8');
-  assert.doesNotMatch(preview, /<script\b/i, 'the hidden preview must stay free of page scripts');
+  assert.equal(existsSync(join(outDir, 'preview/index.html')), false, '/preview/ must not exist');
 
   const garages = readFileSync(join(outDir, 'garages/index.html'), 'utf8');
   assert.doesNotMatch(garages, /gclid=/i, 'gclid must come from the landing URL, not the built HTML');

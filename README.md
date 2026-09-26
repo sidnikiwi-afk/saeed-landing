@@ -83,13 +83,12 @@ npm run test:built-site
 ```
 
 `npm run test:built-site` builds the site and reads `dist`. It fails when
-`/preview/` is missing `noindex`, when that URL is in the sitemap, or when a
-generated page other than the Premier Housing demo contains an em dash, an
-emoji, or a banned tool name (Zapier, Make, n8n, HubSpot, Xero, QuickBooks,
-Calendly, WhatsApp). The live privacy page is the one exception for em dashes:
-that copy is unchanged and still uses them. GitHub Actions runs this check
-on every pull request to `master`, and again before deploy, beside
-`npm run test:contact` and `npm run verify:premier-enquire`.
+`/` is missing the new homepage hero, when `/preview/` still exists, when
+that URL is in the sitemap, or when a generated page other than the Premier
+Housing demo contains an em dash, an emoji, or a banned tool name (Zapier,
+Make, n8n, HubSpot, Xero, QuickBooks, Calendly, WhatsApp). GitHub Actions
+runs this check on every pull request to `master`, and again before deploy,
+beside `npm run test:contact` and `npm run verify:premier-enquire`.
 
 The function is deployed with the existing Premier Housing Pages artifact
 (`functions/` is picked up from the repo root on `wrangler pages deploy`).

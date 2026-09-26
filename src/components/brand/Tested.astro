@@ -1,36 +1,74 @@
 ---
 import IllustrativeCaption from './IllustrativeCaption.astro';
 
-// Kinds of test cases only, adapted from the redesign prototype's tester. The
-// prototype scored each run; the packet rules that out, so these are the case
-// names and what a pass looks like, with no scores or verdicts. The cases are
-// made up and labelled with the Illustrative caption.
 const cases = [
   {
+    id: 'missing',
     tag: 'Email',
     title: 'Email with no address',
     detail: 'A quote request that forgets the postcode',
-    pass: 'It asks for the missing detail instead of guessing, and holds the job as a draft until the address arrives.',
+    lines: [
+      ['Customer', '"Can you quote for a new consumer unit? Thanks, Mark"'],
+      ['System', 'Job type found. Address missing.'],
+      ['Brackstone', 'Draft reply asks for the address and a good time to visit.'],
+      ['System', 'Job held as a draft until the address arrives.'],
+      ['System', 'No job created with guessed details.'],
+    ],
+    verdict: ['Pass', 'Pass', 'n/a'],
+    outcome: 'Fit to switch on',
+    hand: false,
   },
   {
+    id: 'twice',
     tag: 'Workflow',
     title: 'The same enquiry twice',
     detail: 'The customer sends the form, then emails too',
-    pass: 'It matches on the details and merges them into one enquiry, so one confirmation goes out, not two.',
+    lines: [
+      ['Customer', 'Web form: viewing request, 14 Oak Road.'],
+      ['Customer', 'Email 10 minutes later: same person, same property.'],
+      ['System', 'Matched on name, phone and property.'],
+      ['System', 'Merged into one enquiry. One viewing, not two.'],
+      ['Brackstone', 'One confirmation sent, not two.'],
+    ],
+    verdict: ['Pass', 'Pass', 'n/a'],
+    outcome: 'Fit to switch on',
+    hand: false,
   },
   {
+    id: 'change',
     tag: 'Call',
     title: 'Caller changes their mind',
     detail: 'Books Thursday, then wants Friday',
-    pass: 'It releases the first slot and books the new one, without leaving both in the diary.',
+    lines: [
+      ['Customer', 'Can I do Thursday morning?'],
+      ['Brackstone', 'Thursday at 9 is free. Shall I book it?'],
+      ['Customer', 'Actually, Friday would be better.'],
+      ['Brackstone', 'Thursday is released. Friday at 10 is free.'],
+      ['System', 'Thursday slot released. Friday booked.'],
+    ],
+    verdict: ['Pass', 'Pass', 'n/a'],
+    outcome: 'Fit to switch on',
+    hand: false,
   },
   {
+    id: 'price',
     tag: 'Call',
     title: 'Asks for a price we cannot give',
     detail: 'Wants an exact repair cost',
-    pass: 'It says the price needs a look rather than guessing, and books a callback with a person.',
+    lines: [
+      ['Customer', 'How much exactly will the clutch be?'],
+      ['Brackstone', 'It depends on what the technician finds, so it will not guess.'],
+      ['Customer', 'Just give me a number.'],
+      ['Brackstone', 'It needs a look. A callback is booked with the workshop.'],
+      ['System', 'Callback booked. Flagged for a person.'],
+    ],
+    verdict: ['Pass', 'Pass', 'Hand over'],
+    outcome: 'Routes to a person',
+    hand: true,
   },
 ];
+
+const verdictLabels = ['Correct', 'Safe', 'Hand over'];
 ---
 
 <section id="tested" aria-labelledby="tested-title">
@@ -39,19 +77,62 @@ const cases = [
     <h2 id="tested-title">We try to break it before your customers can.</h2>
     <p class="lead">
       The risk with automation is not that it fails loudly. It is that it quietly does something daft and
-      nobody notices for a month. These are the kinds of awkward cases we test against.
+      nobody notices for a month. Pick an awkward case and watch how it is tested.
     </p>
-    <div class="grid">
-      {
-        cases.map((testCase) => (
-          <article class="card">
-            <p class="tag">{testCase.tag}</p>
-            <h3>{testCase.title}</h3>
-            <p class="detail">{testCase.detail}</p>
-            <p class="pass">{testCase.pass}</p>
-          </article>
-        ))
-      }
+    <div class="tester">
+      <div class="scen" role="radiogroup" aria-label="Awkward cases">
+        {
+          cases.map((testCase, index) => (
+            <label class="sc">
+              <input
+                id={`case-${testCase.id}`}
+                type="radio"
+                name="test-case"
+                value={testCase.id}
+                checked={index === 0}
+              />
+              <span>
+                <strong>{testCase.title}</strong>
+                <small>{testCase.detail}</small>
+              </span>
+              <span class="tag">{testCase.tag}</span>
+            </label>
+          ))
+        }
+      </div>
+      <div class="run">
+        {
+          cases.map((testCase) => (
+            <div class="case" data-case={testCase.id}>
+              <p class="rh">
+                <span>Test, {testCase.title.toLowerCase()}</span>
+                <span>checked against a written rubric</span>
+              </p>
+              <div class="lines">
+                {
+                  testCase.lines.map(([who, text], index) => (
+                    <p class:list={['rl', who === 'Brackstone' ? 'ai' : who === 'System' ? 'sys' : 'cu']} style={`--i: ${index}`}>
+                      <em>{who}</em>
+                      <span>{text}</span>
+                    </p>
+                  ))
+                }
+              </div>
+              <div class="verdict" style={`--count: ${testCase.lines.length}`}>
+                {
+                  testCase.verdict.map((value, index) => (
+                    <p>
+                      <small>{verdictLabels[index]}</small>
+                      <strong>{value}</strong>
+                    </p>
+                  ))
+                }
+                <p class:list={['vd', testCase.hand ? 'hand' : 'ok']}>{testCase.outcome}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
     </div>
     <IllustrativeCaption>
       The cases above are made up, chosen to show the kinds of things our internal tests cover before
@@ -98,62 +179,212 @@ const cases = [
     font-size: 1.125rem;
   }
 
-  .grid {
+  .tester {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.875rem;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 1.5rem;
     margin: 2.75rem 0 1.5rem;
   }
 
-  .card {
+  .scen {
+    display: grid;
+    gap: 0.65rem;
+    align-content: start;
+  }
+
+  .sc {
+    position: relative;
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 1.375rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
     border: 1px solid var(--brand-line);
-    border-radius: 20px;
+    border-radius: 16px;
     background: #fff;
+    cursor: pointer;
+  }
+
+  .sc input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .sc strong {
+    display: block;
+    font-size: 0.95rem;
+  }
+
+  .sc small {
+    display: block;
+    margin-top: 0.15rem;
+    color: var(--brand-muted);
+    font-size: 0.78rem;
   }
 
   .tag {
-    margin: 0;
-    color: var(--brand-purple);
+    flex: none;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 99px;
+    background: #fff;
+    font-size: 0.68rem;
+    font-weight: 700;
+  }
+
+  .sc:has(input:checked) {
+    border-color: var(--brand-purple);
+    background: var(--brand-purple-soft);
+  }
+
+  .sc:has(input:focus-visible) {
+    outline: 2px solid var(--brand-purple);
+    outline-offset: 2px;
+  }
+
+  .run {
+    min-height: 25rem;
+    padding: 1.35rem;
+    border-radius: 22px;
+    background: #0d0c14;
+    color: #e4e2ee;
+    box-shadow: 0 50px 100px -40px rgba(60, 30, 160, 0.35);
+  }
+
+  .case {
+    display: none;
+    flex-direction: column;
+    min-height: 22rem;
+  }
+
+  .tester:has(input[value='missing']:checked) .case[data-case='missing'],
+  .tester:has(input[value='twice']:checked) .case[data-case='twice'],
+  .tester:has(input[value='change']:checked) .case[data-case='change'],
+  .tester:has(input[value='price']:checked) .case[data-case='price'] {
+    display: flex;
+  }
+
+  .rh {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin: 0 0 0.9rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid #22202e;
+    color: #8b89a0;
     font-family: 'Geist Mono', ui-monospace, monospace;
-    font-size: 0.72rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-size: 0.75rem;
   }
 
-  h3 {
+  .lines {
+    display: grid;
+  }
+
+  .rl {
+    display: flex;
+    gap: 0.75rem;
     margin: 0;
-    font-size: 1.13rem;
-    font-weight: 650;
-    letter-spacing: -0.02em;
-    line-height: 1.25;
+    padding: 0.4rem 0;
   }
 
-  .detail {
+  .rl em {
+    flex: none;
+    width: 5.5rem;
+    color: #8b89a0;
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: 0.68rem;
+    font-style: normal;
+  }
+
+  .rl.ai span {
+    color: #cbbfff;
+  }
+
+  .rl.sys span {
+    color: #7ff0cf;
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: 0.8rem;
+  }
+
+  .verdict {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr) auto;
+    gap: 0.75rem;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #22202e;
+  }
+
+  .verdict p {
     margin: 0;
-    color: var(--brand-muted);
-    font-size: 0.88rem;
   }
 
-  .pass {
-    margin: auto 0 0;
-    padding-top: 0.75rem;
-    border-top: 1px dashed var(--brand-line);
-    font-size: 0.88rem;
+  .verdict small {
+    display: block;
+    color: #8b89a0;
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: 0.68rem;
   }
 
-  @media (max-width: 1000px) {
-    .grid {
-      grid-template-columns: 1fr 1fr;
+  .vd {
+    padding: 0.45rem 0.7rem;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  .ok {
+    background: rgba(0, 200, 150, 0.15);
+    color: #5eead4;
+  }
+
+  .hand {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fcd34d;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .rl,
+    .verdict {
+      animation: line-in 0.45s linear both;
+    }
+
+    .rl {
+      animation-delay: calc(var(--i) * 0.7s);
+    }
+
+    .verdict {
+      animation-delay: calc(var(--count) * 0.7s + 0.3s);
+    }
+
+    @supports (animation-timeline: view()) {
+      .tester:has(#case-missing:checked) .rl,
+      .tester:has(#case-missing:checked) .verdict {
+        animation-delay: 0s;
+        animation-duration: auto;
+        animation-timeline: view();
+      }
+
+      .tester:has(#case-missing:checked) .rl:nth-child(1) { animation-range: entry 8% entry 18%; }
+      .tester:has(#case-missing:checked) .rl:nth-child(2) { animation-range: entry 16% entry 26%; }
+      .tester:has(#case-missing:checked) .rl:nth-child(3) { animation-range: entry 24% entry 34%; }
+      .tester:has(#case-missing:checked) .rl:nth-child(4) { animation-range: entry 32% entry 42%; }
+      .tester:has(#case-missing:checked) .rl:nth-child(5) { animation-range: entry 40% entry 50%; }
+      .tester:has(#case-missing:checked) .verdict { animation-range: entry 48% entry 62%; }
     }
   }
 
-  @media (max-width: 560px) {
-    .grid {
+  @keyframes line-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  @media (max-width: 900px) {
+    .tester {
       grid-template-columns: 1fr;
     }
   }

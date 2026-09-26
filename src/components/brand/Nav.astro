@@ -5,7 +5,7 @@ interface Props {
   home?: string;
 }
 
-const { home = '/preview/' } = Astro.props;
+const { home = '/' } = Astro.props;
 const links = [
   ['What we do', `${home}#what`],
   ['Your tools', `${home}#tools`],
@@ -21,13 +21,31 @@ const links = [
       <span class="mark" aria-hidden="true">B</span>
       <span>Brackstone</span>
     </a>
-    <div class="links">
+    <input class="menu-toggle" type="checkbox" id="nav-menu-toggle" aria-controls="nav-links" />
+    <label class="menu-button" for="nav-menu-toggle">Menu</label>
+    <div class="links" id="nav-links">
       {links.map(([label, href]) => <a href={href}>{label}</a>)}
       <a href="https://dashboard.brackstonedigital.co.uk/login">Sign in</a>
       <Button href="/contact">Book a teardown</Button>
     </div>
   </nav>
 </header>
+
+<script>
+  const toggle = document.querySelector<HTMLInputElement>('#nav-menu-toggle');
+  if (toggle) {
+    const close = () => {
+      toggle.checked = false;
+    };
+    document.querySelectorAll('#nav-links a').forEach((link) => link.addEventListener('click', close));
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && toggle.checked) {
+        close();
+        toggle.focus();
+      }
+    });
+  }
+</script>
 
 <style>
   .bar {
@@ -102,23 +120,64 @@ const links = [
     padding: 0.55rem 0.9rem;
   }
 
+  .menu-toggle,
+  .menu-button {
+    display: none;
+  }
+
   @media (max-width: 860px) {
     .bar {
       width: calc(100% - 1.5rem);
     }
 
     .nav {
-      align-items: flex-start;
-      flex-direction: column;
+      flex-wrap: wrap;
       width: 100%;
     }
 
+    .menu-toggle {
+      display: block;
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .menu-button {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.5rem 0.9rem;
+      border: 1px solid var(--brand-line);
+      border-radius: 9px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--brand-ink);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .menu-button:hover,
+    .menu-toggle:checked + .menu-button {
+      background: var(--brand-purple-soft);
+    }
+
+    .menu-toggle:focus-visible + .menu-button {
+      outline: 2px solid var(--brand-purple);
+      outline-offset: 2px;
+    }
+
     .links {
-      display: grid;
+      display: none;
       grid-template-columns: 1fr;
       justify-content: start;
       justify-items: start;
       width: 100%;
+    }
+
+    .menu-toggle:checked ~ .links {
+      display: grid;
     }
   }
 </style>

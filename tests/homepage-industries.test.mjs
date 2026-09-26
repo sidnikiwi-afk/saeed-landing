@@ -35,7 +35,7 @@ function anchors(html) {
   return found;
 }
 
-test('preview industries links follow the ads data', async () => {
+test('homepage industries links follow the ads data', async () => {
   const { garagesAd } = await import('../src/data/ads/garages.mjs');
   const { estateAgentsAd } = await import('../src/data/ads/estate-agents.mjs');
   const { aiReceptionistAd } = await import('../src/data/ads/ai-receptionist.mjs');
@@ -53,9 +53,9 @@ test('preview industries links follow the ads data', async () => {
     },
   });
 
-  const html = readFileSync(join(outDir, 'preview', 'index.html'), 'utf8');
+  const html = readFileSync(join(outDir, 'index.html'), 'utf8');
 
-  // Process, customer and team sections are on the preview page too.
+  // Process, customer and team sections are on the homepage too.
   const how = sectionHtml(html, 'how');
   for (const step of ['Teardown', 'Build', 'Test', 'Run and improve']) {
     assert.match(how, new RegExp(`\\b${step}\\b`), `the process is missing ${step}`);

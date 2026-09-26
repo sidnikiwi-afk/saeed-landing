@@ -194,6 +194,25 @@ const teamSummary = [
     font-size: 0.72rem;
   }
 
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .message {
+        animation: message-in linear both;
+        animation-timeline: view();
+      }
+
+      .message:nth-child(2) { animation-range: entry 5% cover 28%; }
+      .message:nth-child(3) { animation-range: entry 16% cover 40%; }
+      .message:nth-child(4) { animation-range: entry 28% cover 52%; }
+      .message:nth-child(5) { animation-range: entry 40% cover 64%; }
+    }
+  }
+
+  @keyframes message-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+
   .summary {
     display: grid;
     gap: 0.5rem;
