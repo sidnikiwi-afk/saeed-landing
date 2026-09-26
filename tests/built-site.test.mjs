@@ -387,6 +387,23 @@ test('built site hides the preview and keeps copy clean', () => {
   assert.doesNotMatch(homeHtml, /\/preview\//, 'homepage links must not point at /preview/');
   assert.match(homeHtml, /href="\/#what"/);
   assert.match(homeHtml, /Book a teardown/);
+  assert.match(
+    homeHtml,
+    /<input[^>]*class="menu-toggle[^"]*"[^>]*type="checkbox"[^>]*id="nav-menu-toggle"/,
+    'the phone menu needs a no-JavaScript checkbox toggle',
+  );
+  assert.match(homeHtml, /<label[^>]*for="nav-menu-toggle"[^>]*>Menu<\/label>/);
+  const navCss = linkedCss(homeHtml);
+  const phoneNav = mediaBlocks(navCss).filter((block) => /max-width:\s*860px/.test(block.query));
+  assert.ok(
+    phoneNav.some((block) => /\.links[^{,]*\{[^}]*display:\s*none/.test(block.body)),
+    'at 860px and below the menu links start closed',
+  );
+  assert.ok(
+    phoneNav.some((block) => /\.menu-toggle[^{:]*:checked\s*~\s*\.links[^{]*\{[^}]*display:\s*grid/.test(block.body)),
+    'the checked toggle opens the menu',
+  );
+  assert.match(navCss, /\.menu-button[^{]*\{[^}]*display:\s*none/, 'desktop has no menu button');
   assert.match(homeHtml, /Illustrative/);
   assert.match(homeHtml, /Privacy/);
   assert.match(homeHtml, /\/fonts\/Geist-Variable\.woff2/);
