@@ -87,10 +87,6 @@ const scenes = [
 <section class="hero" aria-labelledby="hero-title">
   <div class="glow" aria-hidden="true"></div>
   <div class="intro">
-    <p class="ann">
-      <b>Automation for UK teams</b>
-      <span>that run on a phone, an inbox and a&nbsp;diary</span>
-    </p>
     <h1 id="hero-title">
       Every enquiry handled. Every job moved on.
       <span class="grad">Running on its own.</span>
@@ -252,35 +248,9 @@ const scenes = [
     margin: 0 auto;
   }
 
-  .ann {
-    display: inline-flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 0.65rem;
-    max-width: 100%;
-    margin: 0;
-    padding: 0.3rem 0.9rem 0.3rem 0.3rem;
-    border: 1px solid var(--brand-line);
-    border-radius: 999px;
-    background: #fff;
-    color: var(--brand-muted);
-    font-size: 0.82rem;
-    box-shadow: 0 1px 2px rgba(10, 10, 20, 0.04), 0 8px 30px -8px rgba(40, 20, 120, 0.14);
-  }
-
-  .ann b {
-    padding: 0.2rem 0.65rem;
-    border-radius: 999px;
-    background: var(--brand-ink);
-    color: #fff;
-    font-size: 0.72rem;
-    font-weight: 600;
-  }
-
   h1 {
     max-width: min(16em, 100%);
-    margin: 1.4rem auto 1rem;
+    margin: 0 auto 1rem;
     color: var(--brand-ink);
     font-size: clamp(2.35rem, 5.4vw, 4.7rem);
     font-weight: 700;
@@ -735,7 +705,6 @@ const scenes = [
       width: min(1140px, calc(100% - 2rem));
     }
 
-    .ann,
     .sub,
     h1,
     .picker,
@@ -771,20 +740,6 @@ const scenes = [
   }
 
   @media (max-width: 640px) {
-    /* A wrapped flex row keeps the full width. As inline text, each line of the chip hugs its own words. */
-    .ann {
-      display: inline;
-      padding: 0.3rem 0.75rem;
-      line-height: 2.5;
-      -webkit-box-decoration-break: clone;
-      box-decoration-break: clone;
-    }
-
-    .ann b {
-      margin: 0 0.35rem 0 -0.45rem;
-      white-space: nowrap;
-    }
-
     .ctas {
       flex-direction: column;
       align-items: stretch;
