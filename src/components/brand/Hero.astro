@@ -89,7 +89,7 @@ const scenes = [
   <div class="intro">
     <p class="ann">
       <b>Automation for UK teams</b>
-      <span>that run on a phone, an inbox and a diary</span>
+      <span>that run on a phone, an inbox and a&nbsp;diary</span>
     </p>
     <h1 id="hero-title">
       Every enquiry handled. Every job moved on.
@@ -771,14 +771,18 @@ const scenes = [
   }
 
   @media (max-width: 640px) {
-    /* A wrapped flex row keeps the full width, so stack the two parts and size the box to the longer line. */
+    /* A wrapped flex row keeps the full width. As inline text, each line of the chip hugs its own words. */
     .ann {
-      display: inline-grid;
-      justify-items: center;
-      gap: 0.4rem;
-      padding: 0.4rem 0.9rem 0.55rem;
-      border-radius: 1.1rem;
-      text-align: center;
+      display: inline;
+      padding: 0.3rem 0.75rem;
+      line-height: 2.5;
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
+    }
+
+    .ann b {
+      margin: 0 0.35rem 0 -0.45rem;
+      white-space: nowrap;
     }
 
     .ctas {
