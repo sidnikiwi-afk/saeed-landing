@@ -9,7 +9,10 @@ export default defineConfig({
   integrations: [
     react(),
     sitemap({
-      filter: (page) => !page.includes('/premier-housing-demo') && !page.includes('/preview'),
+      filter: (page) =>
+        !page.includes('/premier-housing-demo') &&
+        !page.includes('/marlow-pike-demo') &&
+        !page.includes('/preview'),
     }),
   ],
   vite: {

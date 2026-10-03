@@ -10,9 +10,11 @@
 //   nonempty, comma-separated list of validated HTTPS origins, and the
 //   request Origin must belong to that explicit set. Missing or empty
 //   allowed-origin configuration fails closed before any fetch.
-// - The browser payload may carry property_ref (MP001-MP006); it is
-//   validated, echoed into the forwarded text and folded into the
-//   payload fingerprint. It never influences the recipient.
+// - The browser payload must carry property_ref as exactly one of the six
+//   canonical demo refs (MP001-MP006); the raw value is checked by exact
+//   membership, never normalised into a valid one. It is echoed into the
+//   forwarded text and folded into the payload fingerprint. It never
+//   influences the recipient.
 const MAX_BODY_BYTES = 16 * 1024;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX = 5;
@@ -183,16 +185,23 @@ function listingUrlAllowed(value) {
   }
 }
 
-const PROPERTY_REF_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,39}$/;
+// Exact canonical membership only. The six refs are the stable fictional
+// identifiers rendered into the page's data-property-ref attributes; the
+// server never derives one from a property title or accepts anything else.
+const CANONICAL_PROPERTY_REFS = new Set(['MP001', 'MP002', 'MP003', 'MP004', 'MP005', 'MP006']);
 
 function validate(payload = {}) {
+  // The reference is checked as the exact original string, with no trimming,
+  // case folding or other normalisation that could turn an invalid value
+  // into a valid one. General fields still go through clean().
+  const rawRef = typeof payload.property_ref === 'string' ? payload.property_ref : '';
   const data = {
     name: clean(payload.name, 120),
     phone: clean(payload.phone, 80),
     email: clean(payload.email, 160).toLowerCase(),
     message: clean(payload.message, 1200),
     property: clean(payload.property, 220),
-    property_ref: clean(payload.property_ref, 40),
+    property_ref: CANONICAL_PROPERTY_REFS.has(rawRef) ? rawRef : '',
     listing_url: clean(payload.listing_url, 500),
     company: clean(payload.company, 120),
     submission_id: clean(payload.submission_id, 120),
@@ -207,7 +216,7 @@ function validate(payload = {}) {
     return { ok: false, error: 'Valid email is required' };
   }
   if (!data.property) return { ok: false, error: 'Property is required' };
-  if (data.property_ref && !PROPERTY_REF_RE.test(data.property_ref)) {
+  if (!CANONICAL_PROPERTY_REFS.has(rawRef)) {
     return { ok: false, error: 'Valid property reference is required' };
   }
   if (!listingUrlAllowed(data.listing_url)) {

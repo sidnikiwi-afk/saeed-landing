@@ -166,12 +166,6 @@ test('validates fields including the property reference', async () => {
   });
   assert.equal(badRef.status, 400);
 
-  const goodRefMissing = await onRequestPost({
-    request: request('POST', { ...validPayload, property_ref: '' }),
-    env,
-  });
-  assert.notEqual(goodRefMissing.status, 400);
-
   const badListing = await onRequestPost({
     request: request('POST', {
       ...validPayload,
@@ -186,6 +180,89 @@ test('validates fields including the property reference', async () => {
     env,
   });
   assert.equal(badType.status, 415);
+});
+
+test('accepts exactly the six canonical property refs with fixed destination and metadata', async () => {
+  const canonicalRefs = ['MP001', 'MP002', 'MP003', 'MP004', 'MP005', 'MP006'];
+  for (const ref of canonicalRefs) {
+    let forwards = [];
+    globalThis.fetch = async (url, init) => {
+      forwards.push({ url, payload: JSON.parse(init.body) });
+      return new Response('{"ok":true}', { status: 202 });
+    };
+
+    const response = await onRequestPost({
+      request: request('POST', { ...validPayload, property_ref: ref }),
+      env,
+    });
+    assert.equal(response.status, 200, `expected 200 for ${ref}`);
+    assert.deepEqual(await responseJson(response), { ok: true });
+    assert.equal(forwards.length, 1);
+    assert.equal(
+      forwards[0].url,
+      'https://dashboard.brackstonedigital.co.uk/webhook/inbound-email'
+    );
+    assert.equal(forwards[0].payload.recipient, env.MP_INBOUND_RECIPIENT);
+    assert.equal(forwards[0].payload.inbound_token, env.MP_INBOUND_TOKEN);
+    assert.equal(forwards[0].payload.provider, 'website');
+    assert.equal(forwards[0].payload.provider_metadata.source, 'marlow_pike_demo_site');
+    assert.equal(forwards[0].payload.provider_metadata.property_ref, ref);
+    assert.match(forwards[0].payload.text, new RegExp(`Property reference: ${ref}$`, 'm'));
+    __test.resetRateLimit();
+  }
+});
+
+test('rejects empty, unknown, lower-case and whitespace-manipulated refs with 400 and no forward', async () => {
+  let forwards = 0;
+  globalThis.fetch = async () => {
+    forwards += 1;
+    return new Response('{"ok":true}', { status: 202 });
+  };
+
+  for (const badRef of [
+    '',
+    'MP999',
+    'PH001',
+    'mp002',
+    'Mp003',
+    ' MP002',
+    'MP002 ',
+    'MP 002',
+    'MP002\n',
+    '0002',
+    'MP0021',
+  ]) {
+    const response = await onRequestPost({
+      request: request('POST', { ...validPayload, property_ref: badRef }),
+      env,
+    });
+    assert.equal(response.status, 400, `expected 400 for ${JSON.stringify(badRef)}`);
+    __test.resetRateLimit();
+  }
+
+  assert.equal(forwards, 0);
+});
+
+test('does not derive a ref from the browser property title or any fallback', async () => {
+  let forwards = 0;
+  globalThis.fetch = async () => {
+    forwards += 1;
+    return new Response('{"ok":true}', { status: 202 });
+  };
+
+  // No property_ref at all is invalid now: every page trigger supplies a
+  // canonical ref, so a missing one is a tampered payload, not a fallback.
+  const { property_ref: _omitted, ...noRef } = validPayload;
+  const missing = await onRequestPost({ request: request('POST', noRef), env });
+  assert.equal(missing.status, 400);
+
+  // A title-like ref value never becomes a valid reference.
+  const titleDerived = await onRequestPost({
+    request: request('POST', { ...validPayload, property_ref: validPayload.property }),
+    env,
+  });
+  assert.equal(titleDerived.status, 400);
+  assert.equal(forwards, 0);
 });
 
 test('rejects an oversized request before forwarding', async () => {

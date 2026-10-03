@@ -255,8 +255,22 @@ const phone = demoPhone();
   }
   @media (max-width: 560px) {
     .bm-brand__name { font-size: 1rem; }
-    .bm-callbtn span:last-child { display: none; }
+    /* Collapse the label of the connected call button to its diamond only.
+       The unconnected notice must stay readable, so the hiding is scoped
+       to the tel: anchor and never applies to the off-state span. */
+    a.bm-callbtn span:last-child { display: none; }
     .bm-callbtn { padding: 0.6rem; }
+    .bm-callbtn--off {
+      font-size: 0.64rem;
+      padding: 0.5rem 0.7rem;
+      letter-spacing: 0.02em;
+    }
+  }
+  @media (max-width: 400px) {
+    .bm-nav__inner { gap: 1rem; }
+    .bm-brand__est { display: none; }
+    .bm-brand__mark { font-size: 1.15rem; }
+    .bm-callbtn--off { font-size: 0.6rem; padding: 0.5rem 0.55rem; }
   }
 </style>
 

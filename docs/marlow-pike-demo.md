@@ -12,10 +12,11 @@ Standalone rental demonstration for the fictional agency **Marlow & Pike**, usin
 - `functions/api/marlow-pike-enquire.js` - isolated enquiry endpoint
 - `scripts/build-marlow-pike-pages.mjs` - standalone Pages artifact builder
 - `tests/marlow-pike-enquire-function.test.mjs`
+- `tests/marlow-pike-artifact.test.mjs`
 
 ## Enquiry flow
 
-The modal on any `[data-enquire]` trigger POSTs JSON to the fixed same-origin endpoint `/api/marlow-pike-enquire`. There is no environment-selected host and no Premier fallback. Each submission carries `property_ref` (MP001-MP006) as its own field; the modal's initial default message also mentions the ref, but if the visitor edits the message, their custom text is sent unchanged and nothing is appended to it. The server validates `property_ref` and restates the reference in the forwarded inquiry body (`provider_metadata.property_ref` and a `Property reference:` line in the forwarded text), so the dashboard sees it even when the visitor's message omits it.
+The modal on any `[data-enquire]` trigger POSTs JSON to the fixed same-origin endpoint `/api/marlow-pike-enquire`. There is no environment-selected host and no Premier fallback. Every trigger on the page (`Hero`, `Listings`) sets `data-property-ref` to its canonical fixture ref (MP001-MP006); a submission must carry `property_ref` as exactly one of those six values. The server checks the raw string by exact membership, with no trimming or case folding: an empty value, an unknown ref (for example MP999), a lower-case or whitespace-padded value, or a ref derived from a property title is rejected with 400 and never forwarded. No ref is invented from a fallback. The modal's initial default message also mentions the ref, but if the visitor edits the message, their custom text is sent unchanged and nothing is appended to it. The server restates the reference in the forwarded inquiry body (`provider_metadata.property_ref` and a `Property reference:` line in the forwarded text), so the dashboard sees it even when the visitor's message omits it.
 
 Success copy says the enquiry was received; it never claims a booking was confirmed and makes no response-time promise.
 
@@ -40,19 +41,25 @@ The footer/nav phone comes only from `PUBLIC_MP_DEMO_PHONE` after strict UK form
 | `MP_INBOUND_EMAIL_WEBHOOK_SECRET` | Shared secret sent as `X-Webhook-Secret` (required) |
 | `MP_INBOUND_TOKEN` | Inbound token stamped into the payload (required) |
 | `MP_INBOUND_RECIPIENT` | Server-only canonical dashboard recipient (required) |
+| `MP_SITE_ORIGIN` | Build-time only: exact HTTPS origin of the standalone deployment (required by the artifact builder, not a Pages runtime variable) |
 | `PUBLIC_MP_DEMO_PHONE` | Optional public demo phone; unset shows "Number not connected" |
 
 ## Local verification
 
 ```sh
-node --test tests/marlow-pike-enquire-function.test.mjs   # 15 mocked tests
+node --test tests/marlow-pike-enquire-function.test.mjs   # mocked endpoint tests
+node --test tests/marlow-pike-artifact.test.mjs           # builder fixture tests
 npm run test:premier-enquire                              # existing Premier tests still pass
 npm run build                                             # Astro build
-node scripts/build-marlow-pike-pages.mjs                  # -> dist-marlow-pike-pages
+MP_SITE_ORIGIN=https://<dedicated-demo-origin> node scripts/build-marlow-pike-pages.mjs   # -> dist-marlow-pike-pages
 ```
+
+## Standalone artifact builder
+
+`scripts/build-marlow-pike-pages.mjs` requires `MP_SITE_ORIGIN`: the exact HTTPS origin of the dedicated standalone deployment, with no path, query, fragment or user credentials. It is validated before anything is written; a missing, insecure or over-specified value fails the build and no artifact is produced. With a valid value the builder rewrites only the standalone `index.html`'s `rel="canonical"` and `og:url` to the origin root and `og:image`/`twitter:image` to the same origin keeping the image pathname. The marketing site's own build metadata is untouched, and no default hosted URL or claimed deployed identity is ever fabricated. The demo route is also excluded from the marketing sitemap (`astro.config.mjs`), and the standalone artifact never ships a sitemap.
 
 ## Proposed deploy (activation pending; nothing published)
 
-- New Cloudflare Pages project, e.g. `marlow-pike-demo`, building `astro build` then `node scripts/build-marlow-pike-pages.mjs`, output directory `dist-marlow-pike-pages`.
+- New Cloudflare Pages project, e.g. `marlow-pike-demo`, building `astro build` then `MP_SITE_ORIGIN=https://<dedicated-demo-origin> node scripts/build-marlow-pike-pages.mjs`, output directory `dist-marlow-pike-pages`, with `MP_SITE_ORIGIN` set in the build environment to the project's own origin.
 - Attach the five required `MP_*` variables above plus the optional `PUBLIC_MP_DEMO_PHONE`; set `MP_ALLOWED_ORIGINS` to the project's own `*.pages.dev` origin (and any custom domain later).
 - Activation of the enquiry channel is gated separately by the controller. Until then the deployed artifact still fails closed server-side if variables are absent.
