@@ -3,13 +3,26 @@
 // valid UK phone format means the site shows "Number not connected" and
 // never falls back to any other number.
 
-// Strict UK format: optional +44 country form or a 0-leading geographic /
-// mobile number, digits with single spaces only. No other separators.
-const UK_PHONE_RE = /^(?:\+44\s?\d{4}\s?\d{6}|0\s?1\d{3}\s?\d{6}|0\s?1\d{2}\s?\d{7}|0\s?2\d\s?\d{4}\s?\d{4}|0\s?3\d{3}\s?\d{6}|0\s?7\d{3}\s?\d{6}|0\s?8(?:00|45)\s?\d{3}\s?\d{3}|0\s?8(?:00|45)\s?\d{7})$/;
+// Characters: ASCII digits, ordinary spaces, and an optional leading plus.
+// No other separators, no doubled spaces.
+const PHONE_CHARS_RE = /^\+?[0-9]+(?: [0-9]+)*$/;
+
+// Digit shapes after stripping spaces. Same accepted UK prefix/length
+// semantics as before, plus the conventional forms the original grouping
+// regex rejected: +44 geographic (2+3+4 or 3+3+3 groups) and 0800/0845
+// with a four-digit final group. A leading plus means the +44 country form
+// only; a bare 44 without the plus is not a valid UK domestic number.
+const UK_DOMESTIC_DIGITS_RE = /^0(?:1\d{3}\d{6}|1\d{2}\d{7}|2\d{9}|3\d{3}\d{6}|7\d{3}\d{6}|8(?:00|45)\d{6}|8(?:00|45)\d{7})$/;
+const UK_INTERNATIONAL_DIGITS_RE = /^\+44\d{10}$/;
 
 export function demoPhone(env = import.meta.env) {
   const raw = String(env.PUBLIC_MP_DEMO_PHONE || '').trim();
   if (!raw) return null;
   if (raw.length > 20) return null;
-  return UK_PHONE_RE.test(raw) ? raw : null;
+  if (!PHONE_CHARS_RE.test(raw)) return null;
+  const spaced = raw.replaceAll(' ', '');
+  return (raw.startsWith('+')
+    ? UK_INTERNATIONAL_DIGITS_RE.test(spaced)
+    : UK_DOMESTIC_DIGITS_RE.test(spaced))
+    ? raw : null;
 }
