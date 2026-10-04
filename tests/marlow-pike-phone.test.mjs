@@ -61,6 +61,33 @@ test('rejects overlong values', () => {
   assert.equal(demoPhone(env('0'.repeat(21))), null);
 });
 
+test('accepts the +44 international form of every supported domestic shape', () => {
+  // Domestic display and its +44 equivalent must agree, spaced and dense.
+  const pairs = [
+    ['0161 496 0000', '+44 161 496 0000'],
+    ['020 7946 0123', '+44 20 7946 0123'],
+    ['0113 496 0000', '+44 113 496 0000'],
+    ['0300 123 4567', '+44 300 123 4567'],
+    ['07700 900123', '+44 7700 900123'],
+    ['0800 123 4567', '+44 800 123 4567'],
+    ['0800 123 456', '+44 800 123 456'],
+    ['0845 123 4567', '+44 845 123 4567'],
+  ];
+  for (const [domestic, intl] of pairs) {
+    assert.equal(demoPhone(env(domestic)), domestic, domestic);
+    assert.equal(demoPhone(env(intl)), intl, intl);
+    const dense = intl.replaceAll(' ', '');
+    assert.equal(demoPhone(env(dense)), dense, dense);
+  }
+});
+
+test('rejects +44 values whose national part is not a supported domestic shape', () => {
+  for (const bad of ['+44 0000 000000', '+44 0161 496 0000', '+44 9161 496 0000',
+    '+44 1234', '+4412345678', '+44 12345678901']) {
+    assert.equal(demoPhone(env(bad)), null, JSON.stringify(bad));
+  }
+});
+
 test('never falls back to other phone environment variables', () => {
   const mixed = {
     PUBLIC_MP_DEMO_PHONE: '',
