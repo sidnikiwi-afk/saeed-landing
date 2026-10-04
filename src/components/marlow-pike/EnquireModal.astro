@@ -200,6 +200,7 @@
     const refField = document.getElementById('bmEnqRefField');
     const urlField = document.getElementById('bmEnqUrlField');
     const errEl = document.getElementById('bmEnqErr');
+    const defaultErrorText = errEl.textContent;
     // Fixed same-origin endpoint. No env override, no fallback host.
     const endpoint = '/api/marlow-pike-enquire';
     const formView = modal.querySelector('[data-enq-view="form"]');
@@ -246,6 +247,7 @@
       formView.hidden = false;
       successView.hidden = true;
       errEl.hidden = true;
+      errEl.textContent = defaultErrorText;
       pendingSubmissionId = null;
       // A previous session's request may still be in flight; the new enquiry
       // must be usable immediately, and the stale completion (guarded below)
@@ -292,9 +294,30 @@
     });
     window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.hidden) close(); });
 
+    // Field-level rules mirrored from the endpoint's validate(): the same
+    // clean() semantics (NUL/CR stripped, space and tab runs collapsed,
+    // newlines capped, trimmed, bounded) and the same normalised thresholds.
+    // Values the native constraints let through but the API would reject
+    // with a 400 are stopped here, with the endpoint's own field wording in
+    // the existing error element and focus moved to the offending field.
+    const cleanField = (value, max) => String(value || '')
+      .replace(/\u0000/g, '')
+      .replace(/\r/g, '')
+      .replace(/[ \t]+/g, ' ')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim()
+      .slice(0, max);
+    const fieldProblem = () => {
+      if (cleanField(form.elements['name'].value, 120).length < 2) return ['name', 'Name is required'];
+      if (!/^[+()0-9\s-]{8,30}$/.test(cleanField(form.elements['phone'].value, 80))) return ['phone', 'Valid phone is required'];
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanField(form.elements['email'].value, 160).toLowerCase())) return ['email', 'Valid email is required'];
+      return null;
+    };
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       errEl.hidden = true;
+      errEl.textContent = defaultErrorText;
       // Native constraint validation is the gate. With novalidate removed the
       // browser blocks invalid submits and shows its own feedback before this
       // handler runs; the explicit check below additionally guards
@@ -302,6 +325,15 @@
       // submission identity or fetch.
       if (typeof form.checkValidity === 'function' && !form.checkValidity()) {
         if (typeof form.reportValidity === 'function') form.reportValidity();
+        return;
+      }
+      // API-equivalent field gate: before any pending state, submission id
+      // or fetch, stop values the endpoint itself would 400.
+      const problem = fieldProblem();
+      if (problem) {
+        errEl.textContent = problem[1];
+        errEl.hidden = false;
+        form.elements[problem[0]].focus();
         return;
       }
       // Capture the session this request belongs to. If the visitor closes
@@ -337,6 +369,7 @@
         successView.hidden = false;
       } catch (err) {
         if (session !== submitSession) return; // stale rejection
+        errEl.textContent = defaultErrorText;
         errEl.hidden = false;
       } finally {
         // Only the request that still owns the session may restore the

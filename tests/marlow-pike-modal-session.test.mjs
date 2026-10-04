@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import vm from 'node:vm';
 import { test } from 'node:test';
+import { onRequestPost } from '../functions/api/marlow-pike-enquire.js';
 
 // Portable regression for the modal session-identity bug in the Marlow &
 // Pike enquiry modal: a submission left pending when the modal is closed and
@@ -102,7 +103,7 @@ function makeEnv(scriptSource) {
     /.+@.+/.test(fields.email.value.trim());
   form.reportValidity = () => { form.reportValidityCalls += 1; };
 
-  const errEl = makeElement();
+  const errEl = makeElement({ textContent: 'Sorry, something went wrong and the enquiry was not sent. Please try again later.' });
   const propField = makeElement();
   const byId = {
     bmEnq: modal,
@@ -392,4 +393,210 @@ test('correcting the invalid fields then submits exactly once with success', asy
   assert.equal(env.fetchCalls.length, 1, 'exactly one submission after correction');
   assert.equal(env.successView.hidden, false, 'success shown for the corrected form');
   assert.equal(env.form.resetCalls, 1);
+});
+
+// --- Field-contract: client validation equivalent to the API -----------------
+//
+// The endpoint (functions/api/marlow-pike-enquire.js) rejects values the
+// browser's native constraints happily accept: a tel input takes letters,
+// a 1-character name passes `required`, and type=email permits a dotless
+// host. Those submissions currently pay a round trip and surface a generic
+// service error. The modal must instead apply the endpoint's own normalised
+// rules client-side, show the endpoint's field-specific wording in the
+// existing error element and focus the offending field, before any pending
+// state, submission id or fetch.
+
+const DEFAULT_ERROR_TEXT = 'Sorry, something went wrong and the enquiry was not sent. Please try again later.';
+
+// Runs the actual inline script's submit handler against a fixture and
+// reports the observed client decision: whether it fetched, which feedback
+// it surfaced and which field it focused.
+async function clientDecision(fields, { resolve = true } = {}) {
+  const env = makeEnv(extractModalScript(astroSource));
+  env.open('MP001');
+  fillValid(env);
+  for (const [name, value] of Object.entries(fields)) env.fields[name].value = value;
+  for (const field of Object.values(env.fields)) field.focused = false;
+  const d = deferred();
+  env.setFetch(() => d.promise);
+  if (resolve) d.resolve({ ok: true });
+  await env.submitHandler({ preventDefault() {} });
+  const focusedField = Object.keys(env.fields).find((n) => env.fields[n].focused) || '';
+  return {
+    env,
+    fetched: env.fetchCalls.length,
+    pending: env.submitBtn.disabled,
+    errorShown: !env.errEl.hidden,
+    errorText: env.errEl.hidden ? '' : env.errEl.textContent,
+    focusedField,
+  };
+}
+
+// The actual endpoint on this worktree: a POST with a valid Origin but the
+// deliberately missing MP_* configuration. Valid data must stop at the
+// fail-closed 503 without forwarding anywhere; invalid data must return the
+// specific 400 field error. Used to prove the client rules and the server
+// rules agree fixture by fixture.
+async function endpointDecision(fields) {
+  const origin = 'https://marlow-pike.localhost.test';
+  const forwards = [];
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = (url, opts) => { forwards.push({ url, body: opts && opts.body }); return Promise.resolve(new Response('{"ok":true}', { status: 200 })); };
+  try {
+    const request = new Request(`${origin}/api/marlow-pike-enquire`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Origin: origin },
+      body: JSON.stringify({ ...fields, property: 'x', property_ref: 'MP001', listing_url: '', submission_id: 'test_submission_id' }),
+    });
+    const res = await onRequestPost({ request, env: { MP_ALLOWED_ORIGINS: origin } });
+    return { status: res.status, body: await res.json(), forwarded: forwards.length };
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+}
+
+// Fixtures private to this run. Addresses are illustrative demo values only
+// and are never printed; every assertion below works on statuses and wording.
+const fixture = {
+  valid: { name: 'Demo Viewer', phone: '01632960000', email: ['demo-viewer', 'example.test'].join('@') },
+  shortName: { name: 'D', phone: '01632960000', email: ['demo-viewer', 'example.test'].join('@') },
+  phoneLetters: { name: 'Demo Viewer', phone: '01632 960x1', email: ['demo-viewer', 'example.test'].join('@') },
+  dotlessEmail: { name: 'Demo Viewer', phone: '01632960000', email: 'viewer@example' },
+};
+
+test('API-invalid but native-accepted values are blocked client-side with the endpoint wording and focused field', async () => {
+  const expectations = [
+    ['single-character name', fixture.shortName, 'name', 'Name is required'],
+    ['phone containing letters', fixture.phoneLetters, 'phone', 'Valid phone is required'],
+    ['dotless email host', fixture.dotlessEmail, 'email', 'Valid email is required'],
+  ];
+  const server = await endpointDecision(fixture.shortName);
+  assert.equal(server.status, 400, 'endpoint really rejects the short name');
+  assert.equal(server.forwarded, 0, 'no forward for invalid data');
+  for (const [label, fields, field, wording] of expectations) {
+    const decision = await clientDecision(fields);
+    assert.equal(decision.fetched, 0, `${label}: zero fetch`);
+    assert.equal(decision.pending, false, `${label}: no pending state`);
+    assert.equal(decision.errorShown, true, `${label}: feedback shown`);
+    assert.equal(decision.errorText, wording, `${label}: endpoint wording in the existing error element`);
+    assert.equal(decision.focusedField, field, `${label}: invalid field focused`);
+    assert.equal(decision.env.submitLabel.textContent, 'Send demo enquiry', `${label}: label untouched`);
+    assert.equal(decision.env.successView.hidden, true, `${label}: no success view`);
+    assert.equal(decision.env.formView.hidden, false, `${label}: still on the form view`);
+  }
+});
+
+test('endpoint 400 wording matches the client feedback word for word', async () => {
+  for (const fields of [fixture.shortName, fixture.phoneLetters, fixture.dotlessEmail]) {
+    const server = await endpointDecision(fields);
+    const decision = await clientDecision(fields);
+    assert.equal(server.status, 400);
+    assert.equal(decision.errorText, server.body.error, 'same wording client and server');
+  }
+});
+
+test('correcting each native-accepted invalid class then submits exactly once', async () => {
+  for (const [label, fields, fix] of [
+    ['short name', fixture.shortName, (env) => { env.fields.name.value = 'Demo Viewer'; }],
+    ['phone letters', fixture.phoneLetters, (env) => { env.fields.phone.value = '01632960000'; }],
+    ['dotless email', fixture.dotlessEmail, (env) => { env.fields.email.value = ['demo-viewer', 'example.test'].join('@'); }],
+  ]) {
+    const env = makeEnv(extractModalScript(astroSource));
+    env.open('MP001');
+    fillValid(env);
+    for (const [name, value] of Object.entries(fields)) env.fields[name].value = value;
+    await env.submitHandler({ preventDefault() {} });
+    assert.equal(env.fetchCalls.length, 0, `${label}: blocked before the fix`);
+    fix(env);
+    const d = deferred();
+    env.setFetch(() => d.promise);
+    const done = env.submitHandler({ preventDefault() {} });
+    d.resolve({ ok: true });
+    await done;
+    assert.equal(env.fetchCalls.length, 1, `${label}: exactly one mocked submission after correction`);
+    assert.equal(env.successView.hidden, false, `${label}: success shown`);
+  }
+});
+
+test('normalised boundary fixtures agree between client and endpoint', async () => {
+  const cases = [
+    // whitespace and tabs collapse exactly as the server's clean() does
+    [{ name: '  Demo   Viewer ', phone: ' 01632\t960 001 ', email: ' Viewer@Example.TEST ' }, true],
+    // one character after collapsing is still too short
+    [{ name: ' A ', phone: '01632960000', email: ['demo-viewer', 'example.test'].join('@') }, false],
+    // a real formatted phone is accepted
+    [{ name: 'Demo Viewer', phone: '+44 (1632) 960-001', email: ['demo-viewer', 'example.test'].join('@') }, true],
+    // too short and over-long phones are not
+    [{ name: 'Demo Viewer', phone: '123', email: ['demo-viewer', 'example.test'].join('@') }, false],
+    [{ name: 'Demo Viewer', phone: '+44 (1632) 960-001 02345 6789 01', email: ['demo-viewer', 'example.test'].join('@') }, false],
+    // a space inside the local part survives clean() and must fail both sides
+    [{ name: 'Demo Viewer', phone: '01632960000', email: 'de mo@example.test' }, false],
+  ];
+  for (const [fields, shouldPass] of cases) {
+    const client = await clientDecision(fields);
+    const server = await endpointDecision(fields);
+    if (shouldPass) {
+      assert.equal(client.fetched, 1, `client accepts: ${JSON.stringify(fields.name.length)}`);
+      assert.equal(server.status, 503, 'valid data reaches the fail-closed not-configured stop');
+      assert.equal(server.forwarded, 0, 'valid data still forwards nowhere without config');
+      assert.equal(client.errorShown, false, 'no field error for accepted data');
+    } else {
+      assert.equal(client.fetched, 0, 'client blocks');
+      assert.equal(client.errorShown, true, 'client shows field feedback');
+      assert.equal(server.status, 400, 'server rejects');
+      assert.equal(client.errorText, server.body.error, 'wording agrees');
+    }
+  }
+});
+
+test('opening and reattempting restore the generic default error text', async () => {
+  const env = makeEnv(extractModalScript(astroSource));
+  env.open('MP001');
+  fillValid(env);
+  env.fields.name.value = 'D';
+  await env.submitHandler({ preventDefault() {} });
+  assert.equal(env.errEl.textContent, 'Name is required');
+  // a new attempt clears the field error before anything else happens
+  env.fields.name.value = 'Demo Viewer';
+  const d1 = deferred();
+  env.setFetch(() => d1.promise);
+  const first = env.submitHandler({ preventDefault() {} });
+  assert.equal(env.errEl.hidden, true, 'field error cleared at the start of the retry');
+  d1.resolve({ ok: true });
+  await first;
+  env.close();
+  env.open('MP002');
+  assert.equal(env.errEl.hidden, true, 'error hidden on open');
+  assert.equal(env.errEl.textContent, DEFAULT_ERROR_TEXT, 'generic default text restored on open');
+});
+
+test('a real server failure in the current session shows the generic default text', async () => {
+  const env = makeEnv(extractModalScript(astroSource));
+  env.open('MP001');
+  fillValid(env);
+  const d = deferred();
+  env.setFetch(() => d.promise);
+  const done = env.submitHandler({ preventDefault() {} });
+  d.reject(new Error('503 from origin'));
+  await done;
+  assert.equal(env.errEl.hidden, false, 'failure surfaced');
+  assert.equal(env.errEl.textContent, DEFAULT_ERROR_TEXT, 'generic default error text preserved for real failures');
+});
+
+test('a late server 400/503 rejection must not mutate a reopened session', async () => {
+  const env = makeEnv(extractModalScript(astroSource));
+  env.open('MP001');
+  fillValid(env);
+  const d1 = deferred();
+  env.setFetch(() => d1.promise);
+  const pending = env.submitHandler({ preventDefault() {} });
+  env.close();
+  env.open('MP002');
+  fillValid(env);
+  const errBefore = { hidden: env.errEl.hidden, text: env.errEl.textContent };
+  d1.reject(new Error('bad status 503'));
+  await pending;
+  assert.equal(env.errEl.hidden, errBefore.hidden, 'late 503 must not surface the old session error');
+  assert.equal(env.errEl.textContent, errBefore.text, 'late 503 must not rewrite the new session error text');
+  assert.equal(env.submitBtn.disabled, false, 'new session button stays usable');
 });
