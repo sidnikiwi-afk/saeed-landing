@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, rm, writeFile, mkdir, readdir, readFile } from 'node:fs/promises';
+import { mkdtemp, rm, writeFile, mkdir, readdir, readFile, copyFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -134,6 +134,105 @@ test('fails closed when the built dist is missing', async () => {
   const run = runBuilder(dir, 'https://mp-demo-standalone.example');
   assert.equal(run.status, 1);
   assert.match(run.stderr, /dist\/marlow-pike-demo\/index\.html not found/);
+});
+
+// --- Fail-closed rerun: a failed build must never leave the previous
+// artifact in place looking deployable -------------------------------
+
+async function targetExists(dir) {
+  try {
+    await readdir(join(dir, 'dist-marlow-pike-pages'));
+    return true;
+  } catch (_err) {
+    return false;
+  }
+}
+
+test('a successful run leaves a populated artifact to rerun against', async () => {
+  const dir = await makeFixtureDist();
+  const run = runBuilder(dir, 'https://mp-demo-standalone.example');
+  assert.equal(run.status, 0, run.stderr);
+  assert.equal(await targetExists(dir), true);
+});
+
+test('rerun with a missing origin invalidates the previous artifact first', async () => {
+  const dir = await makeFixtureDist();
+  assert.equal(runBuilder(dir, 'https://mp-demo-standalone.example').status, 0);
+  const rerun = runBuilder(dir, 'missing');
+  assert.equal(rerun.status, 1);
+  assert.match(rerun.stderr, /MP_SITE_ORIGIN is required/);
+  assert.equal(await targetExists(dir), false, 'old deployable artifact must not survive the failed rerun');
+});
+
+test('rerun with an insecure origin invalidates the previous artifact first', async () => {
+  const dir = await makeFixtureDist();
+  assert.equal(runBuilder(dir, 'https://mp-demo-standalone.example').status, 0);
+  const rerun = runBuilder(dir, 'http://mp-demo-standalone.example');
+  assert.equal(rerun.status, 1);
+  assert.match(rerun.stderr, /must use https/);
+  assert.equal(await targetExists(dir), false, 'old deployable artifact must not survive the failed rerun');
+});
+
+test('rerun with a path-bearing origin invalidates the previous artifact first', async () => {
+  const dir = await makeFixtureDist();
+  assert.equal(runBuilder(dir, 'https://mp-demo-standalone.example').status, 0);
+  const rerun = runBuilder(dir, 'https://mp-demo-standalone.example/demo/');
+  assert.equal(rerun.status, 1);
+  assert.equal(await targetExists(dir), false, 'old deployable artifact must not survive the failed rerun');
+});
+
+test('rerun with a missing source dist invalidates the previous artifact', async () => {
+  const dir = await makeFixtureDist();
+  assert.equal(runBuilder(dir, 'https://mp-demo-standalone.example').status, 0);
+  await rm(join(dir, 'dist'), { recursive: true, force: true });
+  const rerun = runBuilder(dir, 'https://mp-demo-standalone.example');
+  assert.equal(rerun.status, 1);
+  assert.match(rerun.stderr, /dist\/marlow-pike-demo\/index\.html not found/);
+  assert.equal(await targetExists(dir), false, 'stale artifact must not survive a missing-source rerun');
+});
+
+test('malformed metadata (missing og:image) fails and leaves no artifact', async () => {
+  const dir = await makeFixtureDist();
+  const demoIndex = join(dir, 'dist', 'marlow-pike-demo', 'index.html');
+  const broken = (await readFile(demoIndex, 'utf8'))
+    .replace(/<meta property="og:image"[^>]*>\s*/, '')
+    .replace(/<meta name="twitter:image"[^>]*>\s*/, '');
+  await writeFile(demoIndex, broken);
+  const run = runBuilder(dir, 'https://mp-demo-standalone.example');
+  assert.equal(run.status, 1);
+  assert.match(run.stderr, /og:image not found/);
+  assert.equal(await targetExists(dir), false, 'no artifact may survive a metadata failure');
+});
+
+test('a broken esbuild dependency fails the rerun and leaves no artifact', async () => {
+  const dir = await makeFixtureDist();
+
+  // First run with the REAL builder: dependency present, artifact populated.
+  const realRun = runBuilder(dir, 'https://mp-demo-standalone.example');
+  assert.equal(realRun.status, 0, realRun.stderr);
+  assert.equal(await targetExists(dir), true);
+
+  // Synthetic fixture repoRoot: a copy of the real builder whose sibling
+  // node_modules has no wrangler/esbuild. Nothing shared is deleted; the
+  // real dependency tree is untouched.
+  const fixtureRepo = await mkdtemp(join(tmpdir(), 'mp-builder-broken-dep-'));
+  tempDirs.push(fixtureRepo);
+  await mkdir(join(fixtureRepo, 'scripts'), { recursive: true });
+  await mkdir(join(fixtureRepo, 'node_modules'), { recursive: true });
+  await copyFile(script, join(fixtureRepo, 'scripts', 'build-marlow-pike-pages.mjs'));
+
+  const run = spawnSync(
+    process.execPath,
+    [join(fixtureRepo, 'scripts', 'build-marlow-pike-pages.mjs')],
+    {
+      cwd: dir,
+      env: { ...process.env, MP_SITE_ORIGIN: 'https://mp-demo-standalone.example' },
+      encoding: 'utf8',
+    },
+  );
+  assert.equal(run.status, 1, 'missing esbuild dependency must fail the build');
+  assert.notEqual((run.stderr || '').trim(), '');
+  assert.equal(await targetExists(dir), false, 'stale artifact must not survive a broken-dependency rerun');
 });
 
 test('advanced-mode worker exists and keeps the standalone isolation constraints', async () => {

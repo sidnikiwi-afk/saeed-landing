@@ -20,7 +20,7 @@
       <h2 class="bm-enq__title" id="bmEnqTitle">Enquire about this demo home</h2>
       <p class="bm-enq__prop" id="bmEnqProp">A fictional Marlow &amp; Pike property</p>
 
-      <form class="bm-enq__form" id="bmEnqForm" novalidate>
+      <form class="bm-enq__form" id="bmEnqForm">
         <input type="hidden" name="property" id="bmEnqPropField" />
         <input type="hidden" name="property_ref" id="bmEnqRefField" />
         <input type="hidden" name="listing_url" id="bmEnqUrlField" />
@@ -295,6 +295,15 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       errEl.hidden = true;
+      // Native constraint validation is the gate. With novalidate removed the
+      // browser blocks invalid submits and shows its own feedback before this
+      // handler runs; the explicit check below additionally guards
+      // programmatic submits so an invalid form never reaches pending state,
+      // submission identity or fetch.
+      if (typeof form.checkValidity === 'function' && !form.checkValidity()) {
+        if (typeof form.reportValidity === 'function') form.reportValidity();
+        return;
+      }
       // Capture the session this request belongs to. If the visitor closes
       // and reopens while the fetch is pending, the newer session must not
       // be touched by this completion.

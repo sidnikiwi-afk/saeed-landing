@@ -91,6 +91,16 @@ function makeEnv(scriptSource) {
   form.querySelector = () => submitBtn;
   form.addEventListener = (type, fn) => { formListeners[type] = fn; };
   form.__inModal = true;
+  // Truthful constraint-validity model of the actual markup: name, phone and
+  // email are required and email must look like an address. Message is NOT a
+  // required field in the modal, so a blank message stays valid (the worker
+  // substitutes a default). Never a blanket always-valid mock.
+  form.reportValidityCalls = 0;
+  form.checkValidity = () =>
+    fields.name.value.trim() !== '' &&
+    fields.phone.value.trim() !== '' &&
+    /.+@.+/.test(fields.email.value.trim());
+  form.reportValidity = () => { form.reportValidityCalls += 1; };
 
   const errEl = makeElement();
   const propField = makeElement();
@@ -330,4 +340,56 @@ test('reopening while an old request is pending re-enables submit with the defau
   await pending;
   assert.equal(env.successView.hidden, true, 'stale success still must not replace the fresh session');
   assert.equal(env.form.resetCalls, 0);
+});
+
+// --- Native constraint validation --------------------------------------------
+
+test('the modal form keeps native constraint validation in the markup', () => {
+  const formTag = astroSource.match(/<form class="bm-enq__form"[^>]*>/);
+  assert.ok(formTag, 'modal form tag not found');
+  assert.equal(/novalidate/.test(formTag[0]), false, 'form must not bypass native validation');
+  for (const field of ['name="name" required', 'name="phone" required', 'name="email" required']) {
+    assert.ok(astroSource.includes(field), `markup must keep required constraint: ${field}`);
+  }
+  assert.ok(/type="email" name="email" required/.test(astroSource), 'email keeps its type constraint');
+});
+
+test('invalid blank required fields send nothing, set no pending state and show native feedback', async () => {
+  for (const [label, clear] of [
+    ['name', (env) => { env.fields.name.value = ''; }],
+    ['phone', (env) => { env.fields.phone.value = ''; }],
+    ['email', (env) => { env.fields.email.value = ''; }],
+    ['malformed email', (env) => { env.fields.email.value = 'not-an-email'; }],
+  ]) {
+    const env = makeEnv(extractModalScript(astroSource));
+    env.open('MP001');
+    fillValid(env);
+    clear(env);
+    await env.submitHandler({ preventDefault() {} });
+    assert.equal(env.fetchCalls.length, 0, `${label}: zero fetch`);
+    assert.equal(env.submitBtn.disabled, false, `${label}: no pending state`);
+    assert.equal(env.submitLabel.textContent, 'Send demo enquiry', `${label}: label untouched`);
+    assert.equal(env.successView.hidden, true, `${label}: no success view`);
+    assert.equal(env.formView.hidden, false, `${label}: still on the form view`);
+    assert.equal(env.form.reportValidityCalls >= 1, true, `${label}: native feedback requested`);
+    assert.equal(env.errEl.hidden, true, `${label}: no network error shown for a validation stop`);
+  }
+});
+
+test('correcting the invalid fields then submits exactly once with success', async () => {
+  const env = makeEnv(extractModalScript(astroSource));
+  env.open('MP001');
+  fillValid(env);
+  env.fields.email.value = 'not-an-email';
+  await env.submitHandler({ preventDefault() {} });
+  assert.equal(env.fetchCalls.length, 0, 'blocked while the email is malformed');
+  env.fields.email.value = 'demo-viewer@example.test';
+  const d = deferred();
+  env.setFetch(() => d.promise);
+  const done = env.submitHandler({ preventDefault() {} });
+  d.resolve({ ok: true });
+  await done;
+  assert.equal(env.fetchCalls.length, 1, 'exactly one submission after correction');
+  assert.equal(env.successView.hidden, false, 'success shown for the corrected form');
+  assert.equal(env.form.resetCalls, 1);
 });

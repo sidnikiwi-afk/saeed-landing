@@ -28,8 +28,6 @@ const root = process.cwd();
 // dependency: an existing build dependency, nothing new installed.
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const workerEntry = join(repoRoot, 'scripts', 'marlow-pike-worker-entry.mjs');
-const wranglerRequire = createRequire(join(repoRoot, 'node_modules', 'wrangler', 'package.json'));
-const esbuildModule = wranglerRequire('esbuild');
 const source = resolve(root, 'dist');
 const target = resolve(root, 'dist-marlow-pike-pages');
 const demoIndex = join(source, 'marlow-pike-demo', 'index.html');
@@ -61,6 +59,12 @@ function requiredSiteOrigin() {
   return parsed.origin;
 }
 
+// Fail closed on rerun: the previous artifact is invalidated BEFORE any
+// prerequisite is checked, so an invalid or missing MP_SITE_ORIGIN (or a
+// missing source dist) can never leave the old standalone artifact in place
+// looking deployable. Only this generated directory is removed.
+await rm(target, { recursive: true, force: true });
+
 let siteOrigin;
 try {
   siteOrigin = requiredSiteOrigin();
@@ -89,9 +93,6 @@ const sharedFiles = [
 // The demo is noindex; state it for crawlers at artifact level too, with no
 // sitemap directive and no marketing-domain reference.
 const STANDALONE_ROBOTS = 'User-agent: *\nDisallow: /\n';
-
-await rm(target, { recursive: true, force: true });
-await mkdir(target, { recursive: true });
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -122,13 +123,15 @@ function rewriteMetadata(html) {
   return output;
 }
 
-let html = await readFile(demoIndex, 'utf8');
+// Everything from here on repopulates the target. Any failure — malformed
+// metadata, a copy error, a worker compilation error — must leave NO
+// apparently complete artifact behind, so the whole build is wrapped and the
+// partial target is removed before exiting.
 try {
-  html = rewriteMetadata(html);
-} catch (err) {
-  console.error(err.message);
-  process.exit(1);
-}
+await mkdir(target, { recursive: true });
+
+let html = await readFile(demoIndex, 'utf8');
+html = rewriteMetadata(html);
 await writeFile(join(target, 'index.html'), html);
 
 for (const dir of sharedDirs) {
@@ -157,26 +160,24 @@ await writeFile(join(target, 'robots.txt'), STANDALONE_ROBOTS);
 // happens only after the origin validation and page prerequisites above
 // have succeeded, and a compiler error fails the build.
 {
-  const esbuild = esbuildModule;
-  let result;
-  try {
-    result = await esbuild.build({
-      entryPoints: [workerEntry],
-      bundle: true,
-      format: 'esm',
-      platform: 'browser',
-      target: 'es2022',
-      outfile: join(target, '_worker.js'),
-      sourcemap: false,
-      logLevel: 'warning',
-    });
-  } catch (err) {
-    console.error(`marlow-pike-pages: worker bundle failed: ${err.message}`);
-    process.exit(1);
-  }
+  // Dependency resolution lives INSIDE the guarded build: if the esbuild
+  // shipped inside the installed wrangler dependency is missing or broken,
+  // this throws into the surrounding catch, which removes the partial target, so
+  // no stale artifact survives a broken dependency either.
+  const wranglerRequire = createRequire(join(repoRoot, 'node_modules', 'wrangler', 'package.json'));
+  const esbuild = wranglerRequire('esbuild');
+  const result = await esbuild.build({
+    entryPoints: [workerEntry],
+    bundle: true,
+    format: 'esm',
+    platform: 'browser',
+    target: 'es2022',
+    outfile: join(target, '_worker.js'),
+    sourcemap: false,
+    logLevel: 'warning',
+  });
   if (result?.errors?.length) {
-    console.error('marlow-pike-pages: worker bundle failed.');
-    process.exit(1);
+    throw new Error(`worker bundle failed (${result.errors.length} errors).`);
   }
   console.log(`Worker bundle: esbuild ${esbuild.version} (resolved from installed wrangler) -> ${join(target, '_worker.js')}`);
 }
@@ -185,3 +186,10 @@ const entries = await readdir(target);
 console.log(`Marlow & Pike Pages artifact ready: ${target}`);
 console.log(`Standalone origin: ${siteOrigin}`);
 console.log(`Artifact root entries: ${entries.sort().join(', ')}`);
+} catch (err) {
+  // No partial or apparently complete artifact may survive any failure after
+  // the target started being repopulated.
+  await rm(target, { recursive: true, force: true });
+  console.error(err?.message?.startsWith('marlow-pike-pages:') ? err.message : `marlow-pike-pages: ${err?.message || err}`);
+  process.exit(1);
+}
