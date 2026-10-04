@@ -65,13 +65,19 @@ try {
   process.exit(1);
 }
 
-// Shared asset directories and files the demo page needs.
+// Shared asset directories and files the demo page needs. The marketing
+// robots.txt is deliberately NOT copied: it points at the marketing domain's
+// sitemap, which this standalone artifact must never advertise. A gated,
+// explicit robots file is generated below instead.
 const sharedDirs = ['_astro', 'images', 'fonts'];
 const sharedFiles = [
   'marlow-pike-favicon.svg',
   'favicon.svg',
-  'robots.txt',
 ];
+
+// The demo is noindex; state it for crawlers at artifact level too, with no
+// sitemap directive and no marketing-domain reference.
+const STANDALONE_ROBOTS = 'User-agent: *\nDisallow: /\n';
 
 await rm(target, { recursive: true, force: true });
 await mkdir(target, { recursive: true });
@@ -129,6 +135,8 @@ for (const file of sharedFiles) {
     if (err.code !== 'ENOENT') throw err;
   }
 }
+
+await writeFile(join(target, 'robots.txt'), STANDALONE_ROBOTS);
 
 const entries = await readdir(target);
 console.log(`Marlow & Pike Pages artifact ready: ${target}`);

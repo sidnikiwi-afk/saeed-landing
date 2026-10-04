@@ -243,7 +243,18 @@
       void modal.offsetWidth;
       modal.classList.add('is-open');
       document.body.style.overflow = 'hidden';
-      setTimeout(() => form.elements['name']?.focus(), 60);
+      // Delayed auto-focus for the default opener path. Never steal focus
+      // from a field inside the modal the visitor (or a password manager)
+      // has already chosen within the 60ms window; keep the delay and the
+      // name-first behaviour when nothing else was selected.
+      setTimeout(() => {
+        // hidden flips only 300ms into close(), but is-open is removed
+        // synchronously; treat either as "no longer open".
+        if (modal.hidden || !modal.classList.contains('is-open')) return;
+        const active = document.activeElement;
+        if (active && modal.contains(active)) return;
+        form.elements['name']?.focus();
+      }, 60);
     };
 
     const close = () => {

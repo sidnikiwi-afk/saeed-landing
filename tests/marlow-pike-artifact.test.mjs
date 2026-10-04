@@ -44,6 +44,12 @@ async function makeFixtureDist() {
   const demoDir = join(dir, 'dist', 'marlow-pike-demo');
   await mkdir(demoDir, { recursive: true });
   await writeFile(join(demoDir, 'index.html'), fixtureIndex());
+  // Real-style marketing robots: sitemap directive that must NOT survive
+  // into the standalone artifact.
+  await writeFile(
+    join(dir, 'dist', 'robots.txt'),
+    `User-agent: *\nAllow: /\n\nSitemap: ${MARKETING_ORIGIN}/sitemap-index.xml\n`
+  );
   return dir;
 }
 
@@ -87,6 +93,14 @@ test('standalone output carries no marketing canonical and keeps noindex', async
   const entries = await readdir(join(dir, 'dist-marlow-pike-pages'));
   assert.equal(entries.includes('sitemap-index.xml'), false);
   assert.equal(entries.includes('sitemap-0.xml'), false);
+
+  // robots.txt is generated, not copied: gated crawl with no marketing
+  // sitemap directive.
+  const robots = await readFile(join(dir, 'dist-marlow-pike-pages', 'robots.txt'), 'utf8');
+  assert.match(robots, /^User-agent: \*\n/);
+  assert.match(robots, /^Disallow: \/$/m);
+  assert.equal(/Sitemap:/i.test(robots), false);
+  assert.equal(robots.includes(MARKETING_ORIGIN), false);
 });
 
 test('fails closed when MP_SITE_ORIGIN is missing', async () => {

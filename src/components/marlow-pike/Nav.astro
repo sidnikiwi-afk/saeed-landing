@@ -267,10 +267,30 @@ const phone = demoPhone();
     }
   }
   @media (max-width: 400px) {
-    .bm-nav__inner { gap: 1rem; }
+    /* Compact tier for 320px-class viewports. Every flex child must be able
+       to shrink and the burger must never be pushed outside the viewport.
+       The brand name column must also shrink and wrap its text: with nowrap
+       the painted glyphs overflow a min-width:0 container and overlap the
+       phone badge even when box bounds look clean. */
+    .bm-nav__inner { gap: 0.75rem; }
+    .bm-brand { min-width: 0; gap: 0.5rem; }
+    .bm-brand__txt { min-width: 0; }
     .bm-brand__est { display: none; }
-    .bm-brand__mark { font-size: 1.15rem; }
-    .bm-callbtn--off { font-size: 0.6rem; padding: 0.5rem 0.55rem; }
+    .bm-brand__mark { font-size: 1.15rem; padding: 0.22rem 0.5rem; }
+    .bm-brand__name {
+      font-size: 0.82rem;
+      white-space: normal;
+      line-height: 1.1;
+    }
+    .bm-burger { flex-shrink: 0; margin-left: auto; }
+    .bm-callbtn { min-width: 0; flex-shrink: 1; }
+    .bm-callbtn--off {
+      font-size: 0.6rem;
+      padding: 0.45rem 0.5rem;
+      letter-spacing: 0.02em;
+      white-space: normal;
+      line-height: 1.25;
+    }
   }
 </style>
 

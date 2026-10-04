@@ -28,7 +28,14 @@ const anchorOf = (p) => `#listing-${p.ref}`;
         const beds = bedsOf(p);
         return (
           <article class="bm-card bm-obs" style={`--i:${i % 3}`} id={`listing-${p.ref}`}>
-            <a href={anchorOf(p)} class="bm-card__link" aria-label={`Enquire about the fictional ${p.type} on ${p.location}, ref ${p.ref}`}>
+            <a
+              href={anchorOf(p)}
+              class="bm-card__link"
+              aria-label={`Enquire about the fictional ${p.type} on ${p.location}, ref ${p.ref}`}
+              data-enquire
+              data-property={`${p.type}, ${p.location}`}
+              data-property-ref={p.ref}
+            >
               <div class="bm-card__imgwrap">
                 <img src={p.local_image} alt={`Illustrative demo image for the fictional ${p.type} on ${p.location}`} loading="lazy" />
                 <span class="bm-card__city">Marlow &middot; Demo</span>
@@ -36,7 +43,13 @@ const anchorOf = (p) => `#listing-${p.ref}`;
               </div>
             </a>
             <div class="bm-card__body">
-              <a href={anchorOf(p)} class="bm-card__titlelink">
+              <a
+                href={anchorOf(p)}
+                class="bm-card__titlelink"
+                data-enquire
+                data-property={`${p.type}, ${p.location}`}
+                data-property-ref={p.ref}
+              >
                 <h3 class="bm-card__type">{p.type}</h3>
               </a>
               <p class="bm-card__loc">{p.location} &middot; Ref {p.ref}</p>
