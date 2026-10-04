@@ -16,11 +16,11 @@
 //   forwarded text and folded into the payload fingerprint. It never
 //   influences the recipient.
 // - The forwarded property description is derived on the server from the
-//   same validated catalog the page renders (src/data/marlow-pike-listings.json).
+//   same validated catalog the page renders (src/data/marlow-pike-listings.mjs).
 //   Caller-supplied property text is never forwarded: a forged or empty
 //   property value cannot influence the canonical property line, the subject
 //   or the body.
-import listingsCatalog from '../../src/data/marlow-pike-listings.json' with { type: 'json' };
+import listingsCatalog from '../../src/data/marlow-pike-listings.mjs';
 const MAX_BODY_BYTES = 16 * 1024;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX = 5;

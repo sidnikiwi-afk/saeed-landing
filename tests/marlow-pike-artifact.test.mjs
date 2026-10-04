@@ -135,3 +135,35 @@ test('fails closed when the built dist is missing', async () => {
   assert.equal(run.status, 1);
   assert.match(run.stderr, /dist\/marlow-pike-demo\/index\.html not found/);
 });
+
+test('advanced-mode worker exists and keeps the standalone isolation constraints', async () => {
+  const dir = await makeFixtureDist();
+  const origin = 'https://mp-demo-standalone.example';
+  const run = runBuilder(dir, origin);
+  assert.equal(run.status, 0, run.stderr);
+
+  // The self-contained advanced-mode _worker.js is part of the artifact.
+  const workerPath = join(dir, 'dist-marlow-pike-pages', '_worker.js');
+  const worker = await readFile(workerPath, 'utf8');
+  assert.ok(worker.length > 0);
+  assert.ok(worker.includes('marlow-pike-enquire'), 'worker must route the Marlow endpoint');
+
+  // The catalogue is bundled in as real canonical data (not merely the MP
+  // refs that also appear in the endpoint allowlist); the worker never
+  // re-imports JSON at runtime and never references the marketing origin.
+  for (const value of ['Mill Lane, Marlow', 'Anchor Yard, Marlow', 'keeps Saturday viewings in order']) {
+    assert.ok(worker.includes(value), `catalogue value ${value} missing from _worker.js`);
+  }
+  assert.equal(/marlow-pike-listings\.json/.test(worker), false);
+  assert.equal(/with\s*\{\s*type:\s*['"]json['"]/.test(worker), false);
+  assert.equal(worker.includes(MARKETING_ORIGIN), false);
+
+  // The existing identity and robots constraints still hold alongside the
+  // worker (the worker must not change the standalone page's identity).
+  const html = await readFile(join(dir, 'dist-marlow-pike-pages', 'index.html'), 'utf8');
+  assert.match(html, /rel="canonical" href="https:\/\/mp-demo-standalone\.example\/"/);
+  assert.match(html, /name="robots" content="noindex, nofollow"/);
+  const robots = await readFile(join(dir, 'dist-marlow-pike-pages', 'robots.txt'), 'utf8');
+  assert.match(robots, /^Disallow: \/$/m);
+  assert.equal(/Sitemap:/i.test(robots), false);
+});

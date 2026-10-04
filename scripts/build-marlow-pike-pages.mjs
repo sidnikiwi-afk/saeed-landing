@@ -16,9 +16,20 @@
 //   npm run build
 //   MP_SITE_ORIGIN=https://<dedicated-demo-origin> node scripts/build-marlow-pike-pages.mjs
 import { access, copyFile, cp, mkdir, readFile, rm, readdir, writeFile } from 'node:fs/promises';
-import { join, resolve } from 'node:path';
+import { createRequire } from 'node:module';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const root = process.cwd();
+// Repository source and dependencies are resolved from this script's real
+// location, never from the build CWD (the artifact tests run the builder
+// from synthetic fixture directories). The esbuild used for the Worker
+// bundle is the one already declared inside the installed Wrangler
+// dependency: an existing build dependency, nothing new installed.
+const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const workerEntry = join(repoRoot, 'scripts', 'marlow-pike-worker-entry.mjs');
+const wranglerRequire = createRequire(join(repoRoot, 'node_modules', 'wrangler', 'package.json'));
+const esbuildModule = wranglerRequire('esbuild');
 const source = resolve(root, 'dist');
 const target = resolve(root, 'dist-marlow-pike-pages');
 const demoIndex = join(source, 'marlow-pike-demo', 'index.html');
@@ -137,6 +148,38 @@ for (const file of sharedFiles) {
 }
 
 await writeFile(join(target, 'robots.txt'), STANDALONE_ROBOTS);
+
+// Advanced-mode Worker: compile the isolated entry into a self-contained
+// `_worker.js` inside the artifact. Pages advanced mode ignores the
+// repository-root functions/ tree entirely for this deployment, so no
+// Premier, contact or marketing endpoint is compiled or routed. The JSON
+// catalogue is bundled in; there is no runtime JSON import. Compilation
+// happens only after the origin validation and page prerequisites above
+// have succeeded, and a compiler error fails the build.
+{
+  const esbuild = esbuildModule;
+  let result;
+  try {
+    result = await esbuild.build({
+      entryPoints: [workerEntry],
+      bundle: true,
+      format: 'esm',
+      platform: 'browser',
+      target: 'es2022',
+      outfile: join(target, '_worker.js'),
+      sourcemap: false,
+      logLevel: 'warning',
+    });
+  } catch (err) {
+    console.error(`marlow-pike-pages: worker bundle failed: ${err.message}`);
+    process.exit(1);
+  }
+  if (result?.errors?.length) {
+    console.error('marlow-pike-pages: worker bundle failed.');
+    process.exit(1);
+  }
+  console.log(`Worker bundle: esbuild ${esbuild.version} (resolved from installed wrangler) -> ${join(target, '_worker.js')}`);
+}
 
 const entries = await readdir(target);
 console.log(`Marlow & Pike Pages artifact ready: ${target}`);

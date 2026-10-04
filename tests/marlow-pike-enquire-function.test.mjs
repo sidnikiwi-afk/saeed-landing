@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { afterEach, beforeEach, test } from 'node:test';
 
 import {
@@ -267,9 +270,7 @@ test('does not derive a ref from the browser property title or any fallback', as
 });
 
 test('forwards the canonical catalog description, never caller property text', async () => {
-  const catalog = JSON.parse(
-    readFileSync(new URL('../src/data/marlow-pike-listings.json', import.meta.url), 'utf8')
-  );
+  const catalog = (await import('../src/data/marlow-pike-listings.mjs')).default;
   const byRef = Object.fromEntries(catalog.listings.map((listing) => [listing.ref, listing]));
   const canonical = (ref) => `${byRef[ref].type}, ${byRef[ref].location}`;
 
@@ -514,4 +515,51 @@ test('returns a generic error for provider failures and blocks unsupported metho
   const get = await onRequestGet({ request: request('GET'), env });
   assert.equal(get.status, 405);
   assert.equal(get.headers.get('Allow'), 'POST, OPTIONS');
+});
+
+// Compiler regression: the endpoint's catalogue import must survive the
+// actual project bundler, including the esbuild bundled with Wrangler 3.x
+// (the Cloudflare preview compiler), which cannot parse JSON import
+// attributes. The catalogue is therefore an ordinary ESM module. This test
+// runs the installed Wrangler and asserts the real bundle inlines actual
+// canonical catalogue data (property locations and testimonial text that
+// exist nowhere else), not merely the MP refs that also appear in the
+// endpoint's allowlist.
+test('the installed Wrangler bundles the endpoint with the catalogue inlined', () => {
+  const outDir = mkdtempSync(join(tmpdir(), 'mp-enquire-bundle-'));
+  try {
+    execFileSync(
+      'npx',
+      ['wrangler', 'pages', 'functions', 'build', '--outdir', outDir, 'functions'],
+      { stdio: 'pipe' },
+    );
+    const bundled = readFileSync(join(outDir, 'index.js'), 'utf8');
+    assert.match(bundled, /marlow_pike_listings_default/);
+    // Canonical property lines derive from type + location; both must be
+    // present as real catalogue values (ref MP006 has no canonical line in
+    // the allowlist sense alone).
+    for (const value of [
+      'Mill Lane, Marlow',
+      'Orchard Rise, Marlow',
+      'Cedar Court, Marlow',
+      'Holloway Croft, Marlow',
+      'Bridge Walk, Marlow',
+      'Anchor Yard, Marlow',
+      '2 bed cottage',
+      'Studio apartment',
+    ]) {
+      assert.ok(bundled.includes(value), `catalogue value ${value} missing from bundle`);
+    }
+    // Testimonial text exists only in the catalogue module, so its presence
+    // proves the whole catalogue, not a partial inline, was bundled.
+    assert.ok(
+      bundled.includes('keeps Saturday viewings in order'),
+      'catalogue testimonial text missing from bundle'
+    );
+    // No unsupported static or dynamic JSON import may remain.
+    assert.doesNotMatch(bundled, /marlow-pike-listings\.json/);
+    assert.doesNotMatch(bundled, /with\s*\{\s*type:\s*['"]json['"]/);
+  } finally {
+    rmSync(outDir, { recursive: true, force: true });
+  }
 });

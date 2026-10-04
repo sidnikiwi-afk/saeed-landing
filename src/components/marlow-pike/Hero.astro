@@ -2,7 +2,7 @@
 // Marlow & Pike — split-screen editorial hero. Visual template cloned from
 // the Premier Housing demo hero; copy and demo framing changed. The featured
 // property is fictional and drawn from the demo listings fixture.
-import listings from '../../data/marlow-pike-listings.json';
+import listings from '../../data/marlow-pike-listings.mjs';
 const featured = listings.listings[1];
 const bedsLabel = featured.beds === 0 ? 'Studio' : `${featured.beds} bed`;
 ---

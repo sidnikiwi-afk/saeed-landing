@@ -16,9 +16,7 @@ const astroSource = readFileSync(join(here, '..', 'src', 'components', 'marlow-p
 
 // Mirror of the immutable catalog, used ONLY to build the synthetic cards'
 // data attributes exactly as Listings.astro renders them.
-const catalog = JSON.parse(
-  readFileSync(join(here, '..', 'src', 'data', 'marlow-pike-listings.json'), 'utf8')
-).listings;
+const catalog = (await import('../src/data/marlow-pike-listings.mjs')).default.listings;
 
 function extractFilterScript(source) {
   const open = source.indexOf('<script>');
