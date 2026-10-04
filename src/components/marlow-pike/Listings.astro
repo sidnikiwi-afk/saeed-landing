@@ -27,7 +27,12 @@ const anchorOf = (p) => `#listing-${p.ref}`;
       {items.map((p, i) => {
         const beds = bedsOf(p);
         return (
-          <article class="bm-card bm-obs" style={`--i:${i % 3}`} id={`listing-${p.ref}`}>
+          <article class="bm-card bm-obs" style={`--i:${i % 3}`} id={`listing-${p.ref}`}
+            data-listing-ref={p.ref}
+            data-listing-beds={p.beds}
+            data-listing-price={p.price}
+            data-listing-area={p.location}
+          >
             <a
               href={anchorOf(p)}
               class="bm-card__link"
@@ -74,6 +79,8 @@ const anchorOf = (p) => `#listing-${p.ref}`;
         );
       })}
     </div>
+
+    <p class="bm-listings__empty" hidden>No demo homes match these filters.</p>
   </div>
 </section>
 
@@ -120,6 +127,20 @@ const anchorOf = (p) => `#listing-${p.ref}`;
     overflow: hidden;
     transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), box-shadow 0.5s ease, border-color 0.5s ease;
   }
+  /* Filtered-out cards use the hidden attribute; the !important keeps the
+     filter effective even against the card's own display-affecting styles. */
+  .bm-card[hidden] { display: none !important; }
+  .bm-listings__empty {
+    margin: 2rem 0 0;
+    padding: 1.2rem 1.4rem;
+    background: #FFFDF8;
+    border: 1px solid rgba(176,141,87,0.3);
+    border-radius: 4px;
+    font-family: 'Work Sans Variable', system-ui, sans-serif;
+    font-size: 0.92rem;
+    color: #4A4640;
+  }
+  .bm-listings__empty[hidden] { display: none; }
   .bm-card:hover {
     transform: translateY(-7px);
     box-shadow: 0 34px 60px -42px rgba(31,58,46,0.7);

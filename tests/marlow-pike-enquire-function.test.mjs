@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { afterEach, beforeEach, test } from 'node:test';
 
 import {
@@ -263,6 +264,69 @@ test('does not derive a ref from the browser property title or any fallback', as
   });
   assert.equal(titleDerived.status, 400);
   assert.equal(forwards, 0);
+});
+
+test('forwards the canonical catalog description, never caller property text', async () => {
+  const catalog = JSON.parse(
+    readFileSync(new URL('../src/data/marlow-pike-listings.json', import.meta.url), 'utf8')
+  );
+  const byRef = Object.fromEntries(catalog.listings.map((listing) => [listing.ref, listing]));
+  const canonical = (ref) => `${byRef[ref].type}, ${byRef[ref].location}`;
+
+  // Distinct refs must forward distinct canonical descriptions.
+  const forwards = [];
+  globalThis.fetch = async (_url, init) => {
+    forwards.push(JSON.parse(init.body));
+    return new Response('{"ok":true}', { status: 202 });
+  };
+
+  for (const ref of ['MP001', 'MP002']) {
+    const response = await onRequestPost({
+      request: request('POST', { ...validPayload, property_ref: ref }),
+      env,
+    });
+    assert.equal(response.status, 200, `expected 200 for ${ref}`);
+    __test.resetRateLimit();
+  }
+  assert.equal(forwards.length, 2);
+  assert.match(forwards[0].text, new RegExp(`Property: ${canonical('MP001')}$`, 'm'));
+  assert.match(forwards[1].text, new RegExp(`Property: ${canonical('MP002')}$`, 'm'));
+  assert.equal(forwards[0].subject, `New demo enquiry: ${canonical('MP001')}`);
+  assert.equal(forwards[1].subject, `New demo enquiry: ${canonical('MP002')}`);
+  assert.notEqual(forwards[0].text, forwards[1].text, 'MP001/MP002 forward distinct bodies');
+
+  // A forged property string with a valid ref never reaches the forward.
+  const forged = 'Penthouse, 1 Real Street, London';
+  globalThis.fetch = async (_url, init) => {
+    forwards.push(JSON.parse(init.body));
+    return new Response('{"ok":true}', { status: 202 });
+  };
+  const forgedResponse = await onRequestPost({
+    request: request('POST', { ...validPayload, property_ref: 'MP004', property: forged }),
+    env,
+  });
+  assert.equal(forgedResponse.status, 200);
+  const forwarded = forwards[forwards.length - 1];
+  assert.equal(JSON.stringify(forwarded).includes(forged), false, 'forged property text is dropped');
+  assert.match(forwarded.text, new RegExp(`Property: ${canonical('MP004')}$`, 'm'));
+  assert.equal(forwarded.subject, `New demo enquiry: ${canonical('MP004')}`);
+
+  // An empty property string with a valid ref still forwards the canonical text.
+  globalThis.fetch = async (_url, init) => {
+    forwards.push(JSON.parse(init.body));
+    return new Response('{"ok":true}', { status: 202 });
+  };
+  const emptyResponse = await onRequestPost({
+    request: request('POST', { ...validPayload, property_ref: 'MP006', property: '' }),
+    env,
+  });
+  assert.equal(emptyResponse.status, 200);
+  const emptyForward = forwards[forwards.length - 1];
+  assert.match(emptyForward.text, new RegExp(`Property: ${canonical('MP006')}$`, 'm'));
+
+  // A forged custom message still only contributes its own line, never the
+  // property line.
+  assert.match(forwarded.text, new RegExp(`Property: ${canonical('MP004')}$`, 'm'));
 });
 
 test('rejects an oversized request before forwarding', async () => {

@@ -15,6 +15,12 @@
 //   membership, never normalised into a valid one. It is echoed into the
 //   forwarded text and folded into the payload fingerprint. It never
 //   influences the recipient.
+// - The forwarded property description is derived on the server from the
+//   same validated catalog the page renders (src/data/marlow-pike-listings.json).
+//   Caller-supplied property text is never forwarded: a forged or empty
+//   property value cannot influence the canonical property line, the subject
+//   or the body.
+import listingsCatalog from '../../src/data/marlow-pike-listings.json' with { type: 'json' };
 const MAX_BODY_BYTES = 16 * 1024;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX = 5;
@@ -190,6 +196,19 @@ function listingUrlAllowed(value) {
 // server never derives one from a property title or accepts anything else.
 const CANONICAL_PROPERTY_REFS = new Set(['MP001', 'MP002', 'MP003', 'MP004', 'MP005', 'MP006']);
 
+// Server-only canonical property descriptions, keyed by ref, derived from the
+// exact catalog the page renders. A ref without a catalog entry maps to ''
+// and fails validation, so no caller text can substitute for it.
+const CANONICAL_PROPERTY_BY_REF = new Map(
+  (listingsCatalog.listings || [])
+    .filter((listing) => CANONICAL_PROPERTY_REFS.has(listing.ref))
+    .map((listing) => [listing.ref, `${listing.type}, ${listing.location}`])
+);
+
+function canonicalPropertyFor(rawRef) {
+  return CANONICAL_PROPERTY_BY_REF.get(rawRef) || '';
+}
+
 function validate(payload = {}) {
   // The reference is checked as the exact original string, with no trimming,
   // case folding or other normalisation that could turn an invalid value
@@ -200,7 +219,9 @@ function validate(payload = {}) {
     phone: clean(payload.phone, 80),
     email: clean(payload.email, 160).toLowerCase(),
     message: clean(payload.message, 1200),
-    property: clean(payload.property, 220),
+    // Canonical description from the server catalog only. The caller's
+    // property text is deliberately never read.
+    property: canonicalPropertyFor(rawRef),
     property_ref: CANONICAL_PROPERTY_REFS.has(rawRef) ? rawRef : '',
     listing_url: clean(payload.listing_url, 500),
     company: clean(payload.company, 120),
@@ -215,10 +236,9 @@ function validate(payload = {}) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
     return { ok: false, error: 'Valid email is required' };
   }
-  if (!data.property) return { ok: false, error: 'Property is required' };
-  if (!CANONICAL_PROPERTY_REFS.has(rawRef)) {
-    return { ok: false, error: 'Valid property reference is required' };
-  }
+  // The canonical description exists only for a known ref, so this one check
+  // covers both "property is required" and "ref must be canonical".
+  if (!data.property) return { ok: false, error: 'Valid property reference is required' };
   if (!listingUrlAllowed(data.listing_url)) {
     return { ok: false, error: 'Valid listing URL is required' };
   }
@@ -432,6 +452,7 @@ export const onRequestDelete = methodNotAllowed;
 
 export const __test = {
   allowedOrigins,
+  canonicalPropertyFor,
   canonicalRecipient,
   corsHeaders,
   intakePayload,

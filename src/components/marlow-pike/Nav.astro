@@ -308,11 +308,15 @@ const phone = demoPhone();
   const bmMobile = document.getElementById('bmMobile');
   const bmSetMenu = (open) => {
     if (!nav || !bmBurger || !bmMobile) return;
+    // Every open/close (including Escape while already closed) bumps the
+    // generation, so the 320ms hide callback of a previous close can never
+    // hide a menu reopened inside that window.
+    const generation = (nav.__bmMenuGeneration = (nav.__bmMenuGeneration || 0) + 1);
     nav.classList.toggle('is-open', open);
     bmBurger.setAttribute('aria-expanded', open ? 'true' : 'false');
     bmBurger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     if (open) { bmMobile.hidden = false; void bmMobile.offsetWidth; bmMobile.classList.add('is-open'); }
-    else { bmMobile.classList.remove('is-open'); setTimeout(() => { bmMobile.hidden = true; }, 320); }
+    else { bmMobile.classList.remove('is-open'); setTimeout(() => { if (nav.__bmMenuGeneration === generation) bmMobile.hidden = true; }, 320); }
     document.body.style.overflow = open ? 'hidden' : '';
   };
   bmBurger?.addEventListener('click', () => bmSetMenu(!nav.classList.contains('is-open')));
