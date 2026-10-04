@@ -204,9 +204,17 @@
     const endpoint = '/api/marlow-pike-enquire';
     const formView = modal.querySelector('[data-enq-view="form"]');
     const successView = modal.querySelector('[data-enq-view="success"]');
+    const submitBtn = form.querySelector('.bm-enq__submit');
+    const submitLabel = submitBtn.querySelector('.bm-enq__submit-label');
+    const submitLabelDefault = submitLabel.textContent;
     let lastFocus = null;
     let lastAutoMsg = '';
     let pendingSubmissionId = null;
+    // Monotonic session identity: advances on every open AND close. Async
+    // callbacks (fetch completion, the 60ms focus timer, the 300ms hide
+    // timer) capture the session they belong to and are ignored if a newer
+    // session has begun.
+    let session = 0;
 
     const createSubmissionId = () => {
       if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
@@ -233,16 +241,23 @@
       // our own previous auto-filled default.
       if (msg && (!msg.value || msg.value === lastAutoMsg)) msg.value = nextDefault;
       lastAutoMsg = nextDefault;
+      session += 1;
       // reset to the form view
       formView.hidden = false;
       successView.hidden = true;
       errEl.hidden = true;
       pendingSubmissionId = null;
+      // A previous session's request may still be in flight; the new enquiry
+      // must be usable immediately, and the stale completion (guarded below)
+      // will never restore these itself.
+      submitBtn.disabled = false;
+      submitLabel.textContent = submitLabelDefault;
       lastFocus = document.activeElement;
       modal.hidden = false;
       void modal.offsetWidth;
       modal.classList.add('is-open');
       document.body.style.overflow = 'hidden';
+      const focusSession = session;
       // Delayed auto-focus for the default opener path. Never steal focus
       // from a field inside the modal the visitor (or a password manager)
       // has already chosen within the 60ms window; keep the delay and the
@@ -250,7 +265,7 @@
       setTimeout(() => {
         // hidden flips only 300ms into close(), but is-open is removed
         // synchronously; treat either as "no longer open".
-        if (modal.hidden || !modal.classList.contains('is-open')) return;
+        if (session !== focusSession || modal.hidden || !modal.classList.contains('is-open')) return;
         const active = document.activeElement;
         if (active && modal.contains(active)) return;
         form.elements['name']?.focus();
@@ -258,9 +273,15 @@
     };
 
     const close = () => {
+      session += 1;
       modal.classList.remove('is-open');
       document.body.style.overflow = '';
-      setTimeout(() => { modal.hidden = true; }, 300);
+      const hideSession = session;
+      setTimeout(() => {
+        // A reopen inside this window started a newer session that must stay
+        // visible.
+        if (session === hideSession) modal.hidden = true;
+      }, 300);
       if (lastFocus && lastFocus.focus) lastFocus.focus();
     };
 
@@ -274,13 +295,14 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       errEl.hidden = true;
+      // Capture the session this request belongs to. If the visitor closes
+      // and reopens while the fetch is pending, the newer session must not
+      // be touched by this completion.
+      const submitSession = session;
       // honeypot tripped -> pretend success, send nothing
       if (form.elements['company'].value) { formView.hidden = true; successView.hidden = false; return; }
-      const submitBtn = form.querySelector('.bm-enq__submit');
-      const labelEl = submitBtn.querySelector('.bm-enq__submit-label');
-      const original = labelEl.textContent;
       submitBtn.disabled = true;
-      labelEl.textContent = 'Sending...';
+      submitLabel.textContent = 'Sending...';
       pendingSubmissionId ||= createSubmissionId();
       const payload = {
         name: form.elements['name'].value.trim(),
@@ -299,15 +321,21 @@
           body: JSON.stringify(payload),
         });
         if (!res.ok) throw new Error('bad status ' + res.status);
+        if (session !== submitSession) return; // stale: leave the newer session alone
         form.reset();
         pendingSubmissionId = null;
         formView.hidden = true;
         successView.hidden = false;
       } catch (err) {
+        if (session !== submitSession) return; // stale rejection
         errEl.hidden = false;
       } finally {
-        submitBtn.disabled = false;
-        labelEl.textContent = original;
+        // Only the request that still owns the session may restore the
+        // button; otherwise it would re-enable over a newer pending one.
+        if (session === submitSession) {
+          submitBtn.disabled = false;
+          submitLabel.textContent = submitLabelDefault;
+        }
       }
     });
   }
