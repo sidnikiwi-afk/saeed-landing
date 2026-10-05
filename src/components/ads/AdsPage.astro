@@ -1,24 +1,11 @@
 ---
 import IllustrativeCaption from '../brand/IllustrativeCaption.astro';
 import { adsSettings } from '../../data/ads/settings.mjs';
-import { adsVisibility, trialHref } from '../../lib/ads-page.mjs';
+import { adsVisibility } from '../../lib/ads-page.mjs';
 
 const { content } = Astro.props;
 const visibility = adsVisibility(adsSettings);
 const year = 2026;
-
-function trialAttrs(placement) {
-  return {
-    href: trialHref({
-      campaign: content.utmCampaign,
-      placement,
-      vertical: content.vertical,
-    }),
-    'data-trial': placement,
-    'data-campaign': content.utmCampaign,
-    'data-vertical': content.vertical,
-  };
-}
 ---
 
 <div class="page">
@@ -37,7 +24,7 @@ function trialAttrs(placement) {
             <span>Call {visibility.phone}</span>
           </a>
         )}
-        <a class="btn solid header-trial" {...trialAttrs('header')}>Start free trial</a>
+        <a class="btn solid header-trial" href="/contact/">Book a teardown</a>
       </div>
     </div>
   </header>
@@ -53,7 +40,7 @@ function trialAttrs(placement) {
             {content.trialPromise.map((point) => <li>{point}</li>)}
           </ul>
           <div class="ctas">
-            <a class="btn solid" {...trialAttrs('hero')}>Start a free trial</a>
+            <a class="btn solid" href="/contact/">Book a 15-minute teardown</a>
             <a class="btn line" href="#example">See an example call</a>
           </div>
           <ul class="micro">
@@ -87,7 +74,7 @@ function trialAttrs(placement) {
       </div>
     </section>
 
-    <section class="strip" aria-label="What the trial covers">
+    <section class="strip" aria-label="What it covers">
       <ul class="wrap strip-grid">
         {content.strip.map((item) => (
           <li>
@@ -164,8 +151,8 @@ function trialAttrs(placement) {
             <div>
               <p class="eyebrow">Simple pricing</p>
               <p class="amount">From £{visibility.price} <small>a month</small></p>
-              <p class="lead">Try it free first. No card needed, and we set it up for you.</p>
-              <a class="btn solid" {...trialAttrs('pricing')}>Start a free trial</a>
+              <p class="lead">We set it up for you.</p>
+              <a class="btn solid" href="/contact/">Book a 15-minute teardown</a>
             </div>
             <ul class="includes">
               {(content.priceIncludes ?? []).map((item) => <li>{item}</li>)}
@@ -178,7 +165,7 @@ function trialAttrs(placement) {
     <section class="block tight">
       <div class="wrap faq">
         <p class="eyebrow">Questions</p>
-        <h2>Before you try it.</h2>
+        <h2>Common questions.</h2>
         {content.faq.map((item, index) => (
           <details open={index === 0}>
             <summary>{item.question}</summary>
@@ -192,7 +179,7 @@ function trialAttrs(placement) {
       <div class="wrap">
         <h2>{content.final.heading}</h2>
         <p>{content.final.text}</p>
-        <a class="btn solid final-btn" {...trialAttrs('final')}>Start a free trial</a>
+        <a class="btn solid final-btn" href="/contact/">Book a 15-minute teardown</a>
         <p class="more">Want more than calls? <a href="/contact">Book a 15-minute teardown</a></p>
       </div>
     </section>
@@ -208,11 +195,11 @@ function trialAttrs(placement) {
     </div>
   </footer>
 
-  <div class:list={['mbar', visibility.showCall && 'has-call']} role="region" aria-label="Free trial">
+  <div class:list={['mbar', visibility.showCall && 'has-call']} role="region" aria-label="Book a teardown">
     {visibility.showCall && (
       <a class="btn line" href={visibility.callHref}>Call {visibility.phone}</a>
     )}
-    <a class="btn solid" {...trialAttrs('mobile-bar')}>Start a free trial, no card</a>
+    <a class="btn solid" href="/contact/">Book a teardown</a>
   </div>
 </div>
 

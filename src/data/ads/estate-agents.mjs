@@ -4,7 +4,7 @@ export const estateAgentsAd = {
   headline: 'AI receptionist for estate agents',
   headlineAccent: 'Every enquiry captured.',
   description:
-    'An AI receptionist for UK estate agents. It captures every viewing request and valuation lead on the call, and says who will call back first. Free trial, no card needed.',
+    'An AI receptionist for UK estate agents. It captures every viewing request and valuation lead on the call, and says who will call back first.',
   eyebrow: 'For UK estate and letting agents',
   intro:
     'It picks up while your negotiators are out on viewings or with vendors, captures the viewing request or valuation enquiry in full, and passes it straight to whoever should call back first. It answers in office hours, in the evening, and at the weekend.',
@@ -13,7 +13,7 @@ export const estateAgentsAd = {
     'Takes valuation leads and routes them to your valuer',
     'Tells the caller who will ring back, and when',
   ],
-  micro: ['No card needed', 'UK phone number', 'Set up for you'],
+  micro: ['Answers out of hours', 'UK phone number', 'Set up for you'],
   example: {
     status: 'Incoming call at 19:14',
     title: 'Branch enquiry line',
@@ -122,7 +122,7 @@ export const estateAgentsAd = {
     {
       question: 'Will it sound robotic?',
       answer:
-        'It is tuned for UK callers and for the way agents talk to applicants and vendors. The call on this page is illustrative, so you can judge the shape of it before a trial.',
+        'It is tuned for UK callers and for the way agents talk to applicants and vendors. The call on this page is illustrative, so you can judge the shape of it before you book.',
     },
     {
       question: 'What if it gets something wrong?',
@@ -132,7 +132,7 @@ export const estateAgentsAd = {
   ],
   final: {
     heading: 'Stop losing enquiries to voicemail.',
-    text: 'Try the AI receptionist free. No card needed, and we set it up for you.',
+    text: 'We set it up for you, and we show you how it is doing.',
   },
   utmCampaign: 'estate-agents',
   vertical: 'estate-agent',
