@@ -1,5 +1,6 @@
 ---
 import BrandLayout from '../layouts/BrandLayout.astro';
+import { ICO_REGISTER_URL, icoRegistrationNumber } from '../data/ico.mjs';
 ---
 
 <BrandLayout
@@ -16,6 +17,7 @@ import BrandLayout from '../layouts/BrandLayout.astro';
 
       <h2>1. Who we are</h2>
       <p>Brackstone Digital is a B2B digital growth service based in Yorkshire, UK. For any data protection queries, use our <a href="/contact">contact form</a> and mark your message as a data protection query. It reaches us directly.</p>
+      <p>Brackstone Digital Limited is registered with the Information Commissioner's Office{icoRegistrationNumber && ` (registration number ${icoRegistrationNumber})`}. You can <a href={ICO_REGISTER_URL} target="_blank" rel="noopener noreferrer">check the ICO register</a>.</p>
 
       <h2>2. What data we collect</h2>
       <p>When you submit our contact form, we collect:</p>
