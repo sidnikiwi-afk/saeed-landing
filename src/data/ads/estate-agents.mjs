@@ -22,7 +22,7 @@ export const estateAgentsAd = {
       { from: 'caller', text: 'Hello, I saw the three bed on Victoria Road. Could I see it on Saturday?' },
       { from: 'ai', text: 'Of course. Can I take your name and the best number for you?' },
       { from: 'caller', text: 'Daniel Rowe. You should have my number, I registered last month.' },
-      { from: 'ai', text: 'Found you, Daniel. I have noted Saturday morning and passed the request to Priya, who looks after Victoria Road. She will ring you this afternoon to fix the exact slot.' },
+      { from: 'ai', text: 'Found you, Daniel. I have noted Saturday morning and passed the request to Priya, who looks after Victoria Road. She will ring you first thing tomorrow morning to fix the exact slot.' },
       { from: 'caller', text: 'Saturday morning would be perfect.' },
       { from: 'ai', text: 'Noted on the request. I will text you a summary now so you have it in writing.' },
     ],
@@ -66,6 +66,8 @@ export const estateAgentsAd = {
       },
     ],
   },
+  featureEyebrow: 'Built for estate agents',
+  featureHeading: 'It knows what a lettings and sales caller needs.',
   featureCards: [
     {
       kicker: 'Viewings',

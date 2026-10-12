@@ -66,6 +66,8 @@ export const garagesAd = {
       },
     ],
   },
+  featureEyebrow: 'Built for garages',
+  featureHeading: 'It knows what a garage caller needs.',
   featureCards: [
     {
       kicker: 'MOT',

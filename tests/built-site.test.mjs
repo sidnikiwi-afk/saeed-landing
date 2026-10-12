@@ -470,6 +470,7 @@ test('built site hides the preview and keeps copy clean', () => {
   assert.doesNotMatch(garagesHtml, /tel:/i, 'empty demo line still renders a call link');
   assert.doesNotMatch(garagesHtml, /£/, 'empty starting price still renders a price');
   assert.doesNotMatch(garagesHtml, /fonts\.googleapis\.com/);
+  assert.match(garagesHtml, /garage caller/, 'garages feature heading is missing');
   assert.match(garagesHtml, /Illustrative/);
   assert.match(garagesHtml, /\/fonts\/Geist-Variable\.woff2/);
 

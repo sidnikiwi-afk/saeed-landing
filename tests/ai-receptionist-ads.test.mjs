@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { test } from 'node:test';
@@ -82,4 +83,22 @@ test('the page renders the ads template with the general entry', () => {
   assert.match(page, /AdsPage/);
   assert.match(page, /ai-receptionist\.mjs/);
   assert.match(page, /aiReceptionistAd/);
+});
+
+test('the built ai receptionist page keeps the general feature heading', () => {
+  // Build to a separate outDir so this file and the other ads test files can
+  // run their builds in parallel without clobbering each other's dist.
+  const outDir = join(root, 'dist-ai-receptionist');  execFileSync('npx', ['astro', 'build', '--outDir', outDir], {
+    cwd: root,
+    stdio: 'inherit',
+    env: {
+      ...process.env,
+      PUBLIC_TURNSTILE_SITE_KEY: process.env.PUBLIC_TURNSTILE_SITE_KEY || 'test-site-key',
+    },
+  });
+
+  const html = readFileSync(join(outDir, 'ai-receptionist', 'index.html'), 'utf8');
+  assert.match(html, /Built for UK businesses/, 'general feature eyebrow is missing');
+  assert.match(html, /your callers need/, 'general feature heading is missing');
+  assert.doesNotMatch(html, /garage caller/, 'general page still shows the garage feature heading');
 });
