@@ -4,7 +4,7 @@ export const garagesAd = {
   headline: 'AI receptionist for garages',
   headlineAccent: 'Every call answered.',
   description:
-    'An AI receptionist for UK garages. It answers the call, books MOTs and services, and texts the customer to confirm. Free trial, no card needed.',
+    'An AI receptionist for UK garages. It answers the call, books MOTs and services, and texts the customer to confirm.',
   eyebrow: 'For UK garages and MOT centres',
   intro:
     'It picks up while you are under a car, books the MOT or service into the diary, and texts the customer to confirm. It answers during the day, in the evening, and at the weekend.',
@@ -13,7 +13,7 @@ export const garagesAd = {
     'Looks up the vehicle and MOT date from the reg',
     'Flags breakdowns and urgent jobs straight to you',
   ],
-  micro: ['No card needed', 'UK phone number', 'Set up for you'],
+  micro: ['Answers out of hours', 'UK phone number', 'Set up for you'],
   example: {
     status: 'Incoming call at 18:52',
     title: 'Garage booking line',
@@ -116,7 +116,7 @@ export const garagesAd = {
     {
       question: 'Will it sound robotic?',
       answer:
-        'It is tuned for UK callers and for the way garages talk about jobs. The call on this page is illustrative, so you can judge the shape of it before a trial.',
+        'It is tuned for UK callers and for the way garages talk about jobs. The call on this page is illustrative, so you can judge the shape of it before you book.',
     },
     {
       question: 'What if it gets something wrong?',
@@ -130,7 +130,7 @@ export const garagesAd = {
   ],
   final: {
     heading: 'Stop losing bookings to voicemail.',
-    text: 'Try the AI receptionist free. No card needed, and we set it up for you.',
+    text: 'We set it up for you, and we show you how it is doing.',
   },
   utmCampaign: 'garages',
   vertical: 'garage',

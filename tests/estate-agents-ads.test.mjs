@@ -43,7 +43,7 @@ test('estate agents ads data follows the page contract', async () => {
   );
 });
 
-test('estate agents page builds with the right headline and trial links', () => {
+test('estate agents page builds with the right headline and no trial links', () => {
   // Build to a separate outDir so this file and built-site.test.mjs can run
   // their builds in parallel without clobbering each other's dist.
   const outDir = join(root, 'dist-estate-agents');
@@ -75,16 +75,26 @@ test('estate agents page builds with the right headline and trial links', () => 
       .replace(/&#39;/g, "'")
       .replace(/&amp;/g, '&');
   for (const match of html.matchAll(re)) hrefs.push(decode(match[1]));
-  assert.ok(hrefs.length > 0, 'estate agents page has no trial links');
-
-  const placements = hrefs.map((href) => new URL(href).searchParams.get('utm_content')).sort();
-  assert.deepEqual(placements, ['final', 'header', 'hero', 'mobile-bar']);
-  for (const href of hrefs) {
-    const url = new URL(href);
-    assert.equal(`${url.origin}${url.pathname}`, 'https://dashboard.brackstonedigital.co.uk/trial-request');
-    assert.equal(url.searchParams.get('utm_source'), 'google');
-    assert.equal(url.searchParams.get('utm_medium'), 'cpc');
-    assert.equal(url.searchParams.get('utm_campaign'), 'estate-agents');
-    assert.equal(url.searchParams.get('vertical'), 'estate-agent');
+  const markup = html.replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, '');
+  assert.deepEqual(hrefs, [], 'estate agents page still links to the trial request');
+  for (const phrase of ['free trial', 'Start free trial', 'Start a free trial', 'No card needed', 'Try it free']) {
+    assert.doesNotMatch(markup, new RegExp(phrase, 'i'), `estate agents page still says "${phrase}"`);
   }
+
+  const anchors = [];
+  for (const match of html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/gi)) {
+    const hrefMatch = match[1].match(/href\s*=\s*(["'])(.*?)\1/i);
+    if (!hrefMatch) continue;
+    const text = match[2].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    anchors.push({ href: decode(hrefMatch[2]), text });
+  }
+  const contactAnchors = anchors.filter((anchor) => anchor.href === '/contact/');
+  assert.ok(
+    contactAnchors.some((anchor) => anchor.text === 'Book a teardown'),
+    'estate agents header or mobile bar is missing a teardown link',
+  );
+  assert.ok(
+    contactAnchors.filter((anchor) => anchor.text === 'Book a 15-minute teardown').length >= 2,
+    'estate agents hero and final sections are missing teardown links',
+  );
 });

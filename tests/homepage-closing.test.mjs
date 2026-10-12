@@ -127,5 +127,6 @@ test('homepage comparison, tested, faq and closing sections follow the packet', 
   assert.equal(teardownLinks.length, 1, 'the closing section should have exactly one teardown button');
   assert.equal(teardownLinks[0].href, '/contact/', 'the teardown button must point at /contact/');
   const trialLinks = anchors(closing).filter((anchor) => anchor.text === 'Start a free trial');
-  assert.equal(trialLinks.length, 1, 'the closing section should have exactly one trial button');
+  assert.equal(trialLinks.length, 0, 'the closing section should have no trial button');
+  assert.doesNotMatch(closing, /free trial/i, 'the closing section still offers a free trial');
 });

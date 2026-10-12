@@ -176,48 +176,37 @@ function anchorHref(html, label) {
   return found[0].href;
 }
 
-// Homepage hero contract: teardown goes to the contact page, and the trial
-// link carries homepage UTM tags plus a placement in utm_content.
+// Tracking and consent scripts may still know about the trial URL, so only
+// markup counts as a public link.
+function visibleMarkup(html) {
+  return html.replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, '');
+}
+
+// Homepage hero contract: the teardown button goes to the contact page, and
+// no public trial link is allowed anywhere on the page.
 export function heroLinkProblems(html) {
   const problems = [];
   let teardown = '';
-  let trialHref = '';
   try {
     teardown = anchorHref(html, 'Book a 15-minute teardown');
-  } catch (error) {
-    problems.push(error.message);
-  }
-  try {
-    trialHref = anchorHref(html, 'Start a free trial');
   } catch (error) {
     problems.push(error.message);
   }
   if (teardown && teardown !== '/contact/') {
     problems.push(`teardown button points at ${teardown}, expected /contact/`);
   }
-  if (trialHref) {
-    let trial;
-    try {
-      trial = new URL(trialHref);
-    } catch {
-      problems.push(`trial button is not an absolute URL: ${trialHref}`);
-      trial = null;
-    }
-    if (trial) {
-      const path = trial.pathname.replace(/\/$/, '') || '/';
-      if (trial.origin !== 'https://dashboard.brackstonedigital.co.uk' || path !== '/trial-request') {
-        problems.push(`trial button points at ${trial.origin}${path}, expected the dashboard trial request`);
-      }
-      if (trial.searchParams.get('utm_source') !== 'website') {
-        problems.push('trial link is missing utm_source=website');
-      }
-      if (trial.searchParams.get('utm_medium') !== 'homepage') {
-        problems.push('trial link is missing utm_medium=homepage');
-      }
-      const placement = trial.searchParams.get('utm_content');
-      if (!placement || !placement.trim()) {
-        problems.push('trial link is missing a placement utm_content');
-      }
+  if (/dashboard\.brackstonedigital\.co\.uk\/trial-request/.test(visibleMarkup(html))) {
+    problems.push('page still links to the trial request');
+  }
+  return problems;
+}
+
+export function trialCopyProblems(html, relPath = 'page') {
+  const text = visibleMarkup(html);
+  const problems = [];
+  for (const phrase of ['free trial', 'Start free trial', 'Start a free trial', 'No card needed', 'Try it free']) {
+    if (new RegExp(phrase, 'i').test(text)) {
+      problems.push(`${relPath} still says "${phrase}"`);
     }
   }
   return problems;
@@ -319,28 +308,21 @@ test('copy scanner flags em dashes, emoji, and banned tool names', () => {
   assert.ok(copyProblems('We use Make here.').some((problem) => problem.includes('Make')));
 });
 
-test('hero link checker rejects a bad teardown or a trial link without UTM tags', () => {
-  const good = [
-    '<a href="/contact/">Book a 15-minute teardown</a>',
-    '<a href="https://dashboard.brackstonedigital.co.uk/trial-request?utm_source=website&amp;utm_medium=homepage&amp;utm_content=hero">Start a free trial</a>',
-  ].join('');
+test('hero link checker rejects a bad teardown link or a leftover trial link', () => {
+  const good = '<a href="/contact/">Book a 15-minute teardown</a>';
   assert.deepEqual(heroLinkProblems(good), []);
-  assert.deepEqual(heroLinkProblems(good.replaceAll('&amp;', '&#38;')), []);
 
   const wrongTeardown = good.replace('href="/contact/"', 'href="/book/"');
   assert.ok(heroLinkProblems(wrongTeardown).some((problem) => problem.includes('/contact/')));
 
-  const wrongTrial = good.replace('/trial-request', '/login');
-  assert.ok(heroLinkProblems(wrongTrial).some((problem) => problem.includes('trial request')));
+  const missingTeardown = '';
+  assert.ok(heroLinkProblems(missingTeardown).some((problem) => problem.includes('teardown')));
 
-  const missingPlacement = good.replace('&amp;utm_content=hero', '');
-  assert.ok(heroLinkProblems(missingPlacement).some((problem) => problem.includes('utm_content')));
-
-  const missingMedium = good.replace('utm_medium=homepage', 'utm_medium=email');
-  assert.ok(heroLinkProblems(missingMedium).some((problem) => problem.includes('utm_medium')));
-
-  const missingSource = good.replace('utm_source=website', 'utm_source=google');
-  assert.ok(heroLinkProblems(missingSource).some((problem) => problem.includes('utm_source')));
+  const withTrial = [
+    good,
+    '<a href="https://dashboard.brackstonedigital.co.uk/trial-request?utm_source=website">Start a free trial</a>',
+  ].join('');
+  assert.ok(heroLinkProblems(withTrial).some((problem) => problem.includes('trial request')));
 });
 
 test('built site hides the preview and keeps copy clean', () => {
@@ -410,6 +392,7 @@ test('built site hides the preview and keeps copy clean', () => {
   assert.match(homeHtml, /\/fonts\/GeistMono-Variable\.woff2/);
   assert.doesNotMatch(homeHtml, /fonts\.googleapis\.com/);
   assert.deepEqual(heroLinkProblems(homeHtml), []);
+  assert.deepEqual(trialCopyProblems(homeHtml, 'homepage'), []);
   assert.match(homeHtml, /Every enquiry handled/);
   assert.match(homeHtml, /Running on its own/);
   assert.match(homeHtml, /Calls, emails, web forms/);
@@ -490,18 +473,17 @@ test('built site hides the preview and keeps copy clean', () => {
   assert.match(garagesHtml, /Illustrative/);
   assert.match(garagesHtml, /\/fonts\/Geist-Variable\.woff2/);
 
-  const hrefs = trialHrefs(garagesHtml);
-  assert.ok(hrefs.length > 0, 'garages page has no trial links');
-  const placements = hrefs.map((href) => new URL(href).searchParams.get('utm_content')).sort();
-  assert.deepEqual(placements, ['final', 'header', 'hero', 'mobile-bar']);
-  for (const href of hrefs) {
-    const url = new URL(href);
-    assert.equal(`${url.origin}${url.pathname}`, 'https://dashboard.brackstonedigital.co.uk/trial-request');
-    assert.equal(url.searchParams.get('utm_source'), 'google');
-    assert.equal(url.searchParams.get('utm_medium'), 'cpc');
-    assert.equal(url.searchParams.get('utm_campaign'), 'garages');
-    assert.equal(url.searchParams.get('vertical'), 'garage');
-  }
+  // The trial offer is gone: no trial links, no trial wording anywhere a
+  // visitor can read. The teardown link replaces the trial button.
+  assert.deepEqual(trialHrefs(garagesHtml), [], 'garages page still links to the trial request');
+  assert.deepEqual(trialCopyProblems(garagesHtml, 'garages page'), []);
+  const garagesAnchors = anchors(garagesHtml).filter((anchor) => anchor.href === '/contact/');
+  const garagesLabels = garagesAnchors.map((anchor) => anchor.text);
+  assert.ok(garagesLabels.includes('Book a teardown'), 'garages header or mobile bar is missing a teardown link');
+  assert.ok(
+    garagesLabels.filter((text) => text === 'Book a 15-minute teardown').length >= 2,
+    'garages hero and final sections are missing teardown links',
+  );
 
   const styles = [...garagesHtml.matchAll(/<(?:link[^>]+href="([^"]+\.css)"|style\b[^>]*>)/g)];
   const cssParts = [garagesHtml];
