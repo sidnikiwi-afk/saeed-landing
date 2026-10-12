@@ -88,7 +88,8 @@ test('the page renders the ads template with the general entry', () => {
 test('the built ai receptionist page keeps the general feature heading', () => {
   // Build to a separate outDir so this file and the other ads test files can
   // run their builds in parallel without clobbering each other's dist.
-  const outDir = join(root, 'dist-ai-receptionist');  execFileSync('npx', ['astro', 'build', '--outDir', outDir], {
+  const outDir = join(root, 'dist-ai-receptionist');
+  execFileSync('npx', ['astro', 'build', '--outDir', outDir], {
     cwd: root,
     stdio: 'inherit',
     env: {
@@ -101,4 +102,6 @@ test('the built ai receptionist page keeps the general feature heading', () => {
   assert.match(html, /Built for UK businesses/, 'general feature eyebrow is missing');
   assert.match(html, /your callers need/, 'general feature heading is missing');
   assert.doesNotMatch(html, /garage caller/, 'general page still shows the garage feature heading');
+  assert.match(html, /call you back first thing tomorrow morning/, 'general example callback timing is missing');
+  assert.doesNotMatch(html, /this afternoon/i, 'general example promises an afternoon callback after hours');
 });

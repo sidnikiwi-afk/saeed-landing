@@ -15,7 +15,7 @@ export const aiReceptionistAd = {
   ],
   micro: ['Answers out of hours', 'UK phone number', 'Set up for you'],
   example: {
-    status: 'Incoming call at 17:48',
+    status: 'Incoming call at 18:06',
     title: 'General enquiries line',
     lines: [
       { from: 'ai', text: 'Good evening, how can I help?' },
