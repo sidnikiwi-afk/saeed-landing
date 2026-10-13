@@ -2,6 +2,7 @@
 import AdsLayout from '../layouts/AdsLayout.astro';
 import { adsSettings } from '../data/ads/settings.mjs';
 import { planFor } from '../lib/ads-page.mjs';
+import { SIGNUP_INDUSTRY_GROUPS } from '../lib/get-started.mjs';
 
 // Same endpoint as the contact page. Extra sign-up details go in the message
 // because this endpoint only stores name, email, business and message.
@@ -9,8 +10,8 @@ const FORM_ENDPOINT = import.meta.env.PUBLIC_CONTACT_ENDPOINT
   || 'https://premier-housing-demo.pages.dev/api/contact';
 const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
 const conversion = adsSettings.googleAdsConversion;
-// Both plans are in the page. The script shows the one that matches
-// ?industry=; without JavaScript the general plan shows with a garage note.
+// Both plans are in the page. The script shows the one that matches the chosen
+// industry; without JavaScript the general plan shows with a garage note.
 const plans = [
   { key: 'receptionist', plan: planFor(adsSettings, 'receptionist') },
   { key: 'garage', plan: planFor(adsSettings, 'garage') },
@@ -70,11 +71,17 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
           <label for="chosen-industry">Industry</label>
           <select id="chosen-industry" aria-describedby="chosen-industry-error" name="chosen_industry" required>
             <option value="" selected disabled>Choose one</option>
-            <option value="Garage">Garage</option>
-            <option value="Estate or letting agent">Estate or letting agent</option>
-            <option value="Other">Other</option>
+            {SIGNUP_INDUSTRY_GROUPS.map(({ group, options }) => (
+              <optgroup label={group}>
+                {options.map((option) => <option value={option}>{option}</option>)}
+              </optgroup>
+            ))}
           </select>
           <p class="field-error" id="chosen-industry-error" hidden>Choose an industry.</p>
+        </div>
+        <div class="field" id="other-industry-field">
+          <label for="other-industry">What kind of business?</label>
+          <input type="text" id="other-industry" name="other_industry" autocomplete="off" />
         </div>
         <div class="field">
           <label for="phone">Phone</label>
@@ -148,19 +155,15 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
 )}
 
 <script>
-  import { SIGNUP_HIDDEN_FIELDS, sendSignup, signupBody, signupErrors } from '../lib/get-started.mjs';
-  import { signupPlanKey } from '../lib/ads-page.mjs';
-
-  const showPlan = () => {
-    const key = signupPlanKey(new URLSearchParams(window.location.search).get('industry'));
-    for (const node of document.querySelectorAll('[data-plan]')) {
-      node.hidden = node.getAttribute('data-plan') !== key;
-    }
-    const note = document.getElementById('garage-note');
-    if (note) note.hidden = true;
-  };
-
-  showPlan();
+  import {
+    OTHER_INDUSTRY,
+    SIGNUP_HIDDEN_FIELDS,
+    industryFromQuery,
+    industryPlanKey,
+    sendSignup,
+    signupBody,
+    signupErrors,
+  } from '../lib/get-started.mjs';
 
   const form = document.getElementById('signup-form');
   const FORM_ENDPOINT = form?.dataset.endpoint || '';
@@ -177,6 +180,19 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
   const business = form?.querySelector('#business');
   const chosen = form?.querySelector('#chosen-industry');
   const phone = form?.querySelector('#phone');
+  const otherField = document.getElementById('other-industry-field');
+  const otherInput = form?.querySelector('#other-industry');
+
+  // Shows the plan for the chosen industry and the Other field when it applies.
+  const showChoice = () => {
+    const key = industryPlanKey(chosen?.value);
+    for (const node of document.querySelectorAll('[data-plan]')) {
+      node.hidden = node.getAttribute('data-plan') !== key;
+    }
+    const note = document.getElementById('garage-note');
+    if (note) note.hidden = true;
+    if (otherField) otherField.hidden = chosen?.value !== OTHER_INDUSTRY;
+  };
 
   const queryFields = SIGNUP_HIDDEN_FIELDS.filter((name) => name !== 'landing_page');
 
@@ -189,16 +205,13 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
     }
     const landing = form.querySelector('[name="landing_page"]');
     if (landing) landing.value = window.location.pathname;
-    const preset = {
-      garages: 'Garage',
-      'estate-agents': 'Estate or letting agent',
-      general: 'Other',
-    };
-    const fromQuery = preset[(params.get('industry') || '').trim()];
+    const fromQuery = industryFromQuery(params.get('industry'));
     if (chosen && fromQuery && !chosen.value) chosen.value = fromQuery;
   };
 
   fillHidden();
+  showChoice();
+  chosen?.addEventListener('change', showChoice);
 
   const setInvalid = (el, invalid) => {
     if (!el) return;
@@ -272,6 +285,7 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
       businessName: business.value,
       email: email.value,
       chosenIndustry: chosen.value,
+      otherIndustry: chosen.value === OTHER_INDUSTRY ? otherInput?.value : '',
       phone: phone.value,
       missedCalls: form.querySelector('#missed').value,
       hidden,
@@ -464,6 +478,7 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
   }
 
   .form[hidden],
+  .field[hidden],
   .error[hidden],
   .success[hidden],
   .field-error[hidden] {

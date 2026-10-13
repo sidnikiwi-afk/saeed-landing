@@ -4,6 +4,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { SIGNUP_INDUSTRY_GROUPS } from '../src/lib/get-started.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(root, 'dist');
@@ -583,6 +584,22 @@ test('built site hides the preview and keeps copy clean', () => {
   assert.match(signupHtml, /<label[^>]*for="chosen-industry"[^>]*>Industry<\/label>/);
   assert.match(signupHtml, /<label[^>]*for="phone"[^>]*>Phone<\/label>/);
   assert.match(signupHtml, /<label[^>]*for="missed"[^>]*>What happens to calls you miss today\?<\/label>/);
+  // Every industry option sits in its group, after the empty "Choose one".
+  const select = signupHtml.match(/<select[^>]*id="chosen-industry"[^>]*>([\s\S]*?)<\/select>/)[1];
+  assert.match(select, /^\s*<option value=""[^>]*selected[^>]*>Choose one<\/option>/);
+  const builtGroups = [...select.matchAll(/<optgroup label="([^"]+)"[^>]*>([\s\S]*?)<\/optgroup>/g)].map((match) => ({
+    group: decodeAttr(match[1]),
+    options: [...match[2].matchAll(/<option value="([^"]+)"[^>]*>([^<]+)<\/option>/g)].map((option) => {
+      assert.equal(decodeAttr(option[1]), decodeAttr(option[2]));
+      return decodeAttr(option[2]);
+    }),
+  }));
+  assert.deepEqual(builtGroups, SIGNUP_INDUSTRY_GROUPS);
+  // Without JavaScript the Other field is always there.
+  assert.match(signupHtml, /<div class="field"[^>]*id="other-industry-field"[^>]*>/);
+  assert.doesNotMatch(signupHtml, /id="other-industry-field"[^>]*hidden/);
+  assert.match(signupHtml, /<label[^>]*for="other-industry"[^>]*>What kind of business\?<\/label>/);
+  assert.match(signupHtml, /<input[^>]*name="other_industry"/);
   assert.match(signupHtml, /cf-turnstile-response|data-sitekey=/);
 
   const pages = walkHtml(dist).filter((path) => {

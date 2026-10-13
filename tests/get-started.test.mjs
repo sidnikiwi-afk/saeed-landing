@@ -12,8 +12,13 @@ const {
   signupIndustry,
 } = await import('../src/lib/ads-page.mjs');
 const {
+  GARAGE_INDUSTRY,
+  OTHER_INDUSTRY,
   SIGNUP_HIDDEN_FIELDS,
+  SIGNUP_INDUSTRY_GROUPS,
   fireSignupConversion,
+  industryFromQuery,
+  industryPlanKey,
   sendSignup,
   signupBody,
   signupConversionTarget,
@@ -130,7 +135,7 @@ test('the sign-up body keeps every hidden field and puts the extra answers in th
   const body = signupBody({
     businessName: 'Hartley Motors',
     email: 'sam@hartley.test',
-    chosenIndustry: 'Garage',
+    chosenIndustry: 'Garage or MOT centre',
     phone: '01274 000000',
     missedCalls: 'They go to voicemail',
     hidden,
@@ -151,9 +156,75 @@ test('the sign-up body keeps every hidden field and puts the extra answers in th
   assert.equal(details[0], 'gclid: click-9');
   assert.equal(details[1], 'Landing page: /get-started/');
   assert.ok(details.indexOf('Phone: 01274 000000') > 1);
-  assert.match(body.message, /Garage/);
+  assert.ok(details.includes('Industry: Garage or MOT centre'));
+  assert.equal(details.some((line) => line.startsWith('What kind of business:')), false);
   assert.match(body.message, /01274 000000/);
   assert.match(body.message, /voicemail/);
+});
+
+test('the industry list is grouped in the agreed order', () => {
+  assert.deepEqual(SIGNUP_INDUSTRY_GROUPS, [
+    { group: 'Motor', options: ['Garage or MOT centre', 'Car dealership', 'Body shop', 'Tyre and exhaust centre'] },
+    { group: 'Property', options: ['Estate or letting agent', 'Property management'] },
+    {
+      group: 'Trades',
+      options: [
+        'Plumber', 'Electrician', 'Heating and gas engineer', 'Roofer', 'Builder', 'Locksmith',
+        'Cleaning company', 'Gardener or landscaper', 'Pest control', 'Removals',
+      ],
+    },
+    { group: 'Health and care', options: ['Dental practice', 'Physiotherapy', 'Private clinic', 'Vet', 'Optician', 'Care provider'] },
+    {
+      group: 'Professional services',
+      options: ['Solicitor', 'Accountant', 'Insurance broker', 'Mortgage broker', 'Recruitment agency'],
+    },
+    { group: 'Beauty', options: ['Hair salon', 'Barber', 'Beauty salon'] },
+    { group: 'Hospitality', options: ['Restaurant or takeaway', 'Hotel or B&B'] },
+    { group: 'Other', options: ['Other'] },
+  ]);
+});
+
+test('?industry= pre-selects garages and estate agents and nothing else', () => {
+  assert.equal(industryFromQuery('garages'), 'Garage or MOT centre');
+  assert.equal(industryFromQuery(' garages '), 'Garage or MOT centre');
+  assert.equal(industryFromQuery('estate-agents'), 'Estate or letting agent');
+  for (const other of ['general', 'ai-receptionist', 'dentists', '', null, undefined]) {
+    assert.equal(industryFromQuery(other), '', `${other} should leave Choose one`);
+  }
+});
+
+test('only the garage choice shows the Garage edition plan', () => {
+  assert.equal(industryPlanKey(GARAGE_INDUSTRY), 'garage');
+  for (const { options } of SIGNUP_INDUSTRY_GROUPS) {
+    for (const option of options) {
+      assert.equal(industryPlanKey(option), option === GARAGE_INDUSTRY ? 'garage' : 'receptionist', option);
+    }
+  }
+  assert.equal(industryPlanKey(''), 'receptionist');
+  assert.equal(pagePlan(adsSettings, 'garages').name, 'Garage edition');
+  assert.equal(planFor(adsSettings, industryPlanKey('Plumber')).name, 'AI receptionist');
+});
+
+test('the message carries the Other answer', () => {
+  const body = signupBody({ chosenIndustry: OTHER_INDUSTRY, otherIndustry: '  Dog groomer ' });
+  const details = body.message.split('\n');
+  const at = details.indexOf('Industry: Other');
+  assert.ok(at > 0);
+  assert.equal(details[at + 1], 'What kind of business: Dog groomer');
+
+  const blank = signupBody({ chosenIndustry: OTHER_INDUSTRY });
+  assert.match(blank.message, /\nWhat kind of business: \(not given\)\n/);
+});
+
+test('the page switches the plan and the Other field from the select', async () => {
+  const { readFileSync } = await import('node:fs');
+  const page = readFileSync(new URL('../src/pages/get-started.astro', import.meta.url), 'utf8');
+  const script = page.slice(page.indexOf('<script>'));
+  assert.match(script, /chosen\?\.addEventListener\('change', showChoice\)/);
+  assert.match(script, /industryPlanKey\(chosen\?\.value\)/);
+  assert.match(script, /otherField\.hidden = chosen\?\.value !== OTHER_INDUSTRY/);
+  assert.match(script, /otherIndustry: chosen\.value === OTHER_INDUSTRY \? otherInput\?\.value : ''/);
+  assert.match(script, /industryFromQuery\(params\.get\('industry'\)\)/);
 });
 
 test('empty conversion settings do not call gtag', () => {
@@ -202,7 +273,7 @@ function signupHarness(status, { reject = false } = {}) {
 const formBody = signupBody({
   businessName: 'Example Motors',
   email: 'owner@example.co.uk',
-  chosenIndustry: 'Garage',
+  chosenIndustry: 'Garage or MOT centre',
   phone: '01274 000000',
   missedCalls: 'They go to voicemail',
   hidden: { gclid: 'click-9', landing_page: '/get-started/' },
@@ -269,7 +340,7 @@ test('a successful sign-up without ad consent sends no conversion', async () => 
 });
 
 test('an invalid sign-up is stopped before it is sent', async () => {
-  const valid = { email: 'owner@example.co.uk', business: 'Example Motors', industry: 'Garage', phone: '01274 000000' };
+  const valid = { email: 'owner@example.co.uk', business: 'Example Motors', industry: 'Garage or MOT centre', phone: '01274 000000' };
   assert.deepEqual(signupErrors(valid), []);
   assert.deepEqual(signupErrors({ ...valid, email: 'not-an-email' }), ['email']);
   assert.deepEqual(signupErrors({ ...valid, business: 'A' }), ['business']);

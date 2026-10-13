@@ -15,6 +15,46 @@ function clean(value) {
   return String(value ?? '').trim();
 }
 
+// The Industry select, in the order the form shows it. Each label is also the
+// option value, so the message carries the label as chosen.
+export const SIGNUP_INDUSTRY_GROUPS = [
+  { group: 'Motor', options: ['Garage or MOT centre', 'Car dealership', 'Body shop', 'Tyre and exhaust centre'] },
+  { group: 'Property', options: ['Estate or letting agent', 'Property management'] },
+  {
+    group: 'Trades',
+    options: [
+      'Plumber', 'Electrician', 'Heating and gas engineer', 'Roofer', 'Builder', 'Locksmith',
+      'Cleaning company', 'Gardener or landscaper', 'Pest control', 'Removals',
+    ],
+  },
+  { group: 'Health and care', options: ['Dental practice', 'Physiotherapy', 'Private clinic', 'Vet', 'Optician', 'Care provider'] },
+  {
+    group: 'Professional services',
+    options: ['Solicitor', 'Accountant', 'Insurance broker', 'Mortgage broker', 'Recruitment agency'],
+  },
+  { group: 'Beauty', options: ['Hair salon', 'Barber', 'Beauty salon'] },
+  { group: 'Hospitality', options: ['Restaurant or takeaway', 'Hotel or B&B'] },
+  { group: 'Other', options: ['Other'] },
+];
+
+export const GARAGE_INDUSTRY = 'Garage or MOT centre';
+export const OTHER_INDUSTRY = 'Other';
+
+const INDUSTRY_PRESETS = {
+  garages: GARAGE_INDUSTRY,
+  'estate-agents': 'Estate or letting agent',
+};
+
+// The option ?industry= pre-selects. Anything else leaves "Choose one".
+export function industryFromQuery(param) {
+  return INDUSTRY_PRESETS[clean(param)] || '';
+}
+
+// Only the garage choice shows the Garage edition plan.
+export function industryPlanKey(industry) {
+  return clean(industry) === GARAGE_INDUSTRY ? 'garage' : 'receptionist';
+}
+
 export function signupConversionTarget(settings = {}) {
   const conversion = settings.googleAdsConversion || {};
   const id = clean(conversion.id);
@@ -64,6 +104,7 @@ export function signupBody({
   businessName = '',
   email = '',
   chosenIndustry = '',
+  otherIndustry = '',
   phone = '',
   missedCalls = '',
   hidden = {},
@@ -75,11 +116,16 @@ export function signupBody({
     carried[field] = clean(hidden[field]);
   }
 
+  const industry = clean(chosenIndustry);
+  const other = clean(otherIndustry);
   const lines = [
     `gclid: ${carried.gclid || '(not given)'}`,
     `Landing page: ${carried.landing_page || '(not given)'}`,
     `Phone: ${clean(phone) || '(not given)'}`,
-    `Industry: ${clean(chosenIndustry) || '(not given)'}`,
+    `Industry: ${industry || '(not given)'}`,
+    ...(industry === OTHER_INDUSTRY || other
+      ? [`What kind of business: ${other || '(not given)'}`]
+      : []),
     `What happens to calls you miss today: ${clean(missedCalls) || '(not given)'}`,
     `Ads industry: ${carried.industry || '(not given)'}`,
     `utm_source: ${carried.utm_source || '(not given)'}`,
