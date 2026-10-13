@@ -50,12 +50,12 @@ export function signupBody({
   }
 
   const lines = [
+    `gclid: ${carried.gclid || '(not given)'}`,
+    `Landing page: ${carried.landing_page || '(not given)'}`,
     `Phone: ${clean(phone) || '(not given)'}`,
     `Industry: ${clean(chosenIndustry) || '(not given)'}`,
     `What happens to calls you miss today: ${clean(missedCalls) || '(not given)'}`,
     `Ads industry: ${carried.industry || '(not given)'}`,
-    `Landing page: ${carried.landing_page || '(not given)'}`,
-    `gclid: ${carried.gclid || '(not given)'}`,
     `utm_source: ${carried.utm_source || '(not given)'}`,
     `utm_medium: ${carried.utm_medium || '(not given)'}`,
     `utm_campaign: ${carried.utm_campaign || '(not given)'}`,
@@ -67,7 +67,7 @@ export function signupBody({
     name: clean(businessName),
     email: clean(email),
     business: clean(businessName),
-    message: lines.join('\n'),
+    message: ['AI receptionist sign-up from /get-started/', ...lines].join('\n'),
     source: 'brackstonedigital.co.uk/get-started',
     submitted_at: submittedAt,
     'cf-turnstile-response': turnstileToken || '',

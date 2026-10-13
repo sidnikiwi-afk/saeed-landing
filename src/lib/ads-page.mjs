@@ -1,5 +1,3 @@
-const TRIAL_URL = 'https://dashboard.brackstonedigital.co.uk/trial-request';
-
 const DEFAULTS = [
   ['utm_source', 'google'],
   ['utm_medium', 'cpc'],
@@ -18,30 +16,6 @@ export function landingParams(landing = '') {
 function present(value) {
   const trimmed = String(value ?? '').trim();
   return trimmed || '';
-}
-
-export function trialHref({ campaign, placement, vertical = '', landing = '' } = {}) {
-  const url = new URL(TRIAL_URL);
-  const incoming = landingParams(landing);
-  const pairs = [
-    ...DEFAULTS,
-    ['utm_campaign', campaign],
-    ['utm_content', placement],
-  ];
-  for (const [key, value] of pairs) {
-    const override = incoming.get(key);
-    url.searchParams.set(key, present(override) || value);
-  }
-  const own = new Set(pairs.map(([key]) => key));
-  for (const [key, value] of incoming) {
-    if (!key.startsWith('utm_') || own.has(key) || !present(value)) continue;
-    url.searchParams.set(key, present(value));
-  }
-  const verticalValue = present(vertical);
-  if (verticalValue) url.searchParams.set('vertical', verticalValue);
-  const gclid = present(incoming.get('gclid'));
-  if (gclid) url.searchParams.set('gclid', gclid);
-  return url.toString();
 }
 
 export function callHref(phone) {
@@ -76,17 +50,6 @@ export function signupPlanKey(industry = '') {
   return present(industry) === 'garages' ? 'garage' : 'receptionist';
 }
 
-export function applyLandingUtms(doc, landing = '') {
-  if (!doc || typeof doc.querySelectorAll !== 'function') return;
-  for (const node of doc.querySelectorAll('[data-trial]')) {
-    const placement = node.getAttribute('data-trial');
-    const campaign = node.getAttribute('data-campaign');
-    const vertical = node.getAttribute('data-vertical');
-    if (!placement || !campaign) continue;
-    node.setAttribute('href', trialHref({ campaign, placement, vertical, landing }));
-  }
-}
-
 const SIGNUP_PATH = '/get-started/';
 
 export function signupIndustry(slug) {
@@ -94,16 +57,26 @@ export function signupIndustry(slug) {
   return 'general';
 }
 
-export function signupHref({ industry = 'general', landing = '' } = {}) {
+export function signupHref({ industry = 'general', campaign = '', placement = '', landing = '' } = {}) {
   const params = new URLSearchParams();
   params.set('industry', present(industry) || 'general');
   const incoming = landingParams(landing);
-  for (const [key, value] of incoming) {
-    if (key !== 'gclid' && !key.startsWith('utm_')) continue;
-    const cleanValue = present(value);
-    if (!cleanValue) continue;
-    params.set(key, cleanValue);
+  const pairs = [
+    ...DEFAULTS,
+    ['utm_campaign', campaign],
+    ['utm_content', placement],
+  ];
+  for (const [key, value] of pairs) {
+    const chosen = present(incoming.get(key)) || present(value);
+    if (chosen) params.set(key, chosen);
   }
+  const own = new Set(pairs.map(([key]) => key));
+  for (const [key, value] of incoming) {
+    if (!key.startsWith('utm_') || own.has(key) || !present(value)) continue;
+    params.set(key, present(value));
+  }
+  const gclid = present(incoming.get('gclid'));
+  if (gclid) params.set('gclid', gclid);
   return `${SIGNUP_PATH}?${params.toString()}`;
 }
 
@@ -112,7 +85,12 @@ export function applySignupParams(doc, landing = '') {
   for (const node of doc.querySelectorAll('[data-signup]')) {
     const industry = node.getAttribute('data-industry');
     if (!industry) continue;
-    node.setAttribute('href', signupHref({ industry, landing }));
+    node.setAttribute('href', signupHref({
+      industry,
+      campaign: node.getAttribute('data-campaign') || '',
+      placement: node.getAttribute('data-placement') || '',
+      landing,
+    }));
   }
 }
 

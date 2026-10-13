@@ -66,17 +66,22 @@ test('sign-up links use the ads industry and carry through utm and gclid', () =>
   assert.equal(signupIndustry('estate-agents'), 'estate-agents');
   assert.equal(signupIndustry('ai-receptionist'), 'general');
 
-  assert.equal(signupHref({ industry: 'garages' }), '/get-started/?industry=garages');
+  assert.equal(
+    signupHref({ industry: 'garages', campaign: 'garages', placement: 'price' }),
+    '/get-started/?industry=garages&utm_source=google&utm_medium=cpc&utm_campaign=garages&utm_content=price',
+  );
 
   const href = signupHref({
     industry: 'estate-agents',
+    campaign: 'estate-agents',
+    placement: 'hero',
     landing: '?utm_source=newsletter&utm_medium=&utm_campaign=spring&utm_term=mot&utm_content=ad&gclid=click-1&unrelated=no',
   });
   const url = new URL(href, 'https://brackstonedigital.co.uk');
   assert.equal(url.pathname, '/get-started/');
   assert.equal(url.searchParams.get('industry'), 'estate-agents');
   assert.equal(url.searchParams.get('utm_source'), 'newsletter');
-  assert.equal(url.searchParams.get('utm_medium'), null);
+  assert.equal(url.searchParams.get('utm_medium'), 'cpc');
   assert.equal(url.searchParams.get('utm_campaign'), 'spring');
   assert.equal(url.searchParams.get('utm_term'), 'mot');
   assert.equal(url.searchParams.get('utm_content'), 'ad');
@@ -87,16 +92,21 @@ test('sign-up links use the ads industry and carry through utm and gclid', () =>
     ['href', '/get-started/?industry=general'],
     ['data-signup', ''],
     ['data-industry', 'general'],
+    ['data-campaign', 'ai-receptionist'],
+    ['data-placement', 'header'],
   ]);
   const node = {
     getAttribute: (name) => attrs.get(name) ?? null,
     setAttribute: (name, value) => attrs.set(name, value),
   };
-  applySignupParams({ querySelectorAll: () => [node] }, '?gclid=abc&utm_source=google');
+  applySignupParams({ querySelectorAll: () => [node] }, '?gclid=abc&utm_source=newsletter&utm_campaign=spring');
   const updated = new URL(attrs.get('href'), 'https://brackstonedigital.co.uk');
   assert.equal(updated.searchParams.get('industry'), 'general');
   assert.equal(updated.searchParams.get('gclid'), 'abc');
-  assert.equal(updated.searchParams.get('utm_source'), 'google');
+  assert.equal(updated.searchParams.get('utm_source'), 'newsletter');
+  assert.equal(updated.searchParams.get('utm_medium'), 'cpc');
+  assert.equal(updated.searchParams.get('utm_campaign'), 'spring');
+  assert.equal(updated.searchParams.get('utm_content'), 'header');
 });
 
 test('the sign-up body keeps every hidden field and puts the extra answers in the message', () => {
@@ -129,6 +139,11 @@ test('the sign-up body keeps every hidden field and puts the extra answers in th
     assert.equal(body[field], hidden[field], `submit body is missing ${field}`);
     assert.match(body.message, new RegExp(hidden[field]));
   }
+  assert.match(body.message, /^AI receptionist sign-up from \/get-started\/\n/);
+  const details = body.message.split('\n').slice(1);
+  assert.equal(details[0], 'gclid: click-9');
+  assert.equal(details[1], 'Landing page: /get-started/');
+  assert.ok(details.indexOf('Phone: 01274 000000') > 1);
   assert.match(body.message, /Garage/);
   assert.match(body.message, /01274 000000/);
   assert.match(body.message, /voicemail/);

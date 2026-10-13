@@ -3,6 +3,6 @@
 export const trackingSettings = {
   ga4MeasurementId: '',
   googleAdsId: '',
-  trialConversionLabel: '',
+  signupTapConversionLabel: '',
   demoLineConversionLabel: '',
 };
