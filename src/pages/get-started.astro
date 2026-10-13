@@ -148,7 +148,7 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
 )}
 
 <script>
-  import { SIGNUP_HIDDEN_FIELDS, fireSignupConversion, signupBody } from '../lib/get-started.mjs';
+  import { SIGNUP_HIDDEN_FIELDS, sendSignup, signupBody, signupErrors } from '../lib/get-started.mjs';
   import { signupPlanKey } from '../lib/ads-page.mjs';
 
   const showPlan = () => {
@@ -234,10 +234,16 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
       return;
     }
 
-    const missingBusiness = business.value.trim().length < 2;
-    const badEmail = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
-    const missingIndustry = !chosen.value;
-    const missingPhone = !phone.value.trim();
+    const errors = signupErrors({
+      email: email.value,
+      business: business.value,
+      industry: chosen.value,
+      phone: phone.value,
+    });
+    const missingBusiness = errors.includes('business');
+    const badEmail = errors.includes('email');
+    const missingIndustry = errors.includes('industry');
+    const missingPhone = errors.includes('phone');
     setInvalid(business, missingBusiness);
     setInvalid(email, badEmail);
     setInvalid(chosen, missingIndustry);
@@ -274,14 +280,15 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
     });
 
     try {
-      const res = await fetch(FORM_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+      await sendSignup({
+        fetchImpl: window.fetch.bind(window),
+        endpoint: FORM_ENDPOINT,
+        body,
+        view: window,
+        settings: { googleAdsConversion: conversion },
+        cookieString: document.cookie,
       });
-      if (!res.ok) throw new Error(`Endpoint returned ${res.status}`);
 
-      fireSignupConversion(window, { googleAdsConversion: conversion }, document.cookie);
       form.hidden = true;
       success.hidden = false;
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

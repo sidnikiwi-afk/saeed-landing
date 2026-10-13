@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -27,17 +27,55 @@ test('the spec fixes one consent cookie and the gclid parameter', () => {
   assert.match(spec, /Click ID parameter: `gclid`/);
 });
 
-test('empty tag IDs load nothing and a choice is remembered without a Google tag', async () => {
+test('the live settings carry the Google Ads tag and leave GA4 and tap labels empty', async () => {
+  const { trackingSettings } = await import('../src/data/tracking.mjs');
+  assert.equal(trackingSettings.ga4MeasurementId, '');
+  assert.equal(trackingSettings.googleAdsId, 'AW-18471816578');
+  assert.equal(trackingSettings.signupTapConversionLabel, '');
+  assert.equal(trackingSettings.demoLineConversionLabel, '');
+});
+
+test('the Google Ads tag loads only after ad consent, and taps add no conversion', async () => {
   const { trackingSettings } = await import('../src/data/tracking.mjs');
   const { startConsent } = await import('../src/lib/consent.mjs');
 
-  assert.equal(trackingSettings.ga4MeasurementId, '');
-  assert.equal(trackingSettings.googleAdsId, '');
-  assert.equal(trackingSettings.signupTapConversionLabel, '');
-  assert.equal(trackingSettings.demoLineConversionLabel, '');
+  const waiting = harness();
+  startConsent(waiting.doc, trackingSettings, waiting.env);
+  assert.equal(waiting.scripts.length, 0, 'gtag.js loaded before consent');
+  waiting.click('a[data-signup]');
+  assert.equal(waiting.dataLayer.length, 0, 'something reached the dataLayer before consent');
+
+  waiting.click('[data-consent-choice="accepted"]');
+  assert.equal(waiting.scripts.length, 1);
+  assert.equal(waiting.scripts[0].src, 'https://www.googletagmanager.com/gtag/js?id=AW-18471816578');
+  assert.ok(waiting.dataLayer.some((entry) => entry[0] === 'config' && entry[1] === 'AW-18471816578'));
+  assert.ok(waiting.dataLayer.some((entry) => entry[0] === 'consent' && entry[1] === 'update'));
+  waiting.click('a[data-signup]');
+  waiting.click('a[href^="tel:"]');
+  assert.equal(waiting.events().some((event) => event.name === 'conversion'), false, 'a tap fired a conversion with an empty label');
+
+  const declined = harness();
+  startConsent(declined.doc, trackingSettings, declined.env);
+  declined.click('[data-consent-choice="declined"]');
+  assert.equal(declined.scripts.length, 0, 'gtag.js loaded after a decline');
+  assert.equal(declined.dataLayer.length, 0);
+
+  const remembered = harness({ cookie: 'brackstone_consent=declined' });
+  startConsent(remembered.doc, trackingSettings, remembered.env);
+  assert.equal(remembered.scripts.length, 0, 'gtag.js loaded after a remembered decline');
+});
+
+test('empty tag IDs load nothing and a choice is remembered without a Google tag', async () => {
+  const { startConsent } = await import('../src/lib/consent.mjs');
+  const emptySettings = {
+    ga4MeasurementId: '',
+    googleAdsId: '',
+    signupTapConversionLabel: '',
+    demoLineConversionLabel: '',
+  };
 
   const empty = harness();
-  startConsent(empty.doc, trackingSettings, empty.env);
+  startConsent(empty.doc, emptySettings, empty.env);
   empty.click('[data-consent-choice="accepted"]');
   assert.equal(empty.scripts.length, 0, 'accept with empty IDs still loaded a tag');
   assert.equal(empty.cookieValue(), 'accepted');
@@ -228,6 +266,21 @@ test('built public pages carry the banner and no tracking tag', () => {
 
   assert.equal(existsSync(join(outDir, 'preview/index.html')), false, '/preview/ must not exist');
 
+  // The Ads IDs reach the build only through the settings: the consent script
+  // bundle carries the tag ID and the /get-started/ form carries the label.
+  const signup = readFileSync(join(outDir, 'get-started/index.html'), 'utf8');
+  assert.match(signup, /data-conversion-id="AW-18471816578"/);
+  assert.match(signup, /data-conversion-label="uX_RCNbj7ZsdEIKbhuhE"/);
+  assert.equal(signup.split('uX_RCNbj7ZsdEIKbhuhE').length - 1, 1);
+  for (const rel of publicPages) {
+    const html = readFileSync(join(outDir, rel), 'utf8');
+    assert.doesNotMatch(html, /uX_RCNbj7ZsdEIKbhuhE/, `${rel} carries the sign-up label`);
+    assert.doesNotMatch(html, /AW-18471816578/, `${rel} bakes the Ads tag ID into the page`);
+  }
+  const bundles = readdirSync(join(outDir, '_astro')).filter((name) => name.endsWith('.js'));
+  const withTag = bundles.filter((name) => readFileSync(join(outDir, '_astro', name), 'utf8').includes('AW-18471816578'));
+  assert.ok(withTag.length > 0 && withTag.every((name) => name.startsWith('ConsentBanner')), `Ads tag ID found in ${withTag.join(', ')}`);
+
   const garages = readFileSync(join(outDir, 'garages/index.html'), 'utf8');
   assert.doesNotMatch(garages, /gclid=/i, 'gclid must come from the landing URL, not the built HTML');
 });
@@ -299,6 +352,7 @@ function harness({ cookie = '', tel = true } = {}) {
     env: { window: view, location: view.location },
     scripts,
     banner,
+    dataLayer,
     get lastCookie() {
       return state.lastCookie;
     },

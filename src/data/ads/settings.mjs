@@ -22,7 +22,9 @@ export const adsSettings = {
     'estate-agents': 'receptionist',
     'ai-receptionist': 'receptionist',
   },
-  googleAdsConversion: { id: '', label: '' },
+  // "Get started form submitted" in Google Ads. Fires after a successful
+  // /get-started/ sign-up, and only with ad consent.
+  googleAdsConversion: { id: 'AW-18471816578', label: 'uX_RCNbj7ZsdEIKbhuhE' },
   sampleCalls: {
     garages: '',
     'estate-agents': '',

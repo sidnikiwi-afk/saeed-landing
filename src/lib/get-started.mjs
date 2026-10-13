@@ -34,6 +34,32 @@ export function fireSignupConversion(view, settings, cookieString) {
   return true;
 }
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Names the fields that block a sign-up, in the order the form shows them.
+export function signupErrors({ email = '', business = '', industry = '', phone = '' } = {}) {
+  const errors = [];
+  if (!EMAIL_PATTERN.test(clean(email))) errors.push('email');
+  if (clean(business).length < 2) errors.push('business');
+  if (!clean(industry)) errors.push('industry');
+  if (!clean(phone)) errors.push('phone');
+  return errors;
+}
+
+// Posts the sign-up and reports the conversion once the endpoint accepts it.
+// A failed request throws before anything reaches Google. The conversion
+// carries only send_to, never the form contents.
+export async function sendSignup({ fetchImpl, endpoint, body, view, settings, cookieString }) {
+  const res = await fetchImpl(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`Endpoint returned ${res.status}`);
+  fireSignupConversion(view, settings, cookieString);
+  return res;
+}
+
 export function signupBody({
   businessName = '',
   email = '',
