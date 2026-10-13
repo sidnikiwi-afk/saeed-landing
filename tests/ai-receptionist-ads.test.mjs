@@ -106,6 +106,10 @@ test('the built ai receptionist page keeps the general feature heading', () => {
   assert.doesNotMatch(html, /this afternoon/i, 'general example promises an afternoon callback after hours');
   assert.doesNotMatch(html, /teardown/i, 'general ads page still says teardown');
   assert.match(html, /From £99 a month \+ VAT/);
+  assert.match(html, /150 minutes included/);
+  assert.match(html, /£149 one-off setup\. We build and test it for you\./);
+  assert.match(html, /Extra minutes 45p each\./);
+  assert.doesNotMatch(html, /£249|£299|Garage edition|Workshop mode|lettings systems/);
   assert.match(html, /\/get-started\/\?industry=general/);
   const sample = html.match(/<a\b[^>]*href="(https:\/\/www\.tiktok\.com\/@brackstonedigital\/video\/7695742730831514913)"[^>]*>[\s\S]*?Hear it answer a call[\s\S]*?<\/a>/);
   assert.ok(sample, 'general page is missing the sample call link');

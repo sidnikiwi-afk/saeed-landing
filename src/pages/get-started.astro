@@ -1,6 +1,7 @@
 ---
 import AdsLayout from '../layouts/AdsLayout.astro';
 import { adsSettings } from '../data/ads/settings.mjs';
+import { planFor } from '../lib/ads-page.mjs';
 
 // Same endpoint as the contact page. Extra sign-up details go in the message
 // because this endpoint only stores name, email, business and message.
@@ -8,6 +9,13 @@ const FORM_ENDPOINT = import.meta.env.PUBLIC_CONTACT_ENDPOINT
   || 'https://premier-housing-demo.pages.dev/api/contact';
 const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
 const conversion = adsSettings.googleAdsConversion;
+// Both plans are in the page. The script shows the one that matches
+// ?industry=; without JavaScript the general plan shows with a garage note.
+const plans = [
+  { key: 'receptionist', plan: planFor(adsSettings, 'receptionist') },
+  { key: 'garage', plan: planFor(adsSettings, 'garage') },
+];
+const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
 ---
 
 <AdsLayout
@@ -28,8 +36,16 @@ const conversion = adsSettings.googleAdsConversion;
     <div class="wrap">
       <h1>Get your <span>AI receptionist</span></h1>
       <p class="next">We will be in touch within one working day to get you set up.</p>
-      <p class="price">From £{adsSettings.startingPrice} a month + VAT</p>
-      <p class="setup">£299 one-off setup. We build and test it for you.</p>
+      {plans.map(({ key, plan }) => (
+        <div class="plan" data-plan={key} hidden={key !== 'receptionist'}>
+          <p class="plan-name">{plan.name}</p>
+          <p class="price">{plan.amount}</p>
+          <p class="minutes">{plan.minutes}</p>
+          <p class="setup">{plan.setup}</p>
+          <p class="extra">{plan.extraMinutes}</p>
+        </div>
+      ))}
+      <p class="extra" id="garage-note">Garage edition from {garageFrom}</p>
 
       <form
         class="form"
@@ -133,6 +149,18 @@ const conversion = adsSettings.googleAdsConversion;
 
 <script>
   import { SIGNUP_HIDDEN_FIELDS, fireSignupConversion, signupBody } from '../lib/get-started.mjs';
+  import { signupPlanKey } from '../lib/ads-page.mjs';
+
+  const showPlan = () => {
+    const key = signupPlanKey(new URLSearchParams(window.location.search).get('industry'));
+    for (const node of document.querySelectorAll('[data-plan]')) {
+      node.hidden = node.getAttribute('data-plan') !== key;
+    }
+    const note = document.getElementById('garage-note');
+    if (note) note.hidden = true;
+  };
+
+  showPlan();
 
   const form = document.getElementById('signup-form');
   const FORM_ENDPOINT = form?.dataset.endpoint || '';
@@ -383,6 +411,33 @@ const conversion = adsSettings.googleAdsConversion;
     font-weight: 800;
     letter-spacing: -0.03em;
     line-height: 1.15;
+  }
+
+  .plan[hidden],
+  .extra[hidden] {
+    display: none;
+  }
+
+  .plan-name {
+    margin: 1.4rem 0 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .plan-name + .price {
+    margin-top: 0.2rem;
+  }
+
+  .minutes {
+    margin: 0 0 0.35rem;
+    font-weight: 600;
+  }
+
+  .extra {
+    margin: 0 0 0.35rem;
+    color: var(--brand-muted);
+    font-size: 0.85rem;
   }
 
   .form,

@@ -225,7 +225,6 @@ test('ads links and demo line follow the page settings', async () => {
   const { garagesAd } = await import('../src/data/ads/garages.mjs');
 
   assert.equal(adsSettings.demoLine, '');
-  assert.equal(adsSettings.startingPrice, '99');
   assert.equal(garagesAd.searchIntent, 'AI receptionist for garages');
   assert.equal(garagesAd.slug, 'garages');
   assert.equal(garagesAd.utmCampaign, 'garages');
@@ -236,21 +235,17 @@ test('ads links and demo line follow the page settings', async () => {
     assert.ok(garagesAd[key], `garages entry is missing ${key}`);
   }
 
-  assert.deepEqual(adsVisibility({ demoLine: '', startingPrice: '  ' }), {
+  assert.deepEqual(adsVisibility({ demoLine: '' }), {
     showCall: false,
     phone: '',
     callHref: '',
-    showPrice: false,
-    price: '',
   });
-  assert.deepEqual(adsVisibility({ demoLine: ' 0800 111 222 ', startingPrice: '149' }), {
+  assert.deepEqual(adsVisibility({ demoLine: ' 0800 111 222 ' }), {
     showCall: true,
     phone: '0800 111 222',
     callHref: 'tel:0800111222',
-    showPrice: true,
-    price: '149',
   });
-  assert.equal(adsVisibility({ demoLine: '+44 1274 000000', startingPrice: '90' }).callHref, 'tel:+441274000000');
+  assert.equal(adsVisibility({ demoLine: '+44 1274 000000' }).callHref, 'tel:+441274000000');
 
   const hero = trialHref({ campaign: 'garages', placement: 'hero', vertical: 'garage' });
   assert.equal(
@@ -468,8 +463,16 @@ test('built site hides the preview and keeps copy clean', () => {
   );
   assert.doesNotMatch(garagesHtml, /noindex/i, 'garages page must be indexed');
   assert.doesNotMatch(garagesHtml, /tel:/i, 'empty demo line still renders a call link');
-  assert.match(garagesHtml, /From £99 a month \+ VAT/, 'ads price line is missing');
-  assert.match(garagesHtml, /£299 one-off setup\. We build and test it for you\./, 'setup line is missing');
+  assert.match(garagesHtml, /<p class="plan"[^>]*>Garage edition<\/p>/, 'garage plan name is missing');
+  assert.match(garagesHtml, /<p class="amount"[^>]*>£249 a month \+ VAT<\/p>/, 'garage price line is missing');
+  assert.match(garagesHtml, /400 minutes included/, 'garage minutes line is missing');
+  assert.match(garagesHtml, /<p class="lead"[^>]*>£299 one-off setup\. We build and test it for you\.<\/p>/, 'garage setup line is missing');
+  assert.match(garagesHtml, /Extra minutes 45p each\./, 'extra minutes line is missing');
+  assert.doesNotMatch(garagesHtml, /£99|£149|150 minutes/, 'garages page shows the general plan');
+  assert.match(garagesHtml, /<h3[^>]*>Workshop mode<\/h3>/, 'workshop mode card is missing');
+  for (const action of ['Call back', 'Quote', 'Booked', 'Complete', 'Follow up']) {
+    assert.match(garagesHtml, new RegExp(`<li[^>]*>${action}</li>`), `workshop mode is missing ${action}`);
+  }
   assert.doesNotMatch(garagesHtml, /teardown/i, 'ads page still says teardown');
   assert.doesNotMatch(garagesHtml, /Hear it answer a call/, 'empty sample call still renders a link');
   assert.doesNotMatch(garagesHtml, /fonts\.googleapis\.com/);
@@ -511,8 +514,32 @@ test('built site hides the preview and keeps copy clean', () => {
   const signupHtml = readFileSync(join(dist, 'get-started', 'index.html'), 'utf8');
   assert.match(signupHtml, /noindex/i, 'sign-up page must be noindex');
   assert.match(signupHtml, /We will be in touch within one working day to get you set up\./);
+  // Without JavaScript the general plan shows with a garage note. Both plans
+  // are in the page so the script can show the garage one for ?industry=garages.
+  const visiblePlans = [...signupHtml.matchAll(/<div class="plan"[^>]*data-plan="(\w+)"[^>]*>/g)]
+    .filter((match) => !/\shidden\b/.test(match[0]))
+    .map((match) => match[1]);
+  assert.deepEqual(visiblePlans, ['receptionist']);
+  assert.match(signupHtml, /data-plan="garage"[^>]*hidden|hidden[^>]*data-plan="garage"/);
   assert.match(signupHtml, /From £99 a month \+ VAT/);
-  assert.match(signupHtml, /£299 one-off setup\. We build and test it for you\./);
+  assert.match(signupHtml, /150 minutes included/);
+  assert.match(signupHtml, /£149 one-off setup\. We build and test it for you\./);
+  assert.match(signupHtml, /£249 a month \+ VAT/);
+  assert.match(signupHtml, /400 minutes included/);
+  assert.match(signupHtml, />£299 one-off setup\. We build and test it for you\.</);
+  for (const [key, name] of [['receptionist', 'AI receptionist'], ['garage', 'Garage edition']]) {
+    assert.match(
+      signupHtml,
+      new RegExp(`data-plan="${key}"[^>]*>\\s*<p class="plan-name"[^>]*>${name}</p>\\s*<p class="price"`),
+      `sign-up ${key} plan is missing its name above the price`,
+    );
+  }
+  assert.match(signupHtml, /Extra minutes 45p each\./);
+  assert.match(signupHtml, /<p class="extra"[^>]*id="garage-note"[^>]*>Garage edition from £249<\/p>/);
+  for (const other of ['ai-receptionist', 'estate-agents']) {
+    const otherHtml = readFileSync(join(dist, other, 'index.html'), 'utf8');
+    assert.doesNotMatch(otherHtml, /Workshop mode/, `${other} shows the garage workshop mode`);
+  }
   assert.match(signupHtml, /premier-housing-demo\.pages\.dev\/api\/contact/);
   for (const field of ['email', 'business', 'chosen_industry', 'phone', 'missed', 'website', 'industry', 'gclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'landing_page']) {
     assert.match(

@@ -110,6 +110,11 @@ export const estateAgentsAd = {
     'Set up and tuned for you',
     'Your data stays yours',
   ],
+  priceAside: {
+    text: 'Need more than call answering? We also build full lettings systems.',
+    linkText: 'Book a 15-minute teardown',
+    href: '/contact/',
+  },
   faq: [
     {
       question: 'Can I keep my existing branch number?',

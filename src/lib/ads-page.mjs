@@ -51,16 +51,29 @@ export function callHref(phone) {
   return compact ? `tel:${compact}` : '';
 }
 
-export function adsVisibility({ demoLine = '', startingPrice = '' } = {}) {
+export function adsVisibility({ demoLine = '' } = {}) {
   const phone = present(demoLine);
-  const price = present(startingPrice);
   return {
     showCall: phone.length > 0,
     phone,
     callHref: phone ? callHref(phone) : '',
-    showPrice: price.length > 0,
-    price,
   };
+}
+
+// The plan an ads page or /get-started/ industry sells. Returns null when the
+// plan has no price line, so the price block is left out.
+export function planFor(settings = {}, key = '') {
+  const plan = settings.plans?.[present(key)];
+  if (!plan || !present(plan.amount)) return null;
+  return { ...plan, extraMinutes: present(settings.extraMinutes) };
+}
+
+export function pagePlan(settings = {}, slug = '') {
+  return planFor(settings, settings.pagePlans?.[slug] ?? '');
+}
+
+export function signupPlanKey(industry = '') {
+  return present(industry) === 'garages' ? 'garage' : 'receptionist';
 }
 
 export function applyLandingUtms(doc, landing = '') {

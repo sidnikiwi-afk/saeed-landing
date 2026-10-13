@@ -4,6 +4,9 @@ import { test } from 'node:test';
 const { adsSettings } = await import('../src/data/ads/settings.mjs');
 const {
   applySignupParams,
+  pagePlan,
+  planFor,
+  signupPlanKey,
   sampleCallUrl,
   signupHref,
   signupIndustry,
@@ -15,8 +18,25 @@ const {
   signupConversionTarget,
 } = await import('../src/lib/get-started.mjs');
 
-test('ads settings publish the starting price and the general sample call', () => {
-  assert.equal(adsSettings.startingPrice, '99');
+test('ads settings publish a plan per page and the general sample call', () => {
+  assert.deepEqual(adsSettings.plans.receptionist, {
+    name: 'AI receptionist',
+    amount: 'From £99 a month + VAT',
+    minutes: '150 minutes included',
+    setup: '£149 one-off setup. We build and test it for you.',
+  });
+  assert.deepEqual(adsSettings.plans.garage, {
+    name: 'Garage edition',
+    amount: '£249 a month + VAT',
+    minutes: '400 minutes included',
+    setup: '£299 one-off setup. We build and test it for you.',
+  });
+  assert.equal(adsSettings.extraMinutes, 'Extra minutes 45p each.');
+  assert.deepEqual(adsSettings.pagePlans, {
+    garages: 'garage',
+    'estate-agents': 'receptionist',
+    'ai-receptionist': 'receptionist',
+  });
   assert.deepEqual(adsSettings.googleAdsConversion, { id: '', label: '' });
   assert.equal(adsSettings.sampleCalls.garages, '');
   assert.equal(adsSettings.sampleCalls['estate-agents'], '');
@@ -24,6 +44,21 @@ test('ads settings publish the starting price and the general sample call', () =
     adsSettings.sampleCalls['ai-receptionist'],
     'https://www.tiktok.com/@brackstonedigital/video/7695742730831514913',
   );
+});
+
+test('pages and sign-up industries pick the decided plan', () => {
+  assert.equal(pagePlan(adsSettings, 'garages').amount, '£249 a month + VAT');
+  assert.equal(pagePlan(adsSettings, 'estate-agents').amount, 'From £99 a month + VAT');
+  assert.equal(pagePlan(adsSettings, 'ai-receptionist').amount, 'From £99 a month + VAT');
+  assert.equal(pagePlan(adsSettings, 'garages').extraMinutes, 'Extra minutes 45p each.');
+  assert.equal(pagePlan(adsSettings, 'unknown'), null);
+  assert.equal(planFor({ plans: { receptionist: { amount: '  ' } } }, 'receptionist'), null);
+
+  assert.equal(signupPlanKey('garages'), 'garage');
+  assert.equal(signupPlanKey(' garages '), 'garage');
+  assert.equal(signupPlanKey('estate-agents'), 'receptionist');
+  assert.equal(signupPlanKey('general'), 'receptionist');
+  assert.equal(signupPlanKey(null), 'receptionist');
 });
 
 test('sign-up links use the ads industry and carry through utm and gclid', () => {

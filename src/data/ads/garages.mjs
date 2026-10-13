@@ -100,10 +100,17 @@ export const garagesAd = {
       text: 'If a caller needs a person, it takes the detail and books a callback.',
     },
   ],
+  workshopMode: {
+    kicker: 'Jobs',
+    title: 'Workshop mode',
+    text: 'Every garage call shows up as a job on one screen in your Brackstone dashboard, with a button for the next step.',
+    actions: ['Call back', 'Quote', 'Booked', 'Complete', 'Follow up'],
+  },
   setupOffer: '',
   priceIncludes: [
     'Your own UK phone number, or divert your existing one',
     'AI receptionist trained on your garage',
+    'Workshop mode: every call as a job in the Dashboard',
     'Bookings, texts and vehicle lookups',
     'Dashboard with recordings and transcripts',
     'Set up and tuned for you',
