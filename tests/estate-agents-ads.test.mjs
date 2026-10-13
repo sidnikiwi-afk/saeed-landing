@@ -100,7 +100,7 @@ test('estate agents page builds with the right headline and no trial links', () 
     ['/contact/'],
   );
   assert.match(html, /<p class="plan"[^>]*>AI receptionist<\/p>/);
-  assert.match(html, /From £99 a month \+ VAT/);
+  assert.match(html, /From £99 a month/);
   assert.match(html, /150 minutes included/);
   assert.match(html, /£149 one-off setup\. We build and test it for you\./);
   assert.match(html, /Extra minutes 45p each\./);

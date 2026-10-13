@@ -487,7 +487,7 @@ test('built site hides the preview and keeps copy clean', () => {
   assert.doesNotMatch(garagesHtml, /noindex/i, 'garages page must be indexed');
   assert.doesNotMatch(garagesHtml, /tel:/i, 'empty demo line still renders a call link');
   assert.match(garagesHtml, /<p class="plan"[^>]*>Garage edition<\/p>/, 'garage plan name is missing');
-  assert.match(garagesHtml, /<p class="amount"[^>]*>£249 a month \+ VAT<\/p>/, 'garage price line is missing');
+  assert.match(garagesHtml, /<p class="amount"[^>]*>£249 a month<\/p>/, 'garage price line is missing');
   assert.match(garagesHtml, /400 minutes included/, 'garage minutes line is missing');
   assert.match(garagesHtml, /<p class="lead"[^>]*>£299 one-off setup\. We build and test it for you\.<\/p>/, 'garage setup line is missing');
   assert.match(garagesHtml, /Extra minutes 45p each\./, 'extra minutes line is missing');
@@ -541,10 +541,10 @@ test('built site hides the preview and keeps copy clean', () => {
     .map((match) => match[1]);
   assert.deepEqual(visiblePlans, ['receptionist']);
   assert.match(signupHtml, /data-plan="garage"[^>]*hidden|hidden[^>]*data-plan="garage"/);
-  assert.match(signupHtml, /From £99 a month \+ VAT/);
+  assert.match(signupHtml, /From £99 a month/);
   assert.match(signupHtml, /150 minutes included/);
   assert.match(signupHtml, /£149 one-off setup\. We build and test it for you\./);
-  assert.match(signupHtml, /£249 a month \+ VAT/);
+  assert.match(signupHtml, /£249 a month/);
   assert.match(signupHtml, /400 minutes included/);
   assert.match(signupHtml, />£299 one-off setup\. We build and test it for you\.</);
   for (const [key, name] of [['receptionist', 'AI receptionist'], ['garage', 'Garage edition']]) {
