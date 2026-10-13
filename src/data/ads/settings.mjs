@@ -5,13 +5,13 @@ export const adsSettings = {
   plans: {
     receptionist: {
       name: 'AI receptionist',
-      amount: 'From £99 a month + VAT',
+      amount: 'From £99 a month',
       minutes: '150 minutes included',
       setup: '£149 one-off setup. We build and test it for you.',
     },
     garage: {
       name: 'Garage edition',
-      amount: '£249 a month + VAT',
+      amount: '£249 a month',
       minutes: '400 minutes included',
       setup: '£299 one-off setup. We build and test it for you.',
     },

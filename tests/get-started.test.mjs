@@ -30,13 +30,13 @@ const LIVE_SEND_TO = 'AW-18471816578/uX_RCNbj7ZsdEIKbhuhE';
 test('ads settings publish a plan per page and the general sample call', () => {
   assert.deepEqual(adsSettings.plans.receptionist, {
     name: 'AI receptionist',
-    amount: 'From £99 a month + VAT',
+    amount: 'From £99 a month',
     minutes: '150 minutes included',
     setup: '£149 one-off setup. We build and test it for you.',
   });
   assert.deepEqual(adsSettings.plans.garage, {
     name: 'Garage edition',
-    amount: '£249 a month + VAT',
+    amount: '£249 a month',
     minutes: '400 minutes included',
     setup: '£299 one-off setup. We build and test it for you.',
   });
@@ -59,9 +59,9 @@ test('ads settings publish a plan per page and the general sample call', () => {
 });
 
 test('pages and sign-up industries pick the decided plan', () => {
-  assert.equal(pagePlan(adsSettings, 'garages').amount, '£249 a month + VAT');
-  assert.equal(pagePlan(adsSettings, 'estate-agents').amount, 'From £99 a month + VAT');
-  assert.equal(pagePlan(adsSettings, 'ai-receptionist').amount, 'From £99 a month + VAT');
+  assert.equal(pagePlan(adsSettings, 'garages').amount, '£249 a month');
+  assert.equal(pagePlan(adsSettings, 'estate-agents').amount, 'From £99 a month');
+  assert.equal(pagePlan(adsSettings, 'ai-receptionist').amount, 'From £99 a month');
   assert.equal(pagePlan(adsSettings, 'garages').extraMinutes, 'Extra minutes 45p each.');
   assert.equal(pagePlan(adsSettings, 'unknown'), null);
   assert.equal(planFor({ plans: { receptionist: { amount: '  ' } } }, 'receptionist'), null);

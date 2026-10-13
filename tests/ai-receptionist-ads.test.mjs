@@ -104,7 +104,7 @@ test('the built ai receptionist page keeps the general feature heading', () => {
   assert.match(html, /call you back first thing tomorrow morning/, 'general example callback timing is missing');
   assert.doesNotMatch(html, /this afternoon/i, 'general example promises an afternoon callback after hours');
   assert.doesNotMatch(html, /teardown/i, 'general ads page still says teardown');
-  assert.match(html, /From £99 a month \+ VAT/);
+  assert.match(html, /From £99 a month/);
   assert.match(html, /150 minutes included/);
   assert.match(html, /£149 one-off setup\. We build and test it for you\./);
   assert.match(html, /Extra minutes 45p each\./);
