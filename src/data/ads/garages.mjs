@@ -28,7 +28,7 @@ export const garagesAd = {
         from: 'ai',
         text: "While I've got it up, your MOT runs out in 14 days. Shall I book the MOT in with the service, so it's one visit?",
       },
-      { from: 'caller', text: "Oh, I'd completely forgotten. Yeah, go on." },
+      { from: 'caller', text: "Oh, I've completely forgotten. Yeah, go on." },
       { from: 'ai', text: 'I can do Tuesday at half eight or Thursday at nine.' },
       { from: 'caller', text: "Tuesday's good." },
       {

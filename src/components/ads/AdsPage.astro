@@ -87,7 +87,7 @@ const year = 2026;
           {content.example.audio && (
             <section class="listen" aria-labelledby="listen-heading">
               <h2 id="listen-heading">{content.example.audio.heading}</h2>
-              <audio controls preload="none" src={content.example.audio.src}>
+              <audio controls preload="none" aria-labelledby="listen-heading" src={content.example.audio.src}>
                 <a href={content.example.audio.src}>Download the call recording</a>
               </audio>
               <IllustrativeCaption>{content.example.audio.caption}</IllustrativeCaption>
