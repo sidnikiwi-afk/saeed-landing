@@ -63,6 +63,10 @@ test('estate agents page builds with the right headline and no trial links', () 
     /<h1\b[^>]*>[\s\S]*AI receptionist for estate agents[\s\S]*<\/h1>/i,
     'estate agents headline does not repeat the search',
   );
+  assert.match(html, /lettings and sales caller/, 'estate agents feature heading is missing');
+  assert.doesNotMatch(html, /garage caller/, 'estate agents page still shows the garage feature heading');
+  assert.match(html, /ring you first thing tomorrow morning/, 'estate agents example callback timing is missing');
+  assert.doesNotMatch(html, /this afternoon/i, 'estate agents example promises an afternoon callback after hours');
   assert.doesNotMatch(html, /noindex/i, 'estate agents page must be indexed');
 
   const hrefs = [];

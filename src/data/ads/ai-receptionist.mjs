@@ -15,21 +15,21 @@ export const aiReceptionistAd = {
   ],
   micro: ['Answers out of hours', 'UK phone number', 'Set up for you'],
   example: {
-    status: 'Incoming call at 17:48',
+    status: 'Incoming call at 18:06',
     title: 'General enquiries line',
     lines: [
-      { from: 'ai', text: 'Good afternoon, how can I help?' },
+      { from: 'ai', text: 'Good evening, how can I help?' },
       { from: 'caller', text: 'Hi, I called earlier and got no answer. Are you open on Saturdays?' },
       { from: 'ai', text: 'We are, from 9 until 1. I can take your name and number so someone can call you back.' },
       { from: 'caller', text: 'Yes please. It is Priya Sharma.' },
-      { from: 'ai', text: 'Thanks Priya. Someone will call you back this afternoon, and I will text you to confirm.' },
+      { from: 'ai', text: 'Thanks Priya. Someone will call you back first thing tomorrow morning, and I will text you to confirm.' },
       { from: 'caller', text: 'Brilliant, thanks.' },
     ],
     booking: [
       { label: 'Caller', value: 'Priya Sharma' },
       { label: 'Question', value: 'Saturday hours' },
       { label: 'Next step', value: 'Callback booked' },
-      { label: 'When', value: 'This afternoon' },
+      { label: 'When', value: 'Tomorrow morning' },
     ],
   },
   strip: [
@@ -65,6 +65,8 @@ export const aiReceptionistAd = {
       },
     ],
   },
+  featureEyebrow: 'Built for UK businesses',
+  featureHeading: 'It knows what your callers need.',
   featureCards: [
     {
       kicker: 'Calls',
