@@ -83,7 +83,16 @@ const year = 2026;
               </dl>
             </div>
           </div>
-          <IllustrativeCaption>Names in this call are made up.</IllustrativeCaption>
+          <IllustrativeCaption>{content.example.caption ?? 'Names in this call are made up.'}</IllustrativeCaption>
+          {content.example.audio && (
+            <section class="listen" aria-labelledby="listen-heading">
+              <h2 id="listen-heading">{content.example.audio.heading}</h2>
+              <audio controls preload="none" aria-labelledby="listen-heading" src={content.example.audio.src}>
+                <a href={content.example.audio.src}>Download the call recording</a>
+              </audio>
+              <IllustrativeCaption>{content.example.audio.caption}</IllustrativeCaption>
+            </section>
+          )}
         </div>
       </div>
     </section>
@@ -648,6 +657,35 @@ const year = 2026;
   .example :global(.caption) {
     margin: 0.75rem auto 0;
     text-align: center;
+  }
+
+  .listen {
+    width: min(100%, 22.5rem);
+    margin: 1.5rem auto 0;
+    padding: 1rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 20px 40px -30px rgba(60, 30, 160, 0.45);
+  }
+
+  .listen h2 {
+    margin: 0 0 0.75rem;
+    color: var(--brand-ink);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-align: center;
+  }
+
+  .listen audio {
+    display: block;
+    width: 100%;
+  }
+
+  .listen :global(.caption) {
+    margin-top: 0.6rem;
+    font-size: 0.85rem;
   }
 
   .strip {
