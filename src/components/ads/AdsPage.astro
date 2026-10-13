@@ -45,7 +45,10 @@ const year = 2026;
           <div class="ctas">
             <a class="btn solid" href={signup} data-signup data-industry={industry}>Get your AI receptionist</a>
             {sampleHref && (
-              <a class="btn line" href={sampleHref} target="_blank" rel="noopener noreferrer">Hear it answer a call</a>
+              <a class="btn line sample" href={sampleHref} target="_blank" rel="noopener noreferrer">
+                Hear it answer a call
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg>
+              </a>
             )}
             <a class="btn line" href="#example">See an example call</a>
           </div>
@@ -337,6 +340,10 @@ const year = 2026;
     color: var(--brand-ink);
   }
 
+  .sample {
+    gap: 0.4rem;
+  }
+
   .line:hover {
     border-color: #cfc6f7;
   }
@@ -623,6 +630,8 @@ const year = 2026;
 
   .strip-grid {
     display: grid;
+    margin: 0 auto;
+    padding: 0 1.25rem;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1.1rem;
   }

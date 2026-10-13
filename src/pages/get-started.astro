@@ -15,13 +15,18 @@ const conversion = adsSettings.googleAdsConversion;
   description="From £99 a month + VAT. Tell us about the business and we will be in touch within one working day to get you set up."
   noindex={true}
 >
-  <main class="signup">
-    <div class="wrap">
+  <header class="hd">
+    <div class="wrap bar">
       <a class="logo" href="/">
         <span class="mark" aria-hidden="true">B</span>
         Brackstone
       </a>
-      <h1>Get your AI receptionist</h1>
+    </div>
+  </header>
+
+  <main class="signup">
+    <div class="wrap">
+      <h1>Get your <span>AI receptionist</span></h1>
       <p class="next">We will be in touch within one working day to get you set up.</p>
       <p class="price">From £{adsSettings.startingPrice} a month + VAT</p>
       <p class="setup">£299 one-off setup. We build and test it for you.</p>
@@ -37,24 +42,28 @@ const conversion = adsSettings.googleAdsConversion;
       >
         <div class="field">
           <label for="email">Email</label>
-          <input type="email" id="email" name="email" required autocomplete="email" />
+          <input type="email" id="email" aria-describedby="email-error" name="email" required autocomplete="email" />
+          <p class="field-error" id="email-error" hidden>Enter your email address.</p>
         </div>
         <div class="field">
           <label for="business">Business name</label>
-          <input type="text" id="business" name="business" required autocomplete="organization" />
+          <input type="text" id="business" aria-describedby="business-error" name="business" required autocomplete="organization" />
+          <p class="field-error" id="business-error" hidden>Enter your business name.</p>
         </div>
         <div class="field">
           <label for="chosen-industry">Industry</label>
-          <select id="chosen-industry" name="chosen_industry" required>
+          <select id="chosen-industry" aria-describedby="chosen-industry-error" name="chosen_industry" required>
             <option value="" selected disabled>Choose one</option>
             <option value="Garage">Garage</option>
             <option value="Estate or letting agent">Estate or letting agent</option>
             <option value="Other">Other</option>
           </select>
+          <p class="field-error" id="chosen-industry-error" hidden>Choose an industry.</p>
         </div>
         <div class="field">
           <label for="phone">Phone</label>
-          <input type="tel" id="phone" name="phone" required autocomplete="tel" />
+          <input type="tel" id="phone" aria-describedby="phone-error" name="phone" required autocomplete="tel" />
+          <p class="field-error" id="phone-error" hidden>Enter your phone number.</p>
         </div>
         <div class="field">
           <label for="missed">What happens to calls you miss today?</label>
@@ -102,10 +111,20 @@ const conversion = adsSettings.googleAdsConversion;
       </form>
 
       <div class="success" id="form-success" hidden>
-        <h2>We will be in touch within one working day to get you set up.</h2>
+        <span class="success-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+        </span>
+        <h2 id="success-heading" tabindex="-1">We will be in touch within one working day to get you set up.</h2>
       </div>
     </div>
   </main>
+
+  <footer class="foot">
+    <div class="wrap">
+      <p>&copy; 2026 Brackstone Digital Limited. Registered in England and Wales, company no. 17159711.</p>
+      <p class="foot-links"><a href="/privacy">Privacy</a></p>
+    </div>
+  </footer>
 </AdsLayout>
 
 {TURNSTILE_SITE_KEY && (
@@ -157,6 +176,8 @@ const conversion = adsSettings.googleAdsConversion;
     if (!el) return;
     if (invalid) el.setAttribute('aria-invalid', 'true');
     else el.removeAttribute('aria-invalid');
+    const message = document.getElementById(`${el.id}-error`);
+    if (message) message.hidden = !invalid;
   };
 
   const turnstileToken = () => {
@@ -237,6 +258,7 @@ const conversion = adsSettings.googleAdsConversion;
       success.hidden = false;
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       success.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+      document.getElementById('success-heading')?.focus({ preventScroll: true });
     } catch (_err) {
       resetTurnstile();
       errorBox.hidden = false;
@@ -247,12 +269,58 @@ const conversion = adsSettings.googleAdsConversion;
 </script>
 
 <style>
+  /* Keeps a focused field clear of the sticky header. */
+  :global(html) {
+    scroll-padding-top: 5rem;
+  }
+
+  /* Header, footer, headline, buttons and cards follow the ads page
+     (src/components/ads/AdsPage.astro) so sign-up reads as the same site. */
+  .hd {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgba(250, 250, 251, 0.92);
+    border-bottom: 1px solid var(--brand-line);
+    backdrop-filter: blur(12px);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    min-height: 4rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .hd .wrap,
+  .foot .wrap {
+    width: min(1120px, 100%);
+  }
+
   .signup {
+    position: relative;
     flex: 1;
-    padding: 1.5rem 0 4rem;
+    overflow: hidden;
+    padding: 3rem 0 4rem;
+  }
+
+  .signup::before {
+    content: "";
+    position: absolute;
+    top: -12rem;
+    left: 50%;
+    width: min(900px, 140%);
+    height: 32rem;
+    transform: translateX(-50%);
+    background:
+      radial-gradient(closest-side, rgba(110, 72, 240, 0.16), transparent),
+      radial-gradient(closest-side at 80% 70%, rgba(0, 200, 150, 0.1), transparent);
+    pointer-events: none;
   }
 
   .wrap {
+    position: relative;
     width: min(640px, 100%);
     margin: 0 auto;
     padding: 0 1.25rem;
@@ -262,56 +330,82 @@ const conversion = adsSettings.googleAdsConversion;
     display: inline-flex;
     align-items: center;
     gap: 0.55rem;
-    margin-bottom: 1.75rem;
     color: var(--brand-ink);
     font-weight: 700;
+    letter-spacing: -0.02em;
     text-decoration: none;
   }
 
   .mark {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.8rem;
-    height: 1.8rem;
+    display: grid;
+    width: 1.625rem;
+    height: 1.625rem;
+    place-items: center;
     border-radius: 8px;
-    background: var(--brand-purple);
+    background: linear-gradient(135deg, var(--brand-purple), #8b6cff);
     color: #fff;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
+    font-weight: 800;
   }
 
   h1 {
-    margin: 0 0 0.75rem;
-    font-size: clamp(2rem, 5vw, 2.8rem);
-    line-height: 1.08;
-    letter-spacing: -0.03em;
+    margin: 0 0 0.85rem;
+    font-size: clamp(2.25rem, 5.4vw, 3.25rem);
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 1.03;
+  }
+
+  h1 span {
+    color: var(--brand-purple);
+  }
+
+  @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+    h1 span {
+      background: linear-gradient(100deg, var(--brand-purple), var(--brand-mint-text));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
   }
 
   .next,
   .setup {
     margin: 0 0 0.7rem;
     color: var(--brand-muted);
-    font-size: 1.05rem;
+    font-size: 1.08rem;
     line-height: 1.5;
   }
 
   .price {
-    margin: 1.1rem 0 0.35rem;
-    font-size: clamp(1.4rem, 3vw, 1.8rem);
+    margin: 1.4rem 0 0.35rem;
+    font-size: clamp(1.5rem, 3vw, 1.9rem);
     font-weight: 800;
     letter-spacing: -0.03em;
-    line-height: 1.2;
+    line-height: 1.15;
+  }
+
+  .form,
+  .success {
+    position: relative;
+    margin-top: 1.75rem;
+    padding: 1.5rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(10, 10, 20, 0.04), 0 8px 30px -8px rgba(40, 20, 120, 0.14);
   }
 
   .form {
-    position: relative;
     display: grid;
-    gap: 1rem;
-    margin-top: 1.5rem;
-    padding: 1.4rem;
-    border: 1px solid var(--brand-line);
-    border-radius: 18px;
-    background: #fff;
+    gap: 1.1rem;
+  }
+
+  .form[hidden],
+  .error[hidden],
+  .success[hidden],
+  .field-error[hidden] {
+    display: none;
   }
 
   .field {
@@ -335,6 +429,7 @@ const conversion = adsSettings.googleAdsConversion;
     color: var(--brand-ink);
     font: inherit;
     font-size: 0.94rem;
+    transition: border-color 0.15s ease;
   }
 
   .field textarea {
@@ -346,13 +441,21 @@ const conversion = adsSettings.googleAdsConversion;
   .field select:focus,
   .field textarea:focus {
     border-color: var(--brand-purple);
-    outline: 2px solid var(--brand-purple-soft);
+    outline: 2px solid var(--brand-purple);
+    outline-offset: 1px;
   }
 
   .field input[aria-invalid='true'],
   .field select[aria-invalid='true'],
   .field textarea[aria-invalid='true'] {
     border-color: #c0392b;
+  }
+
+  .field-error {
+    margin: 0;
+    color: #b42318;
+    font-size: 0.82rem;
+    font-weight: 600;
   }
 
   .hp {
@@ -365,20 +468,33 @@ const conversion = adsSettings.googleAdsConversion;
 
   .submit {
     justify-self: start;
-    min-height: 2.9rem;
-    padding: 0.75rem 1.15rem;
-    border: 0;
+    min-height: 3rem;
+    padding: 0.8rem 1.4rem;
+    border: 1px solid transparent;
     border-radius: 12px;
     background: var(--brand-purple);
     color: #fff;
     font: inherit;
+    font-size: 0.95rem;
     font-weight: 600;
+    line-height: 1.2;
+    box-shadow: 0 8px 24px -8px rgba(110, 72, 240, 0.8);
     cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+
+  .submit:hover:not(:disabled) {
+    background: var(--brand-purple-deep);
+  }
+
+  .submit:active:not(:disabled) {
+    transform: scale(0.98);
   }
 
   .submit:focus-visible,
   .logo:focus-visible,
-  .privacy a:focus-visible {
+  .privacy a:focus-visible,
+  .foot a:focus-visible {
     outline: 2px solid var(--brand-purple);
     outline-offset: 3px;
   }
@@ -388,8 +504,7 @@ const conversion = adsSettings.googleAdsConversion;
     cursor: not-allowed;
   }
 
-  .privacy,
-  .error {
+  .privacy {
     margin: 0;
     color: var(--brand-muted);
     font-size: 0.82rem;
@@ -401,26 +516,62 @@ const conversion = adsSettings.googleAdsConversion;
   }
 
   .error {
+    margin: 0;
     padding: 0.7rem 0.85rem;
-    border: 1px solid var(--brand-line);
+    border: 1px solid color-mix(in srgb, #c0392b 30%, var(--brand-line));
     border-radius: 11px;
+    background: color-mix(in srgb, #c0392b 6%, transparent);
     color: var(--brand-ink);
+    font-size: 0.85rem;
   }
 
-  .error[hidden],
-  .success[hidden] {
-    display: none;
+  .success-mark {
+    display: inline-flex;
+    width: 2.5rem;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 99px;
+    background: var(--brand-purple-soft);
+    color: var(--brand-purple);
   }
 
   .success h2 {
-    margin: 1.25rem 0 0;
+    margin: 1rem 0 0;
     font-size: 1.35rem;
     line-height: 1.35;
     letter-spacing: -0.02em;
   }
 
+  .success h2:focus {
+    outline: none;
+  }
+
+  .foot {
+    padding: 1.6rem 0 1.8rem;
+    color: var(--brand-muted);
+    font-size: 0.78rem;
+    text-align: center;
+  }
+
+  .foot p {
+    margin: 0;
+  }
+
+  .foot-links {
+    margin-top: 0.4rem !important;
+  }
+
+  .foot a {
+    color: inherit;
+    text-decoration: underline;
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .submit {
+    .submit,
+    .field input,
+    .field select,
+    .field textarea {
       transition: none;
     }
   }
