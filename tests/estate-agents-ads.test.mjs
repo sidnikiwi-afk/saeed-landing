@@ -92,13 +92,24 @@ test('estate agents page builds with the right headline and no trial links', () 
     const text = match[2].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
     anchors.push({ href: decode(hrefMatch[2]), text });
   }
-  const contactAnchors = anchors.filter((anchor) => anchor.href === '/contact/');
-  assert.ok(
-    contactAnchors.some((anchor) => anchor.text === 'Book a teardown'),
-    'estate agents header or mobile bar is missing a teardown link',
+  // The only teardown on this page is the small lettings line under the price.
+  assert.equal((html.match(/teardown/gi) ?? []).length, 1, 'estate agents page says teardown outside the lettings line');
+  assert.match(html, /Need more than call answering\? We also build full lettings systems\./);
+  assert.deepEqual(
+    anchors.filter((anchor) => anchor.text === 'Book a 15-minute teardown').map((anchor) => anchor.href),
+    ['/contact/'],
   );
+  assert.match(html, /<p class="plan"[^>]*>AI receptionist<\/p>/);
+  assert.match(html, /From £99 a month \+ VAT/);
+  assert.match(html, /150 minutes included/);
+  assert.match(html, /£149 one-off setup\. We build and test it for you\./);
+  assert.match(html, /Extra minutes 45p each\./);
+  assert.doesNotMatch(html, /£249|£299|Garage edition|Workshop mode/);
+  const signupAnchors = anchors.filter((anchor) => anchor.text === 'Get your AI receptionist');
+  assert.ok(signupAnchors.length >= 4, 'estate agents page is missing sign-up buttons');
   assert.ok(
-    contactAnchors.filter((anchor) => anchor.text === 'Book a 15-minute teardown').length >= 2,
-    'estate agents hero and final sections are missing teardown links',
+    signupAnchors.every((anchor) => anchor.href.startsWith('/get-started/?industry=estate-agents')),
+    'an estate agents sign-up link does not point at /get-started/',
   );
+  assert.doesNotMatch(html, /Hear it answer a call/, 'empty sample call still renders a link');
 });
