@@ -104,4 +104,12 @@ test('the built ai receptionist page keeps the general feature heading', () => {
   assert.doesNotMatch(html, /garage caller/, 'general page still shows the garage feature heading');
   assert.match(html, /call you back first thing tomorrow morning/, 'general example callback timing is missing');
   assert.doesNotMatch(html, /this afternoon/i, 'general example promises an afternoon callback after hours');
+  assert.doesNotMatch(html, /teardown/i, 'general ads page still says teardown');
+  assert.match(html, /From £99 a month \+ VAT/);
+  assert.match(html, /\/get-started\/\?industry=general/);
+  const sample = html.match(/<a\b[^>]*href="(https:\/\/www\.tiktok\.com\/@brackstonedigital\/video\/7695742730831514913)"[^>]*>[\s\S]*?Hear it answer a call[\s\S]*?<\/a>/);
+  assert.ok(sample, 'general page is missing the sample call link');
+  assert.match(sample[0], /target="_blank"/);
+  assert.match(sample[0], /rel="noopener noreferrer"/);
+  assert.equal((html.match(/Hear it answer a call/g) ?? []).length, 1);
 });

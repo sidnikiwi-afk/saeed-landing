@@ -225,7 +225,7 @@ test('ads links and demo line follow the page settings', async () => {
   const { garagesAd } = await import('../src/data/ads/garages.mjs');
 
   assert.equal(adsSettings.demoLine, '');
-  assert.equal(adsSettings.startingPrice, '');
+  assert.equal(adsSettings.startingPrice, '99');
   assert.equal(garagesAd.searchIntent, 'AI receptionist for garages');
   assert.equal(garagesAd.slug, 'garages');
   assert.equal(garagesAd.utmCampaign, 'garages');
@@ -468,22 +468,24 @@ test('built site hides the preview and keeps copy clean', () => {
   );
   assert.doesNotMatch(garagesHtml, /noindex/i, 'garages page must be indexed');
   assert.doesNotMatch(garagesHtml, /tel:/i, 'empty demo line still renders a call link');
-  assert.doesNotMatch(garagesHtml, /£/, 'empty starting price still renders a price');
+  assert.match(garagesHtml, /From £99 a month \+ VAT/, 'ads price line is missing');
+  assert.match(garagesHtml, /£299 one-off setup\. We build and test it for you\./, 'setup line is missing');
+  assert.doesNotMatch(garagesHtml, /teardown/i, 'ads page still says teardown');
+  assert.doesNotMatch(garagesHtml, /Hear it answer a call/, 'empty sample call still renders a link');
   assert.doesNotMatch(garagesHtml, /fonts\.googleapis\.com/);
   assert.match(garagesHtml, /garage caller/, 'garages feature heading is missing');
   assert.match(garagesHtml, /Illustrative/);
   assert.match(garagesHtml, /\/fonts\/Geist-Variable\.woff2/);
 
   // The trial offer is gone: no trial links, no trial wording anywhere a
-  // visitor can read. The teardown link replaces the trial button.
+  // visitor can read. Ads pages sign the visitor up instead of booking a teardown.
   assert.deepEqual(trialHrefs(garagesHtml), [], 'garages page still links to the trial request');
   assert.deepEqual(trialCopyProblems(garagesHtml, 'garages page'), []);
-  const garagesAnchors = anchors(garagesHtml).filter((anchor) => anchor.href === '/contact/');
-  const garagesLabels = garagesAnchors.map((anchor) => anchor.text);
-  assert.ok(garagesLabels.includes('Book a teardown'), 'garages header or mobile bar is missing a teardown link');
+  const garagesSignup = anchors(garagesHtml).filter((anchor) => anchor.text === 'Get your AI receptionist');
+  assert.ok(garagesSignup.length >= 4, 'garages page is missing sign-up buttons');
   assert.ok(
-    garagesLabels.filter((text) => text === 'Book a 15-minute teardown').length >= 2,
-    'garages hero and final sections are missing teardown links',
+    garagesSignup.every((anchor) => anchor.href.startsWith('/get-started/?industry=garages')),
+    'a garages sign-up link does not point at /get-started/',
   );
 
   const styles = [...garagesHtml.matchAll(/<(?:link[^>]+href="([^"]+\.css)"|style\b[^>]*>)/g)];
@@ -504,6 +506,27 @@ test('built site hides the preview and keeps copy clean', () => {
     assert.doesNotMatch(xml, /\/preview\/?/i, `${name} includes the preview URL`);
   }
   assert.match(sitemapText, /\/garages\/?/, 'sitemap is missing /garages/');
+  assert.doesNotMatch(sitemapText, /\/get-started\/?/i, 'sitemap includes /get-started/');
+
+  const signupHtml = readFileSync(join(dist, 'get-started', 'index.html'), 'utf8');
+  assert.match(signupHtml, /noindex/i, 'sign-up page must be noindex');
+  assert.match(signupHtml, /We will be in touch within one working day to get you set up\./);
+  assert.match(signupHtml, /From £99 a month \+ VAT/);
+  assert.match(signupHtml, /£299 one-off setup\. We build and test it for you\./);
+  assert.match(signupHtml, /premier-housing-demo\.pages\.dev\/api\/contact/);
+  for (const field of ['email', 'business', 'chosen_industry', 'phone', 'missed', 'website', 'industry', 'gclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'landing_page']) {
+    assert.match(
+      signupHtml,
+      new RegExp(`name=["']${field}["']`),
+      `sign-up form is missing the ${field} field`,
+    );
+  }
+  assert.match(signupHtml, /<label[^>]*for="email"[^>]*>Email<\/label>/);
+  assert.match(signupHtml, /<label[^>]*for="business"[^>]*>Business name<\/label>/);
+  assert.match(signupHtml, /<label[^>]*for="chosen-industry"[^>]*>Industry<\/label>/);
+  assert.match(signupHtml, /<label[^>]*for="phone"[^>]*>Phone<\/label>/);
+  assert.match(signupHtml, /<label[^>]*for="missed"[^>]*>What happens to calls you miss today\?<\/label>/);
+  assert.match(signupHtml, /cf-turnstile-response|data-sitekey=/);
 
   const pages = walkHtml(dist).filter((path) => {
     const rel = relative(dist, path);

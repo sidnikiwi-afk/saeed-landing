@@ -7,9 +7,10 @@ import ConsentDefault from '../components/consent/ConsentDefault.astro';
 interface Props {
   title: string;
   description: string;
+  noindex?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, noindex = false } = Astro.props;
 const siteUrl = 'https://brackstonedigital.co.uk';
 const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
 ---
@@ -24,6 +25,8 @@ const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
       title={title}
       description={description}
       canonical={canonicalUrl}
+      noindex={noindex}
+      nofollow={noindex}
       openGraph={{
         basic: {
           title: title,

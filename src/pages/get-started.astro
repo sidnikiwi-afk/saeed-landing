@@ -1,0 +1,427 @@
+---
+import AdsLayout from '../layouts/AdsLayout.astro';
+import { adsSettings } from '../data/ads/settings.mjs';
+
+// Same endpoint as the contact page. Extra sign-up details go in the message
+// because this endpoint only stores name, email, business and message.
+const FORM_ENDPOINT = import.meta.env.PUBLIC_CONTACT_ENDPOINT
+  || 'https://premier-housing-demo.pages.dev/api/contact';
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
+const conversion = adsSettings.googleAdsConversion;
+---
+
+<AdsLayout
+  title="Get your AI receptionist | Brackstone"
+  description="From £99 a month + VAT. Tell us about the business and we will be in touch within one working day to get you set up."
+  noindex={true}
+>
+  <main class="signup">
+    <div class="wrap">
+      <a class="logo" href="/">
+        <span class="mark" aria-hidden="true">B</span>
+        Brackstone
+      </a>
+      <h1>Get your AI receptionist</h1>
+      <p class="next">We will be in touch within one working day to get you set up.</p>
+      <p class="price">From £{adsSettings.startingPrice} a month + VAT</p>
+      <p class="setup">£299 one-off setup. We build and test it for you.</p>
+
+      <form
+        class="form"
+        id="signup-form"
+        novalidate
+        data-endpoint={FORM_ENDPOINT}
+        data-turnstile-key={TURNSTILE_SITE_KEY}
+        data-conversion-id={conversion.id}
+        data-conversion-label={conversion.label}
+      >
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required autocomplete="email" />
+        </div>
+        <div class="field">
+          <label for="business">Business name</label>
+          <input type="text" id="business" name="business" required autocomplete="organization" />
+        </div>
+        <div class="field">
+          <label for="chosen-industry">Industry</label>
+          <select id="chosen-industry" name="chosen_industry" required>
+            <option value="" selected disabled>Choose one</option>
+            <option value="Garage">Garage</option>
+            <option value="Estate or letting agent">Estate or letting agent</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" name="phone" required autocomplete="tel" />
+        </div>
+        <div class="field">
+          <label for="missed">What happens to calls you miss today?</label>
+          <textarea id="missed" name="missed" rows="3"></textarea>
+        </div>
+
+        <div class="hp" aria-hidden="true">
+          <label for="website">Website</label>
+          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <input type="hidden" name="industry" value="" />
+        <input type="hidden" name="gclid" value="" />
+        <input type="hidden" name="utm_source" value="" />
+        <input type="hidden" name="utm_medium" value="" />
+        <input type="hidden" name="utm_campaign" value="" />
+        <input type="hidden" name="utm_term" value="" />
+        <input type="hidden" name="utm_content" value="" />
+        <input type="hidden" name="landing_page" value="" />
+
+        {TURNSTILE_SITE_KEY && (
+          <div class="turnstile">
+            <div
+              class="cf-turnstile"
+              data-sitekey={TURNSTILE_SITE_KEY}
+              data-theme="light"
+              data-action="brackstone-contact"
+              data-appearance="interaction-only"
+            ></div>
+          </div>
+        )}
+
+        <button type="submit" class="submit" id="submit-btn">
+          <span id="submit-label">Get your AI receptionist</span>
+        </button>
+
+        <p class="privacy">
+          We use these details only to set you up. Nothing else, no list.
+          See our <a href="/privacy">privacy policy</a>.
+        </p>
+
+        <p class="error" id="form-error" role="alert" hidden>
+          That did not send. Please try again in a moment.
+        </p>
+      </form>
+
+      <div class="success" id="form-success" hidden>
+        <h2>We will be in touch within one working day to get you set up.</h2>
+      </div>
+    </div>
+  </main>
+</AdsLayout>
+
+{TURNSTILE_SITE_KEY && (
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+)}
+
+<script>
+  import { SIGNUP_HIDDEN_FIELDS, fireSignupConversion, signupBody } from '../lib/get-started.mjs';
+
+  const form = document.getElementById('signup-form');
+  const FORM_ENDPOINT = form?.dataset.endpoint || '';
+  const TURNSTILE_SITE_KEY = form?.dataset.turnstileKey || '';
+  const conversion = {
+    id: form?.dataset.conversionId || '',
+    label: form?.dataset.conversionLabel || '',
+  };
+  const btn = document.getElementById('submit-btn');
+  const label = document.getElementById('submit-label');
+  const errorBox = document.getElementById('form-error');
+  const success = document.getElementById('form-success');
+  const email = form?.querySelector('#email');
+  const business = form?.querySelector('#business');
+  const chosen = form?.querySelector('#chosen-industry');
+  const phone = form?.querySelector('#phone');
+
+  const queryFields = SIGNUP_HIDDEN_FIELDS.filter((name) => name !== 'landing_page');
+
+  const fillHidden = () => {
+    if (!form) return;
+    const params = new URLSearchParams(window.location.search);
+    for (const name of queryFields) {
+      const input = form.querySelector(`[name="${name}"]`);
+      if (input) input.value = (params.get(name) || '').trim();
+    }
+    const landing = form.querySelector('[name="landing_page"]');
+    if (landing) landing.value = window.location.pathname;
+    const preset = {
+      garages: 'Garage',
+      'estate-agents': 'Estate or letting agent',
+      general: 'Other',
+    };
+    const fromQuery = preset[(params.get('industry') || '').trim()];
+    if (chosen && fromQuery && !chosen.value) chosen.value = fromQuery;
+  };
+
+  fillHidden();
+
+  const setInvalid = (el, invalid) => {
+    if (!el) return;
+    if (invalid) el.setAttribute('aria-invalid', 'true');
+    else el.removeAttribute('aria-invalid');
+  };
+
+  const turnstileToken = () => {
+    const field = form?.querySelector('[name="cf-turnstile-response"]');
+    if (field?.value) return field.value;
+    try {
+      return window.turnstile?.getResponse?.() || '';
+    } catch (_err) {
+      return '';
+    }
+  };
+
+  const resetTurnstile = () => {
+    try { window.turnstile?.reset?.(); } catch (_err) { /* widget not loaded */ }
+  };
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    errorBox.hidden = true;
+    fillHidden();
+
+    const honeypot = form.querySelector('#website');
+    if (honeypot?.value.trim()) {
+      form.hidden = true;
+      success.hidden = false;
+      return;
+    }
+
+    const missingBusiness = business.value.trim().length < 2;
+    const badEmail = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
+    const missingIndustry = !chosen.value;
+    const missingPhone = !phone.value.trim();
+    setInvalid(business, missingBusiness);
+    setInvalid(email, badEmail);
+    setInvalid(chosen, missingIndustry);
+    setInvalid(phone, missingPhone);
+
+    if (missingBusiness || badEmail || missingIndustry || missingPhone) {
+      (missingBusiness ? business : badEmail ? email : missingIndustry ? chosen : phone).focus();
+      return;
+    }
+
+    const token = turnstileToken();
+    if (TURNSTILE_SITE_KEY && !token) {
+      errorBox.hidden = false;
+      return;
+    }
+
+    btn.disabled = true;
+    label.textContent = 'Sending...';
+
+    const hidden = {};
+    for (const name of SIGNUP_HIDDEN_FIELDS) {
+      hidden[name] = form.querySelector(`[name="${name}"]`)?.value || '';
+    }
+
+    const body = signupBody({
+      businessName: business.value,
+      email: email.value,
+      chosenIndustry: chosen.value,
+      phone: phone.value,
+      missedCalls: form.querySelector('#missed').value,
+      hidden,
+      turnstileToken: token,
+      submittedAt: new Date().toISOString(),
+    });
+
+    try {
+      const res = await fetch(FORM_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error(`Endpoint returned ${res.status}`);
+
+      fireSignupConversion(window, { googleAdsConversion: conversion }, document.cookie);
+      form.hidden = true;
+      success.hidden = false;
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      success.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+    } catch (_err) {
+      resetTurnstile();
+      errorBox.hidden = false;
+      btn.disabled = false;
+      label.textContent = 'Get your AI receptionist';
+    }
+  });
+</script>
+
+<style>
+  .signup {
+    flex: 1;
+    padding: 1.5rem 0 4rem;
+  }
+
+  .wrap {
+    width: min(640px, 100%);
+    margin: 0 auto;
+    padding: 0 1.25rem;
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-bottom: 1.75rem;
+    color: var(--brand-ink);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 8px;
+    background: var(--brand-purple);
+    color: #fff;
+    font-size: 0.95rem;
+  }
+
+  h1 {
+    margin: 0 0 0.75rem;
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+  }
+
+  .next,
+  .setup {
+    margin: 0 0 0.7rem;
+    color: var(--brand-muted);
+    font-size: 1.05rem;
+    line-height: 1.5;
+  }
+
+  .price {
+    margin: 1.1rem 0 0.35rem;
+    font-size: clamp(1.4rem, 3vw, 1.8rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+  }
+
+  .form {
+    position: relative;
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding: 1.4rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 18px;
+    background: #fff;
+  }
+
+  .field {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .field label {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 11px;
+    background: var(--brand-bg);
+    color: var(--brand-ink);
+    font: inherit;
+    font-size: 0.94rem;
+  }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 6rem;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--brand-purple);
+    outline: 2px solid var(--brand-purple-soft);
+  }
+
+  .field input[aria-invalid='true'],
+  .field select[aria-invalid='true'],
+  .field textarea[aria-invalid='true'] {
+    border-color: #c0392b;
+  }
+
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .submit {
+    justify-self: start;
+    min-height: 2.9rem;
+    padding: 0.75rem 1.15rem;
+    border: 0;
+    border-radius: 12px;
+    background: var(--brand-purple);
+    color: #fff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .submit:focus-visible,
+  .logo:focus-visible,
+  .privacy a:focus-visible {
+    outline: 2px solid var(--brand-purple);
+    outline-offset: 3px;
+  }
+
+  .submit:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+
+  .privacy,
+  .error {
+    margin: 0;
+    color: var(--brand-muted);
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+
+  .privacy a {
+    color: inherit;
+  }
+
+  .error {
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 11px;
+    color: var(--brand-ink);
+  }
+
+  .error[hidden],
+  .success[hidden] {
+    display: none;
+  }
+
+  .success h2 {
+    margin: 1.25rem 0 0;
+    font-size: 1.35rem;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .submit {
+      transition: none;
+    }
+  }
+</style>

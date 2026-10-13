@@ -73,3 +73,36 @@ export function applyLandingUtms(doc, landing = '') {
     node.setAttribute('href', trialHref({ campaign, placement, vertical, landing }));
   }
 }
+
+const SIGNUP_PATH = '/get-started/';
+
+export function signupIndustry(slug) {
+  if (slug === 'garages' || slug === 'estate-agents') return slug;
+  return 'general';
+}
+
+export function signupHref({ industry = 'general', landing = '' } = {}) {
+  const params = new URLSearchParams();
+  params.set('industry', present(industry) || 'general');
+  const incoming = landingParams(landing);
+  for (const [key, value] of incoming) {
+    if (key !== 'gclid' && !key.startsWith('utm_')) continue;
+    const cleanValue = present(value);
+    if (!cleanValue) continue;
+    params.set(key, cleanValue);
+  }
+  return `${SIGNUP_PATH}?${params.toString()}`;
+}
+
+export function applySignupParams(doc, landing = '') {
+  if (!doc || typeof doc.querySelectorAll !== 'function') return;
+  for (const node of doc.querySelectorAll('[data-signup]')) {
+    const industry = node.getAttribute('data-industry');
+    if (!industry) continue;
+    node.setAttribute('href', signupHref({ industry, landing }));
+  }
+}
+
+export function sampleCallUrl(sampleCalls = {}, slug = '') {
+  return present(sampleCalls?.[slug]);
+}

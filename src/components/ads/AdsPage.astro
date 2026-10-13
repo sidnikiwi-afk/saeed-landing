@@ -1,10 +1,13 @@
 ---
 import IllustrativeCaption from '../brand/IllustrativeCaption.astro';
 import { adsSettings } from '../../data/ads/settings.mjs';
-import { adsVisibility } from '../../lib/ads-page.mjs';
+import { adsVisibility, sampleCallUrl, signupHref, signupIndustry } from '../../lib/ads-page.mjs';
 
 const { content } = Astro.props;
 const visibility = adsVisibility(adsSettings);
+const industry = signupIndustry(content.slug);
+const signup = signupHref({ industry });
+const sampleHref = sampleCallUrl(adsSettings.sampleCalls, content.slug);
 const year = 2026;
 ---
 
@@ -24,7 +27,7 @@ const year = 2026;
             <span>Call {visibility.phone}</span>
           </a>
         )}
-        <a class="btn solid header-trial" href="/contact/">Book a teardown</a>
+        <a class="btn solid header-trial" href={signup} data-signup data-industry={industry}>Get your AI receptionist</a>
       </div>
     </div>
   </header>
@@ -40,7 +43,10 @@ const year = 2026;
             {content.trialPromise.map((point) => <li>{point}</li>)}
           </ul>
           <div class="ctas">
-            <a class="btn solid" href="/contact/">Book a 15-minute teardown</a>
+            <a class="btn solid" href={signup} data-signup data-industry={industry}>Get your AI receptionist</a>
+            {sampleHref && (
+              <a class="btn line" href={sampleHref} target="_blank" rel="noopener noreferrer">Hear it answer a call</a>
+            )}
             <a class="btn line" href="#example">See an example call</a>
           </div>
           <ul class="micro">
@@ -150,9 +156,9 @@ const year = 2026;
           <div class="price">
             <div>
               <p class="eyebrow">Simple pricing</p>
-              <p class="amount">From £{visibility.price} <small>a month</small></p>
-              <p class="lead">We set it up for you.</p>
-              <a class="btn solid" href="/contact/">Book a 15-minute teardown</a>
+              <p class="amount">From £{visibility.price} a month + VAT</p>
+              <p class="lead">£299 one-off setup. We build and test it for you.</p>
+              <a class="btn solid" href={signup} data-signup data-industry={industry}>Get your AI receptionist</a>
             </div>
             <ul class="includes">
               {(content.priceIncludes ?? []).map((item) => <li>{item}</li>)}
@@ -179,8 +185,8 @@ const year = 2026;
       <div class="wrap">
         <h2>{content.final.heading}</h2>
         <p>{content.final.text}</p>
-        <a class="btn solid final-btn" href="/contact/">Book a 15-minute teardown</a>
-        <p class="more">Want more than calls? <a href="/contact">Book a 15-minute teardown</a></p>
+        <a class="btn solid final-btn" href={signup} data-signup data-industry={industry}>Get your AI receptionist</a>
+        <p class="more">Want more than calls? <a href={signup} data-signup data-industry={industry}>Get your AI receptionist</a></p>
       </div>
     </section>
   </main>
@@ -190,23 +196,23 @@ const year = 2026;
       <p>&copy; {year} Brackstone Digital Limited. Registered in England and Wales, company no. 17159711.</p>
       <p class="foot-links">
         <a href="/privacy">Privacy</a>
-        <a href="/contact">Book a teardown</a>
+        <a href={signup} data-signup data-industry={industry}>Get your AI receptionist</a>
       </p>
     </div>
   </footer>
 
-  <div class:list={['mbar', visibility.showCall && 'has-call']} role="region" aria-label="Book a teardown">
+  <div class:list={['mbar', visibility.showCall && 'has-call']} role="region" aria-label="Get your AI receptionist">
     {visibility.showCall && (
       <a class="btn line" href={visibility.callHref}>Call {visibility.phone}</a>
     )}
-    <a class="btn solid" href="/contact/">Book a teardown</a>
+    <a class="btn solid" href={signup} data-signup data-industry={industry}>Get your AI receptionist</a>
   </div>
 </div>
 
 <script>
-  import { applyLandingUtms } from '../../lib/ads-page.mjs';
+  import { applySignupParams } from '../../lib/ads-page.mjs';
 
-  applyLandingUtms(document, window.location.search);
+  applySignupParams(document, window.location.search);
 </script>
 
 <style>
@@ -797,17 +803,10 @@ const year = 2026;
 
   .amount {
     margin: 0.75rem 0;
-    font-size: 3.25rem;
+    font-size: clamp(1.65rem, 3vw, 2.6rem);
     font-weight: 800;
-    letter-spacing: -0.04em;
-    line-height: 1;
-  }
-
-  .amount small {
-    color: var(--brand-muted);
-    font-size: 1.05rem;
-    font-weight: 500;
-    letter-spacing: 0;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
   }
 
   .price .btn {

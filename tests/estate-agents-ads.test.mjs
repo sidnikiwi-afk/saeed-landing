@@ -92,13 +92,12 @@ test('estate agents page builds with the right headline and no trial links', () 
     const text = match[2].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
     anchors.push({ href: decode(hrefMatch[2]), text });
   }
-  const contactAnchors = anchors.filter((anchor) => anchor.href === '/contact/');
+  assert.doesNotMatch(html, /teardown/i, 'estate agents page still says teardown');
+  const signupAnchors = anchors.filter((anchor) => anchor.text === 'Get your AI receptionist');
+  assert.ok(signupAnchors.length >= 4, 'estate agents page is missing sign-up buttons');
   assert.ok(
-    contactAnchors.some((anchor) => anchor.text === 'Book a teardown'),
-    'estate agents header or mobile bar is missing a teardown link',
+    signupAnchors.every((anchor) => anchor.href.startsWith('/get-started/?industry=estate-agents')),
+    'an estate agents sign-up link does not point at /get-started/',
   );
-  assert.ok(
-    contactAnchors.filter((anchor) => anchor.text === 'Book a 15-minute teardown').length >= 2,
-    'estate agents hero and final sections are missing teardown links',
-  );
+  assert.doesNotMatch(html, /Hear it answer a call/, 'empty sample call still renders a link');
 });
