@@ -31,3 +31,17 @@ Research wiki at `../wikis/`. Check before making changes:
 - Only name tools actually built with. Do not name clients. Label made-up examples as illustrative. The approved lists are in the redesign handoff (`brackstone-dashboard` repo, `demos/cloudflare-demo-pages/site-redesign/HANDOFF.md`).
 - Respect `prefers-reduced-motion`. Content must be visible without JavaScript.
 - Agents must not touch Google Ads, spend money, provision phone numbers, or change live Retell or Twilio config.
+
+## Agent skills
+
+### Issue tracker
+
+Specs and tickets live on the Hermes Kanban board `brackstone-site`, shared by the site and dashboard repos. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five standard triage roles map to board statuses. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
