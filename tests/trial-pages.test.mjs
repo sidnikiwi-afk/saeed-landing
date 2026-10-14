@@ -151,3 +151,24 @@ for (const slug of ['ai-receptionist', 'estate-agents', 'garages']) {
     }
   });
 }
+
+// The example call sits beside the trial button, so it must not show the
+// receptionist booking a slot or confirming one. A person rings back to fix
+// the time.
+const NO_SLOT = [
+  [/\bbooked\b/i, 'booked'],
+  [/\bbook(ing)?\b(\s+\w+){0,3}\s+in\b/i, 'book in'],
+  [/\bconfirmation\b/i, 'confirmation'],
+];
+
+for (const slug of ['ai-receptionist', 'estate-agents', 'garages']) {
+  test(`${slug} example call and summary card confirm no slot`, () => {
+    const html = page(slug);
+    const example = between(html, /<div class="example"/, /<section class="listen"|<\/section>/);
+    assert.match(example, /<dl class="booking"/, `${slug} example lost its summary card`);
+    const text = visibleText(example);
+    for (const [pattern, what] of NO_SLOT) {
+      assert.doesNotMatch(text, pattern, `${slug} example call shows ${what}: "${text.match(pattern)?.[0]}"`);
+    }
+  });
+}

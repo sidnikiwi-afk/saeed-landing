@@ -39,7 +39,7 @@ test('the general headline repeats a search that names no trade', () => {
 test('the trial promise covers calls only, not emails or web forms', () => {
   const promises = aiReceptionistAd.trialPromise.join(' ').toLowerCase();
   assert.match(promises, /\bcalls?\b/, 'trial promise must mention calls');
-  assert.match(promises, /\btexts?\b/, 'trial promise must say the caller gets a text');
+  assert.match(promises, /\btexts? you a summary\b/, 'trial promise must say the business gets a text summary');
   assert.match(promises, /right person/, 'trial promise must say the call is passed on');
 
   // Email and web form handling are not part of the trial.

@@ -7,10 +7,10 @@ export const aiReceptionistAd = {
     'An AI receptionist for UK businesses. It answers every call, takes the details, and passes each one to the right person.',
   eyebrow: 'For UK businesses',
   intro:
-    'It picks up every call, takes the caller\'s details, and texts them so they know someone will be in touch. Urgent calls come to you straight away. It answers during the day, in the evening, and at the weekend.',
+    'It picks up every call, takes the caller\'s details, and texts you a summary. The caller gets a text too, so they know someone will be in touch. Urgent calls come to you straight away. It answers during the day, in the evening, and at the weekend.',
   trialPromise: [
     'Answers the calls a business already gets',
-    'Takes the details and texts the caller',
+    'Takes the details and texts you a summary',
     'Passes each call to the right person',
   ],
   micro: ['Answers out of hours', 'UK phone number', 'Set up for you'],
@@ -70,7 +70,7 @@ export const aiReceptionistAd = {
       },
       {
         title: 'It answers',
-        text: 'Calls are answered on the first ring. The caller gets a text, and the details go to the right person instead of sitting in voicemail.',
+        text: 'Calls are answered on the first ring. You get a text summary, the caller gets a text, and the details go to the right person instead of sitting in voicemail.',
       },
       {
         title: 'You see everything',
@@ -88,8 +88,8 @@ export const aiReceptionistAd = {
     },
     {
       kicker: 'Text',
-      title: 'A text for every caller',
-      text: 'Every caller gets a text after the call, so they know someone has it.',
+      title: 'A text after every call',
+      text: 'You get a text summary of every call. The caller gets a text too, so they know someone has it.',
     },
     {
       kicker: 'Route',
@@ -116,7 +116,7 @@ export const aiReceptionistAd = {
   priceIncludes: [
     'Your own UK phone number, or divert your existing one',
     'AI receptionist set up for your business',
-    'Every call answered, with a text to the caller',
+    'Every call answered, with a text summary to you and a text to the caller',
     'Dashboard with recordings and transcripts',
     'Set up and tuned for you',
     'Your data stays yours',
@@ -140,7 +140,7 @@ export const aiReceptionistAd = {
     {
       question: 'What happens after a call?',
       answer:
-        'The caller gets a text, and the details go to the right person. You can see the recording, transcript and summary of every call in the Dashboard.',
+        'You get a text summary, the caller gets a text, and the details go to the right person. You can see the recording, transcript and summary of every call in the Dashboard.',
     },
   ],
   final: {
