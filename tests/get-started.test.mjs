@@ -13,14 +13,10 @@ const {
 } = await import('../src/lib/ads-page.mjs');
 const {
   GARAGE_INDUSTRY,
-  OTHER_INDUSTRY,
-  SIGNUP_HIDDEN_FIELDS,
   SIGNUP_INDUSTRY_GROUPS,
   fireSignupConversion,
   industryFromQuery,
   industryPlanKey,
-  sendSignup,
-  signupBody,
   signupConversionTarget,
   signupErrors,
 } = await import('../src/lib/get-started.mjs');
@@ -121,47 +117,6 @@ test('sign-up links use the ads industry and carry through utm and gclid', () =>
   assert.equal(updated.searchParams.get('utm_content'), 'header');
 });
 
-test('the sign-up body keeps every hidden field and puts the extra answers in the message', () => {
-  const hidden = {
-    industry: 'garages',
-    gclid: 'click-9',
-    utm_source: 'google',
-    utm_medium: 'cpc',
-    utm_campaign: 'garages',
-    utm_term: 'mot',
-    utm_content: 'hero',
-    landing_page: '/get-started/',
-  };
-  const body = signupBody({
-    businessName: 'Hartley Motors',
-    email: 'sam@hartley.test',
-    chosenIndustry: 'Garage or MOT centre',
-    phone: '01274 000000',
-    missedCalls: 'They go to voicemail',
-    hidden,
-    turnstileToken: 'token',
-    submittedAt: '2026-10-13T09:00:00.000Z',
-  });
-
-  assert.equal(body.name, 'Hartley Motors');
-  assert.equal(body.email, 'sam@hartley.test');
-  assert.equal(body.business, 'Hartley Motors');
-  assert.equal(body['cf-turnstile-response'], 'token');
-  for (const field of SIGNUP_HIDDEN_FIELDS) {
-    assert.equal(body[field], hidden[field], `submit body is missing ${field}`);
-    assert.match(body.message, new RegExp(hidden[field]));
-  }
-  assert.match(body.message, /^AI receptionist sign-up from \/get-started\/\n/);
-  const details = body.message.split('\n').slice(1);
-  assert.equal(details[0], 'gclid: click-9');
-  assert.equal(details[1], 'Landing page: /get-started/');
-  assert.ok(details.indexOf('Phone: 01274 000000') > 1);
-  assert.ok(details.includes('Industry: Garage or MOT centre'));
-  assert.equal(details.some((line) => line.startsWith('What kind of business:')), false);
-  assert.match(body.message, /01274 000000/);
-  assert.match(body.message, /voicemail/);
-});
-
 test('the industry list is grouped in the agreed order', () => {
   assert.deepEqual(SIGNUP_INDUSTRY_GROUPS, [
     { group: 'Motor', options: ['Garage or MOT centre', 'Car dealership', 'Body shop', 'Tyre and exhaust centre'] },
@@ -205,17 +160,6 @@ test('only the garage choice shows the Garage edition plan', () => {
   assert.equal(planFor(adsSettings, industryPlanKey('Plumber')).name, 'AI receptionist');
 });
 
-test('the message carries the Other answer', () => {
-  const body = signupBody({ chosenIndustry: OTHER_INDUSTRY, otherIndustry: '  Dog groomer ' });
-  const details = body.message.split('\n');
-  const at = details.indexOf('Industry: Other');
-  assert.ok(at > 0);
-  assert.equal(details[at + 1], 'What kind of business: Dog groomer');
-
-  const blank = signupBody({ chosenIndustry: OTHER_INDUSTRY });
-  assert.match(blank.message, /\nWhat kind of business: \(not given\)\n/);
-});
-
 test('the page switches the plan and the Other field from the select', async () => {
   const { readFileSync } = await import('node:fs');
   const page = readFileSync(new URL('../src/pages/get-started.astro', import.meta.url), 'utf8');
@@ -223,7 +167,7 @@ test('the page switches the plan and the Other field from the select', async () 
   assert.match(script, /chosen\?\.addEventListener\('change', showChoice\)/);
   assert.match(script, /industryPlanKey\(chosen\?\.value\)/);
   assert.match(script, /otherField\.hidden = chosen\?\.value !== OTHER_INDUSTRY/);
-  assert.match(script, /otherIndustry: chosen\.value === OTHER_INDUSTRY \? otherInput\?\.value : ''/);
+  assert.match(script, /otherIndustry: isOther \? otherInput\?\.value : ''/);
   assert.match(script, /industryFromQuery\(params\.get\('industry'\)\)/);
 });
 
@@ -258,106 +202,29 @@ test('the live conversion targets the Get started form submitted action', () => 
   assert.equal(signupConversionTarget(adsSettings), LIVE_SEND_TO);
 });
 
-function signupHarness(status, { reject = false } = {}) {
-  const calls = [];
-  const requests = [];
-  const view = { gtag: (...args) => calls.push(args) };
-  const fetchImpl = async (url, init) => {
-    requests.push({ url, init });
-    if (reject) throw new TypeError('Failed to fetch');
-    return { ok: status >= 200 && status < 300, status };
-  };
-  return { calls, requests, view, fetchImpl };
-}
-
-const formBody = signupBody({
-  businessName: 'Example Motors',
-  email: 'owner@example.co.uk',
-  chosenIndustry: 'Garage or MOT centre',
-  phone: '01274 000000',
-  missedCalls: 'They go to voicemail',
-  hidden: { gclid: 'click-9', landing_page: '/get-started/' },
-  turnstileToken: 'token',
-});
-
-test('a successful sign-up fires the conversion once, with no form contents', async () => {
-  const h = signupHarness(200);
-  await sendSignup({
-    fetchImpl: h.fetchImpl,
-    endpoint: 'https://example.test/api/contact',
-    body: formBody,
-    view: h.view,
-    settings: adsSettings,
-    cookieString: 'brackstone_consent=accepted',
-  });
-  assert.equal(h.requests.length, 1);
-  assert.deepEqual(h.calls, [['event', 'conversion', { send_to: LIVE_SEND_TO }]]);
-  const sent = JSON.stringify(h.calls);
-  for (const value of ['Example Motors', 'owner@example.co.uk', '01274', 'click-9', 'voicemail', 'token']) {
-    assert.equal(sent.includes(value), false, `the conversion carried ${value}`);
-  }
-});
-
-test('a failed sign-up never fires the conversion', async () => {
-  for (const status of [400, 403, 500, 502]) {
-    const h = signupHarness(status);
-    await assert.rejects(sendSignup({
-      fetchImpl: h.fetchImpl,
-      endpoint: 'https://example.test/api/contact',
-      body: formBody,
-      view: h.view,
-      settings: adsSettings,
-      cookieString: 'brackstone_consent=accepted',
-    }));
-    assert.deepEqual(h.calls, [], `status ${status} fired a conversion`);
-  }
-
-  const offline = signupHarness(0, { reject: true });
-  await assert.rejects(sendSignup({
-    fetchImpl: offline.fetchImpl,
-    endpoint: 'https://example.test/api/contact',
-    body: formBody,
-    view: offline.view,
-    settings: adsSettings,
-    cookieString: 'brackstone_consent=accepted',
-  }));
-  assert.deepEqual(offline.calls, []);
-});
-
-test('a successful sign-up without ad consent sends no conversion', async () => {
-  for (const cookie of ['', 'brackstone_consent=declined']) {
-    const h = signupHarness(200);
-    await sendSignup({
-      fetchImpl: h.fetchImpl,
-      endpoint: 'https://example.test/api/contact',
-      body: formBody,
-      view: h.view,
-      settings: adsSettings,
-      cookieString: cookie,
-    });
-    assert.deepEqual(h.calls, []);
-  }
-});
-
-test('an invalid sign-up is stopped before it is sent', async () => {
+test('an invalid trial request is stopped before it is sent', async () => {
   const valid = { email: 'owner@example.co.uk', business: 'Example Motors', industry: 'Garage or MOT centre', phone: '01274 000000' };
   assert.deepEqual(signupErrors(valid), []);
   assert.deepEqual(signupErrors({ ...valid, email: 'not-an-email' }), ['email']);
   assert.deepEqual(signupErrors({ ...valid, business: 'A' }), ['business']);
   assert.deepEqual(signupErrors({ ...valid, industry: '' }), ['industry']);
   assert.deepEqual(signupErrors({ ...valid, phone: '  ' }), ['phone']);
-  assert.deepEqual(signupErrors({}), ['email', 'business', 'industry', 'phone']);
+  assert.deepEqual(signupErrors({ ...valid, industry: 'Other' }), ['other']);
+  assert.deepEqual(signupErrors({ ...valid, industry: 'Other', otherIndustry: 'Dog groomer' }), []);
+  // In the order the form shows them.
+  assert.deepEqual(signupErrors({}), ['business', 'email', 'phone', 'industry']);
 
-  // The page returns on any error before sendSignup, which is the only path
-  // that reaches gtag.
+  // The page returns on any error before sendTrialRequest, which is the only
+  // path that reaches gtag.
   const { readFileSync } = await import('node:fs');
   const page = readFileSync(new URL('../src/pages/get-started.astro', import.meta.url), 'utf8');
   const script = page.slice(page.indexOf('<script>'));
   const check = script.indexOf('signupErrors({');
-  const stop = script.indexOf('if (missingBusiness || badEmail || missingIndustry || missingPhone) {');
-  const send = script.indexOf('await sendSignup({');
-  assert.ok(check > 0 && stop > check && send > stop, 'sendSignup must come after the validation return');
-  assert.doesNotMatch(script, /fireSignupConversion|gtag\(/, 'the page must not report a conversion outside sendSignup');
+  const stop = script.indexOf('if (errors.length > 0) {');
+  const send = script.indexOf('await sendTrialRequest({');
+  assert.ok(check > 0 && stop > check && send > stop, 'sendTrialRequest must come after the validation return');
+  assert.doesNotMatch(script, /fireSignupConversion|gtag\(/, 'the page must not report a conversion outside sendTrialRequest');
+  assert.doesNotMatch(script, /premier-housing-demo|api\/contact/, 'trial requests must not go to the contact endpoint');
 });
 
 test('an empty sample call renders nothing', () => {
