@@ -65,7 +65,7 @@ test('estate agents page builds with the right headline and the site trial', () 
   );
   assert.match(html, /lettings and sales caller/, 'estate agents feature heading is missing');
   assert.doesNotMatch(html, /garage caller/, 'estate agents page still shows the garage feature heading');
-  assert.match(html, /ring you first thing tomorrow\b/, 'estate agents example callback timing is missing');
+  assert.match(html, /ring you first thing tomorrow to fix the exact time/, 'estate agents example callback timing is missing');
   assert.doesNotMatch(html, /this afternoon/i, 'estate agents example promises an afternoon callback after hours');
   assert.doesNotMatch(html, /noindex/i, 'estate agents page must be indexed');
 
