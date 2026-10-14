@@ -12,8 +12,8 @@ Always use the safe wrapper and name the board: `~/.hermes/bin/hermes-kanban-saf
 ## Conventions
 
 - A **spec** is one task whose title starts `Spec:`. Its body is the spec.
-- A **ticket** is one task per tracer-bullet slice, titled `<NN> <short name>`, with the spec as a parent.
-- **Blocking edges**: a ticket's other parents are the tickets that block it (`create --parent <id>` or `link <parent> <child>`). A ticket is unblocked when every parent is done.
+- A **ticket** is one task per tracer-bullet slice, titled `<NN> <short name>`. Its body names the spec task id under `## Parent`. The spec is never a board parent, because a child stays blocked until every parent is done.
+- **Blocking edges**: a ticket's board parents are exactly the tickets that block it. Create with one `--parent`, then add any further blockers with `link <blocker-id> <ticket-id>`; repeated `--parent` flags on one `create` were observed to drop all but the first edge. Check with `show` afterwards.
 - Each ticket body names its repo (`saeed-landing` or `brackstone-dashboard`), branch and worktree.
 - Statuses: todo, ready, running, review, blocked, scheduled, done. Triage roles map to these in `triage-labels.md`.
 
