@@ -23,7 +23,7 @@ The thing a person typed into Google that an ads page answers, such as "AI recep
 _Avoid_: Keyword, vertical
 
 **Dashboard**:
-The Brackstone web app at dashboard.brackstonedigital.co.uk, built in a separate repo. Customers sign in there, and it hosts the free trial request page.
+The Brackstone web app at dashboard.brackstonedigital.co.uk, built in a separate repo. Customers sign in there to follow their free trial and use the receptionist. It checks and records every trial request.
 _Avoid_: Portal, app (on its own). Say "custom dashboard" for the thing we build for a client, and "Kanban board" for where tickets live.
 
 ### Offer
@@ -45,11 +45,11 @@ A free 15-minute call where Brackstone looks at what a business does by hand and
 _Avoid_: Consultation, discovery call, audit
 
 **Free trial**:
-A card-free, 7-day trial of the AI receptionist with 50 trial minutes, set up by Brackstone. The 7 days start at go-live, not when the trial is requested. It ends at 7 days or 50 trial minutes, whichever comes first. Every business gets the same trial; garages also see workshop mode. It is requested through the dashboard's trial request page and is the main call to action on every ads page.
+A card-free, 7-day trial of the AI receptionist with 50 trial minutes, set up by Brackstone. The 7 days start at go-live, not when the trial is requested. It ends at 7 days or 50 trial minutes, whichever comes first. Every business gets the same trial; garages also see workshop mode. It is requested on the site's get-started page and is the main call to action on every ads page.
 _Avoid_: Demo, free account, self-serve trial
 
 **Trial request**:
-What a business submits on the dashboard's trial request page to ask for a free trial. Brackstone reviews each one and sets the receptionist up before go-live.
+What a business submits on the site's get-started page to ask for a free trial. The dashboard checks and records it; Brackstone reviews each one and sets the receptionist up before go-live.
 _Avoid_: Sign-up, lead, application
 
 **Go-live**:
@@ -83,11 +83,11 @@ _Avoid_: Demo number, test line
 ### Measurement
 
 **Primary conversion**:
-A free trial request that is actually submitted on the dashboard. This is the number that tells us an ad worked.
+A trial request the dashboard has accepted. This is the number that tells us an ad worked.
 _Avoid_: Lead, sign-up, conversion (on its own)
 
 **Secondary conversion**:
-A sign of interest on the marketing site: a tap on a free trial button or on the demo line. It is counted, but never treated as proof that an ad worked.
+A sign of interest on the marketing site: a tap on a free trial button or on the demo line, before any trial request is sent. It is counted, but never treated as proof that an ad worked.
 _Avoid_: Micro-conversion, click, lead
 
 ### Trial emails
