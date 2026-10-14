@@ -45,8 +45,36 @@ A free 15-minute call where Brackstone looks at what a business does by hand and
 _Avoid_: Consultation, discovery call, audit
 
 **Free trial**:
-A card-free trial of the AI receptionist, requested through the dashboard's trial request page. It is the main call to action on every ads page.
-_Avoid_: Demo, free account
+A card-free, 7-day trial of the AI receptionist with 50 trial minutes, set up by Brackstone. The 7 days start at go-live, not when the trial is requested. It ends at 7 days or 50 trial minutes, whichever comes first. Every business gets the same trial; garages also see workshop mode. It is requested through the dashboard's trial request page and is the main call to action on every ads page.
+_Avoid_: Demo, free account, self-serve trial
+
+**Trial request**:
+What a business submits on the dashboard's trial request page to ask for a free trial. Brackstone reviews each one and sets the receptionist up before go-live.
+_Avoid_: Sign-up, lead, application
+
+**Go-live**:
+The moment a trial receptionist starts answering the business's calls. The free trial's 7 days are counted from here.
+_Avoid_: Activation, launch, start date
+
+**Trial minute**:
+One minute of call time answered by the AI receptionist during a free trial, counted to the second. Time spent on a call after it has been passed to a person does not count.
+_Avoid_: Credit, call (on its own)
+
+**Forwarding confirmed**:
+The point at which a business's calls are proven to reach its receptionist, shown by the first real call that arrives through the business's own number. It is detected, not ticked by hand.
+_Avoid_: Connected, set up, installed
+
+**Setup waiver**:
+The setup fee is not charged when a business moves from a free trial to a paid plan within 48 hours of the trial ending.
+_Avoid_: Discount, free setup, promo
+
+**AI receptionist plan**:
+The paid plan for any business: from £99 a month with 150 minutes and a £149 one-off setup. Prices carry no VAT.
+_Avoid_: Starter, basic plan
+
+**Garage edition**:
+The paid plan for garages: £249 a month with 400 minutes and a £299 one-off setup, including workshop mode and vehicle lookup from the registration.
+_Avoid_: Growth, garage plan, pro
 
 **Demo line**:
 A real phone number a visitor can ring to hear the AI receptionist take a call.
@@ -62,6 +90,24 @@ _Avoid_: Lead, sign-up, conversion (on its own)
 A sign of interest on the marketing site: a tap on a free trial button or on the demo line. It is counted, but never treated as proof that an ad worked.
 _Avoid_: Micro-conversion, click, lead
 
+### Trial emails
+
+**Nurture sequence**:
+The emails a business receives from trial request to a few days after its trial ends, sent from Saeed. Most are chosen by what has happened on the trial, such as forwarding confirmed or calls answered, not only by the date.
+_Avoid_: Drip, campaign, newsletter
+
+**Service email**:
+A nurture sequence email about the trial the business asked for, such as its go-live, its usage or its pause. It does not need marketing consent but still carries an unsubscribe link.
+_Avoid_: Transactional email, notification
+
+**Marketing email**:
+A nurture sequence email that encourages the business to buy, such as trade proof or a check-in. It is sent under the soft opt-in from the trial request and stops the moment the business unsubscribes.
+_Avoid_: Promo, newsletter, cold email
+
+**Check-in**:
+A personal email Saeed sends himself a few days after a trial ends. The system drafts it; it never sends on its own.
+_Avoid_: Follow-up (on its own), automated personal email
+
 ### Honesty
 
 **Built**:
@@ -69,11 +115,11 @@ A piece of past work Brackstone has actually delivered, described without naming
 _Avoid_: Case study, client, portfolio
 
 **Trial promise**:
-What the free trial does for a new customer with no setup work, such as capturing viewing requests. An ads page leads with the trial promise and nothing more.
+What the free trial does for a business with standard setup: it answers calls, takes the caller's details, texts the business a summary and uses a UK number. For garages it also includes workshop mode and vehicle lookup from the registration. An ads page leads with the trial promise and nothing more.
 _Avoid_: Feature, capability
 
 **Setup offer**:
-Something Brackstone has built and can set up for a customer, but which a free trial does not include, such as booking viewings into a diary. An ads page may mention it only as a separate, clearly labelled line.
+Something Brackstone has built and can set up for a customer, but which a free trial does not include, such as booking viewings into a diary, connecting a CRM, or a custom call flow. An ads page may mention it only as a separate, clearly labelled line.
 _Avoid_: Add-on, upgrade, premium feature
 
 **Illustrative**:
