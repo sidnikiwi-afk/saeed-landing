@@ -8,9 +8,9 @@ import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const recording = join(root, 'public', 'audio', 'garage-demo-call.mp3');
 
-test('garage call recording exists and is under 1 MB', () => {
+test('garage call recording exists and is no bigger than 500 KB', () => {
   assert.ok(existsSync(recording), 'public/audio/garage-demo-call.mp3 is missing');
-  assert.ok(statSync(recording).size < 1024 * 1024, 'garage call recording is 1 MB or more');
+  assert.ok(statSync(recording).size <= 500 * 1024, 'garage call recording is bigger than 500 KB');
 });
 
 test('garages page plays the call recording', () => {
@@ -41,14 +41,19 @@ test('garages page plays the call recording', () => {
     /Illustrative\. AI voices\. Registration and details made up\./,
     'garage audio caption is missing',
   );
-  // The transcript on the page is the same call as the recording.
+  // The free trial takes the job and a person rings back to fix the time, so
+  // the call books nothing and the page needs no paid-setup label.
+  assert.doesNotMatch(text, /paid setup/, 'garage example is still labelled as a paid setup');
+  // The transcript and summary card on the page are the same call as the recording.
   for (const line of [
     'you&#39;re through to the workshop',
     'LM21 XRT',
     'silver 2021 Ford Focus',
     'MOT runs out in 14 days',
-    'Tuesday at half eight or Thursday at nine',
-    'Tue 08:30',
+    'Tuesday morning, ideally.',
+    'ring you back today to fix the time',
+    'I&#39;ll text you a summary now',
+    'Garage to call back',
   ]) {
     assert.ok(text.includes(line) || text.includes(line.replace('&#39;', "'")), `garage transcript is missing "${line}"`);
   }

@@ -139,7 +139,7 @@ export const estateAgentsAd = {
     {
       question: 'Will it sound robotic?',
       answer:
-        'It is tuned for UK callers and for the way agents talk to applicants and vendors. The call on this page is illustrative, so you can judge the shape of it before you book.',
+        'It is tuned for UK callers and for the way agents talk to applicants and vendors. The call on this page is illustrative, so you can judge the shape of it before you try it.',
     },
     {
       question: 'What if it gets something wrong?',

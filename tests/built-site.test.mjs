@@ -496,6 +496,8 @@ test('built site hides the preview and keeps copy clean', () => {
   for (const action of ['Call back', 'Quote', 'Booked', 'Complete', 'Follow up']) {
     assert.match(garagesHtml, new RegExp(`<li[^>]*>${action}</li>`), `workshop mode is missing ${action}`);
   }
+  assert.match(garagesHtml, /<h3[^>]*>Vehicle lookup from the reg<\/h3>/, 'vehicle lookup card is missing');
+  assert.match(garagesHtml, /Looks up the vehicle and MOT date from the reg/, 'vehicle lookup trial line is missing');
   assert.doesNotMatch(garagesHtml, /teardown/i, 'ads page still says teardown');
   assert.doesNotMatch(garagesHtml, /Hear it answer a call/, 'empty sample call still renders a link');
   assert.doesNotMatch(garagesHtml, /fonts\.googleapis\.com/);
