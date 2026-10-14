@@ -503,11 +503,10 @@ test('built site hides the preview and keeps copy clean', () => {
   assert.match(garagesHtml, /Illustrative/);
   assert.match(garagesHtml, /\/fonts\/Geist-Variable\.woff2/);
 
-  // The trial offer is gone: no trial links, no trial wording anywhere a
-  // visitor can read. Ads pages sign the visitor up instead of booking a teardown.
-  assert.deepEqual(trialHrefs(garagesHtml), [], 'garages page still links to the trial request');
-  assert.deepEqual(trialCopyProblems(garagesHtml, 'garages page'), []);
-  const garagesSignup = anchors(garagesHtml).filter((anchor) => anchor.text === 'Get your AI receptionist');
+  // Ads pages send the visitor to the site's trial form, never the
+  // dashboard's old trial request page (ADR 0005).
+  assert.deepEqual(trialHrefs(garagesHtml), [], 'garages page still links to the dashboard trial request');
+  const garagesSignup = anchors(garagesHtml).filter((anchor) => anchor.text === 'Start your 7-day free trial');
   assert.ok(garagesSignup.length >= 4, 'garages page is missing sign-up buttons');
   assertSignupDefaults(garagesSignup, 'garages', 'garages');
 
@@ -533,10 +532,10 @@ test('built site hides the preview and keeps copy clean', () => {
 
   const signupHtml = readFileSync(join(dist, 'get-started', 'index.html'), 'utf8');
   assert.match(signupHtml, /noindex/i, 'sign-up page must be noindex');
-  assert.match(signupHtml, /We will be in touch within one working day to get you set up\./);
+  assert.match(signupHtml, /We'll set up your receptionist within 7 days, usually sooner, and email you when it's live\./);
   // Without JavaScript the general plan shows with a garage note. Both plans
   // are in the page so the script can show the garage one for ?industry=garages.
-  const visiblePlans = [...signupHtml.matchAll(/<div class="plan"[^>]*data-plan="(\w+)"[^>]*>/g)]
+  const visiblePlans = [...signupHtml.matchAll(/<div class="plan after"[^>]*data-plan="(\w+)"[^>]*>/g)]
     .filter((match) => !/\shidden\b/.test(match[0]))
     .map((match) => match[1]);
   assert.deepEqual(visiblePlans, ['receptionist']);
@@ -563,7 +562,7 @@ test('built site hides the preview and keeps copy clean', () => {
     const otherHtml = readFileSync(join(dist, slug, 'index.html'), 'utf8');
     assert.doesNotMatch(otherHtml, /Workshop mode/, `${slug} shows the garage workshop mode`);
     assertSignupDefaults(
-      anchors(otherHtml).filter((anchor) => anchor.text === 'Get your AI receptionist'),
+      anchors(otherHtml).filter((anchor) => anchor.text === 'Start your 7-day free trial'),
       industry,
       campaign,
     );
@@ -571,8 +570,8 @@ test('built site hides the preview and keeps copy clean', () => {
   const generalHtml = readFileSync(join(dist, 'ai-receptionist', 'index.html'), 'utf8');
   assert.match(generalHtml, /Illustrative role-play with AI voices, not a real customer call\./);
   assert.doesNotMatch(garagesHtml, /Illustrative role-play with AI voices/);
-  assert.match(signupHtml, /premier-housing-demo\.pages\.dev\/api\/contact/);
-  for (const field of ['email', 'business', 'chosen_industry', 'phone', 'missed', 'website', 'industry', 'gclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'landing_page']) {
+  assert.match(signupHtml, /action="https:\/\/dashboard\.brackstonedigital\.co\.uk\/api\/trial-requests"/);
+  for (const field of ['email', 'business_name', 'industry', 'other_industry', 'phone', 'notes', 'website', 'gclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'landing_page']) {
     assert.match(
       signupHtml,
       new RegExp(`name=["']${field}["']`),
@@ -583,7 +582,7 @@ test('built site hides the preview and keeps copy clean', () => {
   assert.match(signupHtml, /<label[^>]*for="business"[^>]*>Business name<\/label>/);
   assert.match(signupHtml, /<label[^>]*for="chosen-industry"[^>]*>Industry<\/label>/);
   assert.match(signupHtml, /<label[^>]*for="phone"[^>]*>Phone<\/label>/);
-  assert.match(signupHtml, /<label[^>]*for="missed"[^>]*>What happens to calls you miss today\?<\/label>/);
+  assert.match(signupHtml, /<label[^>]*for="missed"[^>]*>What happens to calls you miss today\? <span class="optional"[^>]*>\(optional\)<\/span><\/label>/);
   // Every industry option sits in its group, after the empty "Choose one".
   const select = signupHtml.match(/<select[^>]*id="chosen-industry"[^>]*>([\s\S]*?)<\/select>/)[1];
   assert.match(select, /^\s*<option value=""[^>]*selected[^>]*>Choose one<\/option>/);

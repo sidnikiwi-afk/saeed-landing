@@ -10,6 +10,8 @@ const industry = signupIndustry(content.slug);
 const campaign = content.utmCampaign;
 const signupFor = (placement) => signupHref({ industry, campaign, placement });
 const sampleHref = sampleCallUrl(adsSettings.sampleCalls, content.slug);
+const trial = adsSettings.trial;
+const trialLine = trial.line[adsSettings.pagePlans[content.slug]] ?? trial.line.receptionist;
 const year = 2026;
 ---
 
@@ -29,7 +31,7 @@ const year = 2026;
             <span>Call {visibility.phone}</span>
           </a>
         )}
-        <a class="btn solid header-trial" href={signupFor('header')} data-signup data-industry={industry} data-campaign={campaign} data-placement="header">Get your AI receptionist</a>
+        <a class="btn solid header-trial" href={signupFor('header')} data-signup data-industry={industry} data-campaign={campaign} data-placement="header">{trial.button}</a>
       </div>
     </div>
   </header>
@@ -45,7 +47,7 @@ const year = 2026;
             {content.trialPromise.map((point) => <li>{point}</li>)}
           </ul>
           <div class="ctas">
-            <a class="btn solid" href={signupFor('hero')} data-signup data-industry={industry} data-campaign={campaign} data-placement="hero">Get your AI receptionist</a>
+            <a class="btn solid" href={signupFor('hero')} data-signup data-industry={industry} data-campaign={campaign} data-placement="hero">{trial.button}</a>
             {sampleHref && (
               <a class="btn line sample" href={sampleHref} target="_blank" rel="noopener noreferrer">
                 Hear it answer a call
@@ -54,6 +56,7 @@ const year = 2026;
             )}
             <a class="btn line" href="#example">See an example call</a>
           </div>
+          <p class="trial-line">{trialLine}</p>
           {sampleHref && (
             <IllustrativeCaption>Illustrative role-play with AI voices, not a real customer call.</IllustrativeCaption>
           )}
@@ -188,7 +191,9 @@ const year = 2026;
               <p class="lead">{plan.minutes}</p>
               <p class="lead">{plan.setup}</p>
               {plan.extraMinutes && <p class="extra">{plan.extraMinutes}</p>}
-              <a class="btn solid" href={signupFor('price')} data-signup data-industry={industry} data-campaign={campaign} data-placement="price">Get your AI receptionist</a>
+              <p class="trial-line">{trialLine}</p>
+              <a class="btn solid" href={signupFor('price')} data-signup data-industry={industry} data-campaign={campaign} data-placement="price">{trial.button}</a>
+              <p class="promise">{trial.promise}</p>
             </div>
             <ul class="includes">
               {(content.priceIncludes ?? []).map((item) => <li>{item}</li>)}
@@ -220,8 +225,9 @@ const year = 2026;
       <div class="wrap">
         <h2>{content.final.heading}</h2>
         <p>{content.final.text}</p>
-        <a class="btn solid final-btn" href={signupFor('final')} data-signup data-industry={industry} data-campaign={campaign} data-placement="final">Get your AI receptionist</a>
-        <p class="more">Want more than calls? <a href={signupFor('final')} data-signup data-industry={industry} data-campaign={campaign} data-placement="final">Get your AI receptionist</a></p>
+        <a class="btn solid final-btn" href={signupFor('final')} data-signup data-industry={industry} data-campaign={campaign} data-placement="final">{trial.button}</a>
+        <p class="final-line">{trialLine}</p>
+        <p class="more">{trial.promise} {trial.consent}</p>
       </div>
     </section>
   </main>
@@ -231,16 +237,16 @@ const year = 2026;
       <p>&copy; {year} Brackstone Digital Limited. Registered in England and Wales, company no. 17159711.</p>
       <p class="foot-links">
         <a href="/privacy">Privacy</a>
-        <a href={signupFor('final')} data-signup data-industry={industry} data-campaign={campaign} data-placement="final">Get your AI receptionist</a>
+        <a href={signupFor('final')} data-signup data-industry={industry} data-campaign={campaign} data-placement="final">{trial.button}</a>
       </p>
     </div>
   </footer>
 
-  <div class:list={['mbar', visibility.showCall && 'has-call']} role="region" aria-label="Get your AI receptionist" data-mobile-cta>
+  <div class:list={['mbar', visibility.showCall && 'has-call']} role="region" aria-label={trial.button} data-mobile-cta>
     {visibility.showCall && (
       <a class="btn line" href={visibility.callHref}>Call {visibility.phone}</a>
     )}
-    <a class="btn solid" href={signupFor('mobile-bar')} data-signup data-industry={industry} data-campaign={campaign} data-placement="mobile-bar">Get your AI receptionist</a>
+    <a class="btn solid" href={signupFor('mobile-bar')} data-signup data-industry={industry} data-campaign={campaign} data-placement="mobile-bar">{trial.button}</a>
   </div>
 </div>
 
@@ -519,6 +525,32 @@ const year = 2026;
 
   .ctas + :global(.caption) {
     margin-top: 0.75rem;
+  }
+
+  .trial-line {
+    margin-top: 0.75rem;
+    color: var(--brand-ink);
+    font-size: 0.92rem;
+    font-weight: 600;
+  }
+
+  .trial-line + :global(.caption) {
+    margin-top: 0.5rem;
+  }
+
+  .price .trial-line {
+    margin-top: 1.25rem;
+  }
+
+  .price .trial-line + .btn {
+    margin-top: 0.75rem;
+  }
+
+  .promise {
+    margin-top: 0.75rem;
+    color: var(--brand-muted);
+    font-size: 0.88rem;
+    line-height: 1.5;
   }
 
   .micro {
@@ -1003,6 +1035,13 @@ const year = 2026;
     margin: 0 auto 1.6rem;
     color: #dcd3ff;
     font-size: 1.05rem;
+  }
+
+  .final .final-line {
+    margin: 1rem auto 0;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
   }
 
   .final-btn {
