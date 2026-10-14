@@ -69,7 +69,7 @@ The point at which a business's calls are proven to reach its receptionist, show
 _Avoid_: Connected, set up, installed
 
 **Setup waiver**:
-The setup fee is not charged when a business moves from a free trial to a paid plan within 48 hours of the trial ending.
+The setup fee is not charged when a business moves from a free trial to a paid plan during the trial or within 48 hours of it ending.
 _Avoid_: Discount, free setup, promo
 
 **AI receptionist plan**:
