@@ -49,8 +49,12 @@ A card-free, 7-day trial of the AI receptionist with 50 trial minutes, set up by
 _Avoid_: Demo, free account, self-serve trial
 
 **Trial request**:
-What a business submits on the site's get-started page to ask for a free trial. The dashboard checks and records it; Brackstone reviews each one and sets the receptionist up before go-live.
+What a business submits on the site's get-started page to ask for a free trial. The dashboard checks and records it; Brackstone reviews each one and sets the receptionist up within the onboarding window.
 _Avoid_: Sign-up, lead, application
+
+**Onboarding window**:
+Up to 7 days between a trial request and go-live, while Brackstone sets the receptionist up. Brackstone aims to finish sooner, but the site promises no more than this.
+_Avoid_: Setup time, waiting period, lead time
 
 **Go-live**:
 The moment a trial receptionist starts answering the business's calls. The free trial's 7 days are counted from here.
