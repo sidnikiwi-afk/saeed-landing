@@ -41,6 +41,13 @@ test('garages page plays the call recording', () => {
     /Illustrative\. AI voices\. Registration and details made up\./,
     'garage audio caption is missing',
   );
+  // The call books into the diary, which the free trial does not do, so the
+  // page labels it as a paid setup.
+  assert.match(
+    text,
+    /This call shows booking into the diary, which is a paid setup\. On the free trial it takes the same details and passes the job to you\./,
+    'garage example is not labelled as a paid setup',
+  );
   // The transcript on the page is the same call as the recording.
   for (const line of [
     'you&#39;re through to the workshop',

@@ -114,3 +114,40 @@ test('without JavaScript the trial form renders and posts to the trial request e
   assert.ok(fallback, 'no fallback for visitors without JavaScript');
   assert.match(fallback[1], /href="mailto:saeed@brackstonedigital\.co\.uk/);
 });
+
+// The trial answers calls, takes the details, texts the caller and passes the
+// job on. Booking into a diary and handling emails or web forms are paid
+// setups, so the hero and the bullet lists must not promise them.
+const TRIAL_ONLY = [
+  [/\bbook(s|ing)?\b/i, 'booking'],
+  [/\bdiary\b/i, 'a diary'],
+  [/\breads? (your )?emails?\b/i, 'reading emails'],
+  [/\bweb forms?\b/i, 'web forms'],
+];
+
+function between(html, start, end) {
+  const from = html.search(start);
+  assert.ok(from >= 0, `missing ${start}`);
+  const rest = html.slice(from);
+  const to = rest.search(end);
+  assert.ok(to > 0, `missing ${end} after ${start}`);
+  return rest.slice(0, to);
+}
+
+for (const slug of ['ai-receptionist', 'estate-agents', 'garages']) {
+  test(`${slug} hero and bullets promise only what the trial gives`, () => {
+    const html = page(slug);
+    const parts = {
+      hero: between(html, /<section class="hero"/, /<div class="example"/),
+      strip: between(html, /<section class="strip"/, /<\/section>/),
+      includes: between(html, /<ul class="includes"/, /<\/ul>/),
+    };
+    assert.match(visibleText(parts.hero), /Start your 7-day free trial/, `${slug} hero lost the trial button`);
+    for (const [name, part] of Object.entries(parts)) {
+      const text = visibleText(part);
+      for (const [pattern, what] of TRIAL_ONLY) {
+        assert.doesNotMatch(text, pattern, `${slug} ${name} promises ${what}: "${text.match(pattern)?.[0]}"`);
+      }
+    }
+  });
+}

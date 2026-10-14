@@ -36,11 +36,15 @@ test('the general headline repeats a search that names no trade', () => {
   }
 });
 
-test('the trial promise covers calls, emails and web forms only', () => {
+test('the trial promise covers calls only, not emails or web forms', () => {
   const promises = aiReceptionistAd.trialPromise.join(' ').toLowerCase();
   assert.match(promises, /\bcalls?\b/, 'trial promise must mention calls');
-  assert.match(promises, /\bemails?\b/, 'trial promise must mention emails');
-  assert.match(promises, /\bforms?\b/, 'trial promise must mention web forms');
+  assert.match(promises, /\btexts?\b/, 'trial promise must say the caller gets a text');
+  assert.match(promises, /right person/, 'trial promise must say the call is passed on');
+
+  // Email and web form handling are not part of the trial.
+  const copy = JSON.stringify({ ...aiReceptionistAd, example: undefined }).toLowerCase();
+  assert.doesNotMatch(copy, /\bemails?\b|web forms?|\bbooks?\b|\bdiary\b/, 'general page promises more than the trial gives');
 
   const example = JSON.stringify(aiReceptionistAd.example).toLowerCase();
   assert.doesNotMatch(example, /\bmot\b|\bviewing\b|\bvaluation\b/, 'example call must stay trade free');

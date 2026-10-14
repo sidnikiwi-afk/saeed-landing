@@ -4,14 +4,14 @@ export const garagesAd = {
   headline: 'AI receptionist for garages',
   headlineAccent: 'Every call answered.',
   description:
-    'An AI receptionist for UK garages. It answers the call, books MOTs and services, and texts the customer to confirm.',
+    'An AI receptionist for UK garages. It answers the call, takes the job details, looks up the vehicle from the reg, and texts the customer.',
   eyebrow: 'For UK garages and MOT centres',
   intro:
-    'It picks up while you are under a car, books the MOT or service into the diary, and texts the customer to confirm. It answers during the day, in the evening, and at the weekend.',
+    'It picks up while you are under a car, takes down the MOT, service or repair, and texts the customer so they know you have it. Urgent jobs come straight to you. It answers during the day, in the evening, and at the weekend.',
   trialPromise: [
-    'Books MOTs, services and repairs on the call',
+    'Takes MOT, service and repair requests on the call',
     'Looks up the vehicle and MOT date from the reg',
-    'Flags breakdowns and urgent jobs straight to you',
+    'Shows every call as a job in workshop mode',
   ],
   micro: ['Answers out of hours', 'UK phone number', 'Set up for you'],
   example: {
@@ -43,7 +43,8 @@ export const garagesAd = {
       { label: 'Job', value: 'Service and MOT' },
       { label: 'Booked', value: 'Tue 08:30' },
     ],
-    caption: 'Registration and details in this call are made up.',
+    caption:
+      'This call shows booking into the diary, which is a paid setup. On the free trial it takes the same details and passes the job to you. Registration and details made up.',
     audio: {
       heading: 'Hear it answer a garage call',
       src: '/audio/garage-demo-call.mp3',
@@ -53,8 +54,8 @@ export const garagesAd = {
   strip: [
     { title: 'First ring', text: 'Every call picked up' },
     { title: 'Out of hours', text: 'Evenings and weekends' },
-    { title: 'Books the slot', text: 'Not just a message' },
-    { title: 'Texts to confirm', text: 'With an easy way to change' },
+    { title: 'The whole job', text: 'Not just a message' },
+    { title: 'Texts the customer', text: 'So they know you have it' },
   ],
   problem: {
     heading: 'Every missed call is a booking for the garage down the road.',
@@ -71,11 +72,11 @@ export const garagesAd = {
     steps: [
       {
         title: 'We set it up for you',
-        text: 'Your services, the prices you are happy to share, opening hours, and how you like bookings taken.',
+        text: 'Your services, the prices you are happy to share, opening hours, and who should get which jobs.',
       },
       {
-        title: 'It answers and books',
-        text: 'Calls are answered on the first ring. Bookings go in the diary and the customer gets a text.',
+        title: 'It answers and takes the job',
+        text: 'Calls are answered on the first ring. You get the details and the customer gets a text.',
       },
       {
         title: 'You see every call',
@@ -88,8 +89,8 @@ export const garagesAd = {
   featureCards: [
     {
       kicker: 'MOT',
-      title: 'MOT and service bookings',
-      text: 'Takes the booking instead of a message, and confirms it by text.',
+      title: 'MOT and service requests',
+      text: 'Takes the reg, the job and when suits the customer, then texts them to say it is with you.',
     },
     {
       kicker: 'Reg',
@@ -99,7 +100,7 @@ export const garagesAd = {
     {
       kicker: 'Urgent',
       title: 'Urgent jobs flagged',
-      text: 'Breakdowns and safety issues come straight to you, not the diary.',
+      text: 'Breakdowns and safety issues come straight to you, not to the back of the queue.',
     },
     {
       kicker: 'Ask',
@@ -114,7 +115,7 @@ export const garagesAd = {
     {
       kicker: 'Pass',
       title: 'Hands over when it should',
-      text: 'If a caller needs a person, it takes the detail and books a callback.',
+      text: 'If a caller needs a person, it takes the detail and gets someone to call back.',
     },
   ],
   workshopMode: {
@@ -128,7 +129,7 @@ export const garagesAd = {
     'Your own UK phone number, or divert your existing one',
     'AI receptionist trained on your garage',
     'Workshop mode: every call as a job in the Dashboard',
-    'Bookings, texts and vehicle lookups',
+    'Text summaries and vehicle lookups',
     'Dashboard with recordings and transcripts',
     'Set up and tuned for you',
     'Your data stays yours',
@@ -142,12 +143,12 @@ export const garagesAd = {
     {
       question: 'Will it sound robotic?',
       answer:
-        'It is tuned for UK callers and for the way garages talk about jobs. The call on this page is illustrative, so you can judge the shape of it before you book.',
+        'It is tuned for UK callers and for the way garages talk about jobs. The call on this page is illustrative, so you can judge the shape of it before you try it.',
     },
     {
       question: 'What if it gets something wrong?',
       answer:
-        'We test it against awkward calls before it goes live. When it is not sure, it takes the detail and books a callback instead of guessing.',
+        'We test it against awkward calls before it goes live. When it is not sure, it takes the detail and passes it to you instead of guessing.',
     },
     {
       question: 'How long does setup take?',
@@ -155,7 +156,7 @@ export const garagesAd = {
     },
   ],
   final: {
-    heading: 'Stop losing bookings to voicemail.',
+    heading: 'Stop losing jobs to voicemail.',
     text: 'We set it up for you, and we show you how it is doing.',
   },
   utmCampaign: 'garages',
