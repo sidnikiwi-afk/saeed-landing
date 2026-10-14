@@ -2,14 +2,11 @@
 import AdsLayout from '../layouts/AdsLayout.astro';
 import { adsSettings } from '../data/ads/settings.mjs';
 import { planFor } from '../lib/ads-page.mjs';
-import { SIGNUP_INDUSTRY_GROUPS } from '../lib/get-started.mjs';
+import { SIGNUP_INDUSTRY_GROUPS, TRIAL_REQUEST_ENDPOINT } from '../lib/get-started.mjs';
 
-// Same endpoint as the contact page. Extra sign-up details go in the message
-// because this endpoint only stores name, email, business and message.
-const FORM_ENDPOINT = import.meta.env.PUBLIC_CONTACT_ENDPOINT
-  || 'https://premier-housing-demo.pages.dev/api/contact';
 const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
 const conversion = adsSettings.googleAdsConversion;
+const trial = adsSettings.trial;
 // Both plans are in the page. The script shows the one that matches the chosen
 // industry; without JavaScript the general plan shows with a garage note.
 const plans = [
@@ -17,11 +14,15 @@ const plans = [
   { key: 'garage', plan: planFor(adsSettings, 'garage') },
 ];
 const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
+// The security check needs JavaScript, so a visitor without it can email
+// the request instead of meeting a refusal.
+const NO_SCRIPT_EMAIL = 'saeed@brackstonedigital.co.uk';
+const noScriptHref = `mailto:${NO_SCRIPT_EMAIL}?subject=${encodeURIComponent('7-day free trial request')}`;
 ---
 
 <AdsLayout
-  title="Get your AI receptionist | Brackstone"
-  description="From £99 a month. Tell us about the business and we will be in touch within one working day to get you set up."
+  title="Start your 7-day free trial | Brackstone"
+  description={`${trial.line.receptionist} ${trial.promise}`}
   noindex={true}
 >
   <header class="hd">
@@ -35,10 +36,15 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
 
   <main class="signup">
     <div class="wrap">
-      <h1>Get your <span>AI receptionist</span></h1>
-      <p class="next">We will be in touch within one working day to get you set up.</p>
+      <h1>Start your <span class="accent"><span class="keep">7-day</span> free trial</span></h1>
       {plans.map(({ key, plan }) => (
         <div class="plan" data-plan={key} hidden={key !== 'receptionist'}>
+          <p class="trial-line">{trial.line[key]}</p>
+        </div>
+      ))}
+      <p class="next">{trial.promise}</p>
+      {plans.map(({ key, plan }) => (
+        <div class="plan after" data-plan={key} hidden={key !== 'receptionist'}>
           <p class="plan-name">{plan.name}</p>
           <p class="price">{plan.amount}</p>
           <p class="minutes">{plan.minutes}</p>
@@ -51,25 +57,30 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
       <form
         class="form"
         id="signup-form"
-        novalidate
-        data-endpoint={FORM_ENDPOINT}
+        method="post"
+        action={TRIAL_REQUEST_ENDPOINT}
         data-turnstile-key={TURNSTILE_SITE_KEY}
         data-conversion-id={conversion.id}
         data-conversion-label={conversion.label}
       >
+        <div class="field">
+          <label for="business">Business name</label>
+          <input type="text" id="business" aria-describedby="business-error" name="business_name" required autocomplete="organization" />
+          <p class="field-error" id="business-error" hidden>Enter your business name.</p>
+        </div>
         <div class="field">
           <label for="email">Email</label>
           <input type="email" id="email" aria-describedby="email-error" name="email" required autocomplete="email" />
           <p class="field-error" id="email-error" hidden>Enter your email address.</p>
         </div>
         <div class="field">
-          <label for="business">Business name</label>
-          <input type="text" id="business" aria-describedby="business-error" name="business" required autocomplete="organization" />
-          <p class="field-error" id="business-error" hidden>Enter your business name.</p>
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" aria-describedby="phone-error" name="phone" required autocomplete="tel" />
+          <p class="field-error" id="phone-error" hidden>Enter your phone number.</p>
         </div>
         <div class="field">
           <label for="chosen-industry">Industry</label>
-          <select id="chosen-industry" aria-describedby="chosen-industry-error" name="chosen_industry" required>
+          <select id="chosen-industry" aria-describedby="chosen-industry-error" name="industry" required>
             <option value="" selected disabled>Choose one</option>
             {SIGNUP_INDUSTRY_GROUPS.map(({ group, options }) => (
               <optgroup label={group}>
@@ -81,31 +92,30 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
         </div>
         <div class="field" id="other-industry-field">
           <label for="other-industry">What kind of business?</label>
-          <input type="text" id="other-industry" name="other_industry" autocomplete="off" />
+          <input type="text" id="other-industry" aria-describedby="other-industry-error" name="other_industry" autocomplete="off" />
+          <p class="field-error" id="other-industry-error" hidden>Tell us what kind of business you run.</p>
         </div>
         <div class="field">
-          <label for="phone">Phone</label>
-          <input type="tel" id="phone" aria-describedby="phone-error" name="phone" required autocomplete="tel" />
-          <p class="field-error" id="phone-error" hidden>Enter your phone number.</p>
+          <label for="website">Website <span class="optional">(optional)</span></label>
+          <input type="text" id="website" name="website" inputmode="url" autocomplete="url" />
         </div>
         <div class="field">
-          <label for="missed">What happens to calls you miss today?</label>
-          <textarea id="missed" name="missed" rows="3"></textarea>
+          <label for="missed">What happens to calls you miss today? <span class="optional">(optional)</span></label>
+          <textarea id="missed" name="notes" rows="3"></textarea>
         </div>
 
         <div class="hp" aria-hidden="true">
-          <label for="website">Website</label>
-          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+          <label for="company-fax">Leave this empty</label>
+          <input type="text" id="company-fax" name="company_fax" tabindex="-1" autocomplete="off" />
         </div>
 
-        <input type="hidden" name="industry" value="" />
         <input type="hidden" name="gclid" value="" />
         <input type="hidden" name="utm_source" value="" />
         <input type="hidden" name="utm_medium" value="" />
         <input type="hidden" name="utm_campaign" value="" />
         <input type="hidden" name="utm_term" value="" />
         <input type="hidden" name="utm_content" value="" />
-        <input type="hidden" name="landing_page" value="" />
+        <input type="hidden" name="landing_page" value="/get-started/" />
 
         {TURNSTILE_SITE_KEY && (
           <div class="turnstile">
@@ -119,17 +129,25 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
           </div>
         )}
 
+        <noscript>
+          <p class="noscript">
+            Our security check needs JavaScript. If the button below does not work, email
+            <a href={noScriptHref}>{NO_SCRIPT_EMAIL}</a> with your business name and phone number
+            and we will start your trial from there.
+          </p>
+        </noscript>
+
         <button type="submit" class="submit" id="submit-btn">
-          <span id="submit-label">Get your AI receptionist</span>
+          <span id="submit-label">{trial.button}</span>
         </button>
 
         <p class="privacy">
-          We use these details only to set you up. Nothing else, no list.
+          {trial.consent}
           See our <a href="/privacy">privacy policy</a>.
         </p>
 
         <p class="error" id="form-error" role="alert" hidden>
-          That did not send. Please try again in a moment.
+          That did not send. Please check your connection and try again.
         </p>
       </form>
 
@@ -137,7 +155,7 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
         <span class="success-mark" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
         </span>
-        <h2 id="success-heading" tabindex="-1">We will be in touch within one working day to get you set up.</h2>
+        <h2 id="success-heading" tabindex="-1">We've received your trial request. {trial.promise}</h2>
       </div>
     </div>
   </main>
@@ -157,16 +175,15 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
 <script>
   import {
     OTHER_INDUSTRY,
-    SIGNUP_HIDDEN_FIELDS,
+    TRACKING_FIELDS,
     industryFromQuery,
     industryPlanKey,
-    sendSignup,
-    signupBody,
+    sendTrialRequest,
     signupErrors,
+    trialRequestBody,
   } from '../lib/get-started.mjs';
 
   const form = document.getElementById('signup-form');
-  const FORM_ENDPOINT = form?.dataset.endpoint || '';
   const TURNSTILE_SITE_KEY = form?.dataset.turnstileKey || '';
   const conversion = {
     id: form?.dataset.conversionId || '',
@@ -174,14 +191,19 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
   };
   const btn = document.getElementById('submit-btn');
   const label = document.getElementById('submit-label');
+  const buttonText = label?.textContent || '';
   const errorBox = document.getElementById('form-error');
   const success = document.getElementById('form-success');
+  const successHeading = document.getElementById('success-heading');
   const email = form?.querySelector('#email');
   const business = form?.querySelector('#business');
   const chosen = form?.querySelector('#chosen-industry');
   const phone = form?.querySelector('#phone');
   const otherField = document.getElementById('other-industry-field');
   const otherInput = form?.querySelector('#other-industry');
+
+  // The script checks the fields itself and shows its own messages.
+  if (form) form.noValidate = true;
 
   // Shows the plan for the chosen industry and the Other field when it applies.
   const showChoice = () => {
@@ -194,7 +216,7 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
     if (otherField) otherField.hidden = chosen?.value !== OTHER_INDUSTRY;
   };
 
-  const queryFields = SIGNUP_HIDDEN_FIELDS.filter((name) => name !== 'landing_page');
+  const queryFields = TRACKING_FIELDS.filter((name) => name !== 'landing_page');
 
   const fillHidden = () => {
     if (!form) return;
@@ -221,6 +243,11 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
     if (message) message.hidden = !invalid;
   };
 
+  const showError = (message) => {
+    errorBox.textContent = message;
+    errorBox.hidden = false;
+  };
+
   const turnstileToken = () => {
     const field = form?.querySelector('[name="cf-turnstile-response"]');
     if (field?.value) return field.value;
@@ -240,36 +267,32 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
     errorBox.hidden = true;
     fillHidden();
 
-    const honeypot = form.querySelector('#website');
+    const honeypot = form.querySelector('#company-fax');
     if (honeypot?.value.trim()) {
       form.hidden = true;
       success.hidden = false;
       return;
     }
 
+    const isOther = chosen.value === OTHER_INDUSTRY;
     const errors = signupErrors({
       email: email.value,
       business: business.value,
       industry: chosen.value,
       phone: phone.value,
+      otherIndustry: otherInput?.value,
     });
-    const missingBusiness = errors.includes('business');
-    const badEmail = errors.includes('email');
-    const missingIndustry = errors.includes('industry');
-    const missingPhone = errors.includes('phone');
-    setInvalid(business, missingBusiness);
-    setInvalid(email, badEmail);
-    setInvalid(chosen, missingIndustry);
-    setInvalid(phone, missingPhone);
+    const fields = { business, email, phone, industry: chosen, other: otherInput };
+    for (const [key, el] of Object.entries(fields)) setInvalid(el, errors.includes(key));
 
-    if (missingBusiness || badEmail || missingIndustry || missingPhone) {
-      (missingBusiness ? business : badEmail ? email : missingIndustry ? chosen : phone).focus();
+    if (errors.length > 0) {
+      fields[errors[0]].focus();
       return;
     }
 
     const token = turnstileToken();
     if (TURNSTILE_SITE_KEY && !token) {
-      errorBox.hidden = false;
+      showError('Please complete the security check.');
       return;
     }
 
@@ -277,43 +300,43 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
     label.textContent = 'Sending...';
 
     const hidden = {};
-    for (const name of SIGNUP_HIDDEN_FIELDS) {
+    for (const name of TRACKING_FIELDS) {
       hidden[name] = form.querySelector(`[name="${name}"]`)?.value || '';
     }
 
-    const body = signupBody({
-      businessName: business.value,
-      email: email.value,
-      chosenIndustry: chosen.value,
-      otherIndustry: chosen.value === OTHER_INDUSTRY ? otherInput?.value : '',
-      phone: phone.value,
-      missedCalls: form.querySelector('#missed').value,
-      hidden,
-      turnstileToken: token,
-      submittedAt: new Date().toISOString(),
+    const result = await sendTrialRequest({
+      fetchImpl: window.fetch.bind(window),
+      body: trialRequestBody({
+        businessName: business.value,
+        email: email.value,
+        phone: phone.value,
+        industry: chosen.value,
+        otherIndustry: isOther ? otherInput?.value : '',
+        website: form.querySelector('#website').value,
+        notes: form.querySelector('#missed').value,
+        hidden,
+        turnstileToken: token,
+      }),
+      view: window,
+      settings: { googleAdsConversion: conversion },
+      cookieString: document.cookie,
     });
 
-    try {
-      await sendSignup({
-        fetchImpl: window.fetch.bind(window),
-        endpoint: FORM_ENDPOINT,
-        body,
-        view: window,
-        settings: { googleAdsConversion: conversion },
-        cookieString: document.cookie,
-      });
-
+    if (result.accepted) {
+      if (result.message && successHeading) successHeading.textContent = result.message;
       form.hidden = true;
       success.hidden = false;
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       success.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
-      document.getElementById('success-heading')?.focus({ preventScroll: true });
-    } catch (_err) {
-      resetTurnstile();
-      errorBox.hidden = false;
-      btn.disabled = false;
-      label.textContent = 'Get your AI receptionist';
+      successHeading?.focus({ preventScroll: true });
+      return;
     }
+
+    // A token is good for one check, so a refusal needs a fresh one.
+    resetTurnstile();
+    showError(result.message);
+    btn.disabled = false;
+    label.textContent = buttonText;
   });
 </script>
 
@@ -403,19 +426,31 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
     font-weight: 800;
     letter-spacing: -0.045em;
     line-height: 1.03;
+    text-wrap: balance;
   }
 
-  h1 span {
+  h1 .accent {
     color: var(--brand-purple);
   }
 
+  h1 .keep {
+    white-space: nowrap;
+  }
+
   @supports ((-webkit-background-clip: text) or (background-clip: text)) {
-    h1 span {
+    h1 .accent {
       background: linear-gradient(100deg, var(--brand-purple), var(--brand-mint-text));
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
+  }
+
+  .trial-line {
+    margin: 0 0 0.5rem;
+    font-size: 1.08rem;
+    font-weight: 700;
+    line-height: 1.45;
   }
 
   .next,
@@ -439,8 +474,14 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
     display: none;
   }
 
+  .plan.after {
+    margin-top: 1.4rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--brand-line);
+  }
+
   .plan-name {
-    margin: 1.4rem 0 0;
+    margin: 0;
     font-size: 1.15rem;
     font-weight: 700;
     letter-spacing: -0.02em;
@@ -571,6 +612,7 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
   .submit:focus-visible,
   .logo:focus-visible,
   .privacy a:focus-visible,
+  .noscript a:focus-visible,
   .foot a:focus-visible {
     outline: 2px solid var(--brand-purple);
     outline-offset: 3px;
@@ -579,6 +621,26 @@ const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
   .submit:disabled {
     opacity: 0.65;
     cursor: not-allowed;
+  }
+
+  .optional {
+    color: var(--brand-muted);
+    font-weight: 500;
+  }
+
+  .noscript {
+    margin: 0;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 11px;
+    background: var(--brand-bg);
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .noscript a {
+    color: var(--brand-purple);
+    font-weight: 600;
   }
 
   .privacy {
