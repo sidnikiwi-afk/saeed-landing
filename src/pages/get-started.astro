@@ -13,7 +13,6 @@ const plans = [
   { key: 'receptionist', plan: planFor(adsSettings, 'receptionist') },
   { key: 'garage', plan: planFor(adsSettings, 'garage') },
 ];
-const garageFrom = adsSettings.plans.garage.amount.replace(/ a month.*$/, '');
 // The security check needs JavaScript, so a visitor without it can email
 // the request instead of meeting a refusal.
 const NO_SCRIPT_EMAIL = 'saeed@brackstonedigital.co.uk';
@@ -52,7 +51,7 @@ const noScriptHref = `mailto:${NO_SCRIPT_EMAIL}?subject=${encodeURIComponent('7-
           <p class="extra">{plan.extraMinutes}</p>
         </div>
       ))}
-      <p class="extra" id="garage-note">Garage edition from {garageFrom}</p>
+      <p class="extra" id="garage-note">Garage edition {adsSettings.plans.garage.amount}</p>
 
       <form
         class="form"

@@ -33,7 +33,7 @@ test('ads settings publish a plan per page and the general sample call', () => {
   assert.deepEqual(adsSettings.plans.garage, {
     name: 'Garage edition',
     amount: '£249 a month',
-    minutes: '400 minutes included',
+    minutes: '500 minutes included',
     setup: '£299 one-off setup. We build and test it for you.',
   });
   assert.equal(adsSettings.extraMinutes, 'Extra minutes 45p each.');
