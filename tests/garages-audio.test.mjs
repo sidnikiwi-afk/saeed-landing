@@ -13,7 +13,7 @@ test('garage call recording exists and is under 1 MB', () => {
   assert.ok(statSync(recording).size < 1024 * 1024, 'garage call recording is 1 MB or more');
 });
 
-test('garages page plays the call recording and other ads pages do not', () => {
+test('garages page plays the call recording', () => {
   // Build to a separate outDir so this file and built-site.test.mjs can run
   // their builds in parallel without clobbering each other's dist.
   const outDir = join(root, 'dist-garages-audio');
@@ -51,10 +51,5 @@ test('garages page plays the call recording and other ads pages do not', () => {
     'Tue 08:30',
   ]) {
     assert.ok(text.includes(line) || text.includes(line.replace('&#39;', "'")), `garage transcript is missing "${line}"`);
-  }
-
-  for (const slug of ['estate-agents', 'ai-receptionist']) {
-    const other = readFileSync(join(outDir, slug, 'index.html'), 'utf8');
-    assert.doesNotMatch(other, /<audio\b/, `${slug} page should not have an audio element`);
   }
 });

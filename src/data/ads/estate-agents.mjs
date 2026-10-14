@@ -18,13 +18,18 @@ export const estateAgentsAd = {
     status: 'Incoming call at 19:14',
     title: 'Branch enquiry line',
     lines: [
-      { from: 'ai', text: 'Hi, you are through to the branch. How can I help?' },
+      { from: 'ai', text: "Hi, you're through to the branch. How can I help?" },
       { from: 'caller', text: 'Hello, I saw the three bed on Victoria Road. Could I see it on Saturday?' },
       { from: 'ai', text: 'Of course. Can I take your name and the best number for you?' },
       { from: 'caller', text: 'Daniel Rowe. You should have my number, I registered last month.' },
-      { from: 'ai', text: 'Found you, Daniel. I have noted Saturday morning and passed the request to Priya, who looks after Victoria Road. She will ring you first thing tomorrow morning to fix the exact slot.' },
-      { from: 'caller', text: 'Saturday morning would be perfect.' },
-      { from: 'ai', text: 'Noted on the request. I will text you a summary now so you have it in writing.' },
+      { from: 'ai', text: 'Found you, Daniel. Is Saturday morning or afternoon better for you?' },
+      { from: 'caller', text: 'Morning would be perfect.' },
+      {
+        from: 'ai',
+        text: "Lovely. I've noted Saturday morning and passed it to Priya, who looks after Victoria Road. She'll ring you first thing tomorrow to fix the exact time.",
+      },
+      { from: 'caller', text: 'Great, thanks.' },
+      { from: 'ai', text: "I'll text you a summary now, so you've got it in writing. Bye for now." },
     ],
     booking: [
       { label: 'Caller', value: 'Daniel Rowe' },
@@ -32,6 +37,11 @@ export const estateAgentsAd = {
       { label: 'Preferred', value: 'Saturday morning' },
       { label: 'Goes to', value: 'Priya, sales negotiator' },
     ],
+    audio: {
+      heading: 'Hear it answer a viewing request',
+      src: '/audio/estate-agents-demo-call.mp3',
+      caption: 'AI voices. Names and details made up.',
+    },
   },
   strip: [
     { title: 'First ring', text: 'Every call picked up' },

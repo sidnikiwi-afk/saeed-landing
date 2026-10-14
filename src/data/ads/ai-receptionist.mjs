@@ -18,19 +18,32 @@ export const aiReceptionistAd = {
     status: 'Incoming call at 18:06',
     title: 'General enquiries line',
     lines: [
-      { from: 'ai', text: 'Good evening, how can I help?' },
-      { from: 'caller', text: 'Hi, I called earlier and got no answer. Are you open on Saturdays?' },
-      { from: 'ai', text: 'We are, from 9 until 1. I can take your name and number so someone can call you back.' },
-      { from: 'caller', text: 'Yes please. It is Priya Sharma.' },
-      { from: 'ai', text: 'Thanks Priya. Someone will call you back first thing tomorrow morning, and I will text you to confirm.' },
+      { from: 'ai', text: 'Good evening, thanks for calling. How can I help?' },
+      { from: 'caller', text: "Hi, I rang earlier and couldn't get through. Are you open on Saturdays?" },
+      {
+        from: 'ai',
+        text: 'We are, from nine until one. If you like, I can take your name and number and get someone to call you back.',
+      },
+      { from: 'caller', text: "Yes please. It's Ravi Sharma." },
+      { from: 'ai', text: 'Thanks, Ravi. Is this the best number to reach you on?' },
+      { from: 'caller', text: "Yeah, this one's fine." },
+      {
+        from: 'ai',
+        text: "Lovely. Someone will call you back first thing tomorrow morning, and I'll text you now to confirm.",
+      },
       { from: 'caller', text: 'Brilliant, thanks.' },
     ],
     booking: [
-      { label: 'Caller', value: 'Priya Sharma' },
+      { label: 'Caller', value: 'Ravi Sharma' },
       { label: 'Question', value: 'Saturday hours' },
       { label: 'Next step', value: 'Callback booked' },
       { label: 'When', value: 'Tomorrow morning' },
     ],
+    audio: {
+      heading: 'Hear it take an evening call',
+      src: '/audio/ai-receptionist-demo-call.mp3',
+      caption: 'AI voices. Names and details made up.',
+    },
   },
   strip: [
     { title: 'First ring', text: 'Every call picked up' },
