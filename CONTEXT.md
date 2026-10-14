@@ -77,7 +77,7 @@ The paid plan for any business: from £99 a month with 150 minutes and a £149 o
 _Avoid_: Starter, basic plan
 
 **Garage edition**:
-The paid plan for garages: £249 a month with 400 minutes and a £299 one-off setup, including workshop mode and vehicle lookup from the registration.
+The paid plan for garages: £249 a month with 500 minutes, extra minutes 45p, and a £299 one-off setup, including workshop mode and vehicle lookup from the registration.
 _Avoid_: Growth, garage plan, pro
 
 **Demo line**:
