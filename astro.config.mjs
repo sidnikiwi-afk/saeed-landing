@@ -10,9 +10,10 @@ export default defineConfig({
     react(),
     sitemap({
       filter: (page) =>
-        !page.includes('/premier-housing-demo') &&
-        !page.includes('/marlow-pike-demo') &&
-        !page.includes('/preview'),
+        !page.includes('/premier-housing-demo')
+        && !page.includes('/marlow-pike-demo')
+        && !page.includes('/preview')
+        && !page.includes('/get-started'),
     }),
   ],
   vite: {

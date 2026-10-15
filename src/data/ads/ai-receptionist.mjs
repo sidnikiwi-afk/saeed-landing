@@ -4,7 +4,7 @@ export const aiReceptionistAd = {
   headline: 'AI receptionist',
   headlineAccent: 'Every call answered.',
   description:
-    'An AI receptionist for UK businesses. It answers the calls, emails and web forms a business already gets. Free trial, no card needed.',
+    'An AI receptionist for UK businesses. It answers the calls, emails and web forms a business already gets.',
   eyebrow: 'For UK businesses',
   intro:
     'It picks up every call, reads the emails and web forms you already get, and passes the urgent ones to you straight away. It answers during the day, in the evening, and at the weekend.',
@@ -13,23 +13,23 @@ export const aiReceptionistAd = {
     'Reads your emails and web form enquiries',
     'Flags the urgent ones straight to you',
   ],
-  micro: ['No card needed', 'UK phone number', 'Set up for you'],
+  micro: ['Answers out of hours', 'UK phone number', 'Set up for you'],
   example: {
-    status: 'Incoming call at 17:48',
+    status: 'Incoming call at 18:06',
     title: 'General enquiries line',
     lines: [
-      { from: 'ai', text: 'Good afternoon, how can I help?' },
+      { from: 'ai', text: 'Good evening, how can I help?' },
       { from: 'caller', text: 'Hi, I called earlier and got no answer. Are you open on Saturdays?' },
       { from: 'ai', text: 'We are, from 9 until 1. I can take your name and number so someone can call you back.' },
       { from: 'caller', text: 'Yes please. It is Priya Sharma.' },
-      { from: 'ai', text: 'Thanks Priya. Someone will call you back this afternoon, and I will text you to confirm.' },
+      { from: 'ai', text: 'Thanks Priya. Someone will call you back first thing tomorrow morning, and I will text you to confirm.' },
       { from: 'caller', text: 'Brilliant, thanks.' },
     ],
     booking: [
       { label: 'Caller', value: 'Priya Sharma' },
       { label: 'Question', value: 'Saturday hours' },
       { label: 'Next step', value: 'Callback booked' },
-      { label: 'When', value: 'This afternoon' },
+      { label: 'When', value: 'Tomorrow morning' },
     ],
   },
   strip: [
@@ -65,6 +65,8 @@ export const aiReceptionistAd = {
       },
     ],
   },
+  featureEyebrow: 'Built for UK businesses',
+  featureHeading: 'It knows what your callers need.',
   featureCards: [
     {
       kicker: 'Calls',
@@ -115,7 +117,7 @@ export const aiReceptionistAd = {
     {
       question: 'Will it sound robotic?',
       answer:
-        'It is tuned for UK callers. The call on this page is illustrative, so you can judge the shape of it before a trial.',
+        'It is tuned for UK callers. The call on this page is illustrative, so you can judge the shape of it before you book.',
     },
     {
       question: 'What if it gets something wrong?',
@@ -130,7 +132,7 @@ export const aiReceptionistAd = {
   ],
   final: {
     heading: 'Stop losing enquiries to voicemail.',
-    text: 'Try the AI receptionist free. No card needed, and we set it up for you.',
+    text: 'We set it up for you, and we show you how it is doing.',
   },
   utmCampaign: 'ai-receptionist',
   vertical: 'general',

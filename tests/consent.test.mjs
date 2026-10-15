@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -27,17 +27,55 @@ test('the spec fixes one consent cookie and the gclid parameter', () => {
   assert.match(spec, /Click ID parameter: `gclid`/);
 });
 
-test('empty tag IDs load nothing and a choice is remembered without a Google tag', async () => {
+test('the live settings carry the Google Ads tag and leave GA4 and tap labels empty', async () => {
+  const { trackingSettings } = await import('../src/data/tracking.mjs');
+  assert.equal(trackingSettings.ga4MeasurementId, '');
+  assert.equal(trackingSettings.googleAdsId, 'AW-18471816578');
+  assert.equal(trackingSettings.signupTapConversionLabel, '');
+  assert.equal(trackingSettings.demoLineConversionLabel, '');
+});
+
+test('the Google Ads tag loads only after ad consent, and taps add no conversion', async () => {
   const { trackingSettings } = await import('../src/data/tracking.mjs');
   const { startConsent } = await import('../src/lib/consent.mjs');
 
-  assert.equal(trackingSettings.ga4MeasurementId, '');
-  assert.equal(trackingSettings.googleAdsId, '');
-  assert.equal(trackingSettings.trialConversionLabel, '');
-  assert.equal(trackingSettings.demoLineConversionLabel, '');
+  const waiting = harness();
+  startConsent(waiting.doc, trackingSettings, waiting.env);
+  assert.equal(waiting.scripts.length, 0, 'gtag.js loaded before consent');
+  waiting.click('a[data-signup]');
+  assert.equal(waiting.dataLayer.length, 0, 'something reached the dataLayer before consent');
+
+  waiting.click('[data-consent-choice="accepted"]');
+  assert.equal(waiting.scripts.length, 1);
+  assert.equal(waiting.scripts[0].src, 'https://www.googletagmanager.com/gtag/js?id=AW-18471816578');
+  assert.ok(waiting.dataLayer.some((entry) => entry[0] === 'config' && entry[1] === 'AW-18471816578'));
+  assert.ok(waiting.dataLayer.some((entry) => entry[0] === 'consent' && entry[1] === 'update'));
+  waiting.click('a[data-signup]');
+  waiting.click('a[href^="tel:"]');
+  assert.equal(waiting.events().some((event) => event.name === 'conversion'), false, 'a tap fired a conversion with an empty label');
+
+  const declined = harness();
+  startConsent(declined.doc, trackingSettings, declined.env);
+  declined.click('[data-consent-choice="declined"]');
+  assert.equal(declined.scripts.length, 0, 'gtag.js loaded after a decline');
+  assert.equal(declined.dataLayer.length, 0);
+
+  const remembered = harness({ cookie: 'brackstone_consent=declined' });
+  startConsent(remembered.doc, trackingSettings, remembered.env);
+  assert.equal(remembered.scripts.length, 0, 'gtag.js loaded after a remembered decline');
+});
+
+test('empty tag IDs load nothing and a choice is remembered without a Google tag', async () => {
+  const { startConsent } = await import('../src/lib/consent.mjs');
+  const emptySettings = {
+    ga4MeasurementId: '',
+    googleAdsId: '',
+    signupTapConversionLabel: '',
+    demoLineConversionLabel: '',
+  };
 
   const empty = harness();
-  startConsent(empty.doc, trackingSettings, empty.env);
+  startConsent(empty.doc, emptySettings, empty.env);
   empty.click('[data-consent-choice="accepted"]');
   assert.equal(empty.scripts.length, 0, 'accept with empty IDs still loaded a tag');
   assert.equal(empty.cookieValue(), 'accepted');
@@ -46,15 +84,15 @@ test('empty tag IDs load nothing and a choice is remembered without a Google tag
   assert.match(empty.lastCookie, /Path=\//);
   assert.match(empty.lastCookie, /SameSite=Lax/);
   assert.match(empty.lastCookie, /Secure/);
-  empty.click('a[href*="trial-request"]');
+  empty.click('a[data-signup]');
   empty.click('a[href^="tel:"]');
-  assert.equal(empty.events().some((event) => event.name === 'conversion' || event.name === 'free_trial_tap' || event.name === 'demo_line_tap'), false);
+  assert.equal(empty.events().some((event) => event.name === 'conversion' || event.name === 'signup_tap' || event.name === 'demo_line_tap'), false);
 
   const declined = harness({ cookie: 'brackstone_consent=declined' });
   startConsent(declined.doc, {
     ga4MeasurementId: 'G-TEST1234',
     googleAdsId: 'AW-123456789',
-    trialConversionLabel: 'trialLabel',
+    signupTapConversionLabel: 'signupTapLabel',
     demoLineConversionLabel: 'demoLabel',
   }, declined.env);
   assert.equal(declined.banner.hidden, true, 'a remembered decline still shows the banner');
@@ -64,18 +102,18 @@ test('empty tag IDs load nothing and a choice is remembered without a Google tag
   startConsent(waiting.doc, {
     ga4MeasurementId: 'G-TEST1234',
     googleAdsId: 'AW-123456789',
-    trialConversionLabel: 'trialLabel',
+    signupTapConversionLabel: 'signupTapLabel',
     demoLineConversionLabel: 'demoLabel',
   }, waiting.env);
   assert.equal(waiting.scripts.length, 0, 'a tag loaded before consent');
-  waiting.click('a[href*="trial-request"]');
-  assert.equal(waiting.events().length, 0, 'a trial tap counted before consent');
+  waiting.click('a[data-signup]');
+  assert.equal(waiting.events().length, 0, 'a sign-up tap counted before consent');
   waiting.click('[data-consent-choice="accepted"]');
   assert.equal(waiting.scripts.length, 1);
   assert.match(waiting.scripts[0].src, /googletagmanager\.com\/gtag\/js\?id=G-TEST1234/);
-  waiting.click('a[href*="trial-request"]');
-  assert.ok(waiting.events().some((event) => event.name === 'free_trial_tap'));
-  assert.ok(waiting.events().some((event) => event.sendTo === 'AW-123456789/trialLabel'));
+  waiting.click('a[data-signup]');
+  assert.ok(waiting.events().some((event) => event.name === 'signup_tap'));
+  assert.ok(waiting.events().some((event) => event.sendTo === 'AW-123456789/signupTapLabel'));
   waiting.click('a[href^="tel:"]');
   assert.ok(waiting.events().some((event) => event.name === 'demo_line_tap'));
   assert.ok(waiting.events().some((event) => event.sendTo === 'AW-123456789/demoLabel'));
@@ -84,51 +122,113 @@ test('empty tag IDs load nothing and a choice is remembered without a Google tag
   startConsent(noDemo.doc, {
     ga4MeasurementId: 'G-TEST1234',
     googleAdsId: 'AW-123456789',
-    trialConversionLabel: 'trialLabel',
+    signupTapConversionLabel: 'signupTapLabel',
     demoLineConversionLabel: 'demoLabel',
   }, noDemo.env);
   noDemo.click('[data-consent-choice="accepted"]');
-  noDemo.click('a[href*="trial-request"]');
+  noDemo.click('a[data-signup]');
   assert.equal(noDemo.events().some((event) => event.name === 'demo_line_tap'), false);
 });
 
-test('ads trial links keep the UTM rules and gain gclid from the landing URL', async () => {
-  const { trialHref, applyLandingUtms } = await import('../src/lib/ads-page.mjs');
+test('sign-up taps are reported only after consent, and empty labels add no conversion', async () => {
+  const { startConsent } = await import('../src/lib/consent.mjs');
+  const settings = {
+    ga4MeasurementId: 'G-TEST1234',
+    googleAdsId: 'AW-123456789',
+    signupTapConversionLabel: 'signupTapLabel',
+    demoLineConversionLabel: 'demoLabel',
+  };
 
-  const plain = new URL(trialHref({
-    campaign: 'garages',
-    placement: 'hero',
-    vertical: 'garage',
-  }));
-  assert.equal(plain.searchParams.get('gclid'), null);
-  assert.equal(plain.searchParams.get('utm_source'), 'google');
-  assert.equal(plain.searchParams.get('utm_medium'), 'cpc');
-  assert.equal(plain.searchParams.get('utm_campaign'), 'garages');
-  assert.equal(plain.searchParams.get('utm_content'), 'hero');
+  const before = harness();
+  startConsent(before.doc, settings, before.env);
+  before.click('a[data-signup]');
+  assert.equal(before.events().length, 0, 'a sign-up tap counted before consent');
 
-  const passed = new URL(trialHref({
-    campaign: 'garages',
-    placement: 'header',
-    vertical: 'garage',
-    landing: 'https://brackstonedigital.co.uk/garages/?gclid=CjwKtest&utm_source=newsletter&utm_term=mot&utm_medium=',
-  }));
-  assert.equal(passed.searchParams.get('gclid'), 'CjwKtest');
-  assert.equal(passed.searchParams.get('utm_source'), 'newsletter');
-  assert.equal(passed.searchParams.get('utm_medium'), 'cpc');
-  assert.equal(passed.searchParams.get('utm_campaign'), 'garages');
-  assert.equal(passed.searchParams.get('utm_content'), 'header');
-  assert.equal(passed.searchParams.get('utm_term'), 'mot');
-  assert.equal(passed.searchParams.get('vertical'), 'garage');
+  const accepted = harness({ cookie: 'brackstone_consent=accepted' });
+  startConsent(accepted.doc, settings, accepted.env);
+  accepted.click('a[data-signup]');
+  assert.ok(accepted.events().some((event) => event.name === 'signup_tap'));
+  assert.ok(accepted.events().some((event) => event.sendTo === 'AW-123456789/signupTapLabel'));
 
-  const nodes = ['hero', 'final'].map((placement) => fakeTrial(placement));
-  applyLandingUtms({ querySelectorAll: () => nodes }, '?gclid=from-ad&utm_campaign=spring');
-  for (const node of nodes) {
-    const url = new URL(node.getAttribute('href'));
-    assert.equal(url.searchParams.get('gclid'), 'from-ad');
-    assert.equal(url.searchParams.get('utm_campaign'), 'spring');
-    assert.equal(url.searchParams.get('utm_content'), node.getAttribute('data-trial'));
-    assert.equal(url.searchParams.get('utm_source'), 'google');
-  }
+  const emptyLabel = harness({ cookie: 'brackstone_consent=accepted' });
+  startConsent(emptyLabel.doc, {
+    ga4MeasurementId: 'G-TEST1234',
+    googleAdsId: 'AW-123456789',
+    signupTapConversionLabel: '',
+    demoLineConversionLabel: '',
+  }, emptyLabel.env);
+  emptyLabel.click('a[data-signup]');
+  assert.equal(emptyLabel.events().some((event) => event.name === 'conversion'), false);
+  assert.equal(emptyLabel.events().some((event) => event.sendTo), false);
+
+  const emptyIds = harness({ cookie: 'brackstone_consent=accepted' });
+  startConsent(emptyIds.doc, {
+    ga4MeasurementId: '',
+    googleAdsId: '',
+    signupTapConversionLabel: '',
+    demoLineConversionLabel: '',
+  }, emptyIds.env);
+  emptyIds.click('a[data-signup]');
+  assert.equal(emptyIds.events().length, 0, 'empty tag IDs still reported a sign-up tap');
+});
+
+test('the consent banner lifts above the mobile sign-up bar', async () => {
+  const { startConsent } = await import('../src/lib/consent.mjs');
+  const source = readFileSync(join(root, 'src/lib/consent.mjs'), 'utf8');
+  assert.doesNotMatch(source, /Free trial/);
+
+  const banner = { hidden: false, style: { bottom: '' } };
+  const bar = {
+    getAttribute(name) {
+      return name === 'data-mobile-cta' ? '' : null;
+    },
+    getBoundingClientRect() {
+      return { height: 64 };
+    },
+  };
+  const stale = {
+    getAttribute(name) {
+      return name === 'aria-label' ? 'Free trial' : null;
+    },
+    getBoundingClientRect() {
+      return { height: 20 };
+    },
+  };
+  let barDisplay = 'block';
+  const resize = [];
+  const view = {
+    getComputedStyle(node) {
+      return { display: node === bar ? barDisplay : 'block' };
+    },
+    addEventListener(type, fn) {
+      if (type === 'resize') resize.push(fn);
+    },
+    location: { hostname: 'brackstonedigital.co.uk', protocol: 'https:' },
+  };
+  const doc = {
+    cookie: '',
+    querySelector(selector) {
+      if (selector === '[data-consent-banner]') return banner;
+      if (selector === '[data-mobile-cta]') return bar;
+      return null;
+    },
+    querySelectorAll(selector) {
+      if (selector === '[role="region"]') return [stale];
+      return [];
+    },
+    addEventListener() {},
+    createElement() {
+      return {};
+    },
+    head: { appendChild() {} },
+  };
+
+  startConsent(doc, {}, { window: view, location: view.location });
+  assert.equal(banner.style.bottom, '76px');
+
+  barDisplay = 'none';
+  for (const fn of resize) fn();
+  assert.equal(banner.style.bottom, '');
 });
 
 test('built public pages carry the banner and no tracking tag', () => {
@@ -166,22 +266,24 @@ test('built public pages carry the banner and no tracking tag', () => {
 
   assert.equal(existsSync(join(outDir, 'preview/index.html')), false, '/preview/ must not exist');
 
+  // The Ads IDs reach the build only through the settings: the consent script
+  // bundle carries the tag ID and the /get-started/ form carries the label.
+  const signup = readFileSync(join(outDir, 'get-started/index.html'), 'utf8');
+  assert.match(signup, /data-conversion-id="AW-18471816578"/);
+  assert.match(signup, /data-conversion-label="uX_RCNbj7ZsdEIKbhuhE"/);
+  assert.equal(signup.split('uX_RCNbj7ZsdEIKbhuhE').length - 1, 1);
+  for (const rel of publicPages) {
+    const html = readFileSync(join(outDir, rel), 'utf8');
+    assert.doesNotMatch(html, /uX_RCNbj7ZsdEIKbhuhE/, `${rel} carries the sign-up label`);
+    assert.doesNotMatch(html, /AW-18471816578/, `${rel} bakes the Ads tag ID into the page`);
+  }
+  const bundles = readdirSync(join(outDir, '_astro')).filter((name) => name.endsWith('.js'));
+  const withTag = bundles.filter((name) => readFileSync(join(outDir, '_astro', name), 'utf8').includes('AW-18471816578'));
+  assert.ok(withTag.length > 0 && withTag.every((name) => name.startsWith('ConsentBanner')), `Ads tag ID found in ${withTag.join(', ')}`);
+
   const garages = readFileSync(join(outDir, 'garages/index.html'), 'utf8');
   assert.doesNotMatch(garages, /gclid=/i, 'gclid must come from the landing URL, not the built HTML');
 });
-
-function fakeTrial(placement) {
-  const attrs = new Map([
-    ['href', 'https://dashboard.brackstonedigital.co.uk/trial-request'],
-    ['data-trial', placement],
-    ['data-campaign', 'garages'],
-    ['data-vertical', 'garage'],
-  ]);
-  return {
-    getAttribute: (name) => attrs.get(name) ?? null,
-    setAttribute: (name, value) => attrs.set(name, value),
-  };
-}
 
 function harness({ cookie = '', tel = true } = {}) {
   let jar = cookie;
@@ -197,7 +299,7 @@ function harness({ cookie = '', tel = true } = {}) {
     dataLayer.push(arguments);
   };
 
-  const trial = element('A', { href: 'https://dashboard.brackstonedigital.co.uk/trial-request?utm_content=hero' });
+  const signup = element('A', { href: '/get-started/?industry=general&utm_content=hero', 'data-signup': '' });
   const phone = element('A', { href: 'tel:+441274000000' });
   const accept = element('BUTTON', { 'data-consent-choice': 'accepted' });
   const decline = element('BUTTON', { 'data-consent-choice': 'declined' });
@@ -211,7 +313,7 @@ function harness({ cookie = '', tel = true } = {}) {
     ['[data-consent-banner]', banner],
     ['[data-consent-choice="accepted"]', accept],
     ['[data-consent-choice="declined"]', decline],
-    ['a[href*="trial-request"]', trial],
+    ['a[data-signup]', signup],
     ['a[href^="tel:"]', phone],
   ]);
 
@@ -250,6 +352,7 @@ function harness({ cookie = '', tel = true } = {}) {
     env: { window: view, location: view.location },
     scripts,
     banner,
+    dataLayer,
     get lastCookie() {
       return state.lastCookie;
     },

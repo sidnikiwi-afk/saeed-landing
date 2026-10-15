@@ -43,7 +43,7 @@ test('estate agents ads data follows the page contract', async () => {
   );
 });
 
-test('estate agents page builds with the right headline and trial links', () => {
+test('estate agents page builds with the right headline and no trial links', () => {
   // Build to a separate outDir so this file and built-site.test.mjs can run
   // their builds in parallel without clobbering each other's dist.
   const outDir = join(root, 'dist-estate-agents');
@@ -63,6 +63,10 @@ test('estate agents page builds with the right headline and trial links', () => 
     /<h1\b[^>]*>[\s\S]*AI receptionist for estate agents[\s\S]*<\/h1>/i,
     'estate agents headline does not repeat the search',
   );
+  assert.match(html, /lettings and sales caller/, 'estate agents feature heading is missing');
+  assert.doesNotMatch(html, /garage caller/, 'estate agents page still shows the garage feature heading');
+  assert.match(html, /ring you first thing tomorrow morning/, 'estate agents example callback timing is missing');
+  assert.doesNotMatch(html, /this afternoon/i, 'estate agents example promises an afternoon callback after hours');
   assert.doesNotMatch(html, /noindex/i, 'estate agents page must be indexed');
 
   const hrefs = [];
@@ -75,16 +79,37 @@ test('estate agents page builds with the right headline and trial links', () => 
       .replace(/&#39;/g, "'")
       .replace(/&amp;/g, '&');
   for (const match of html.matchAll(re)) hrefs.push(decode(match[1]));
-  assert.ok(hrefs.length > 0, 'estate agents page has no trial links');
-
-  const placements = hrefs.map((href) => new URL(href).searchParams.get('utm_content')).sort();
-  assert.deepEqual(placements, ['final', 'header', 'hero', 'mobile-bar']);
-  for (const href of hrefs) {
-    const url = new URL(href);
-    assert.equal(`${url.origin}${url.pathname}`, 'https://dashboard.brackstonedigital.co.uk/trial-request');
-    assert.equal(url.searchParams.get('utm_source'), 'google');
-    assert.equal(url.searchParams.get('utm_medium'), 'cpc');
-    assert.equal(url.searchParams.get('utm_campaign'), 'estate-agents');
-    assert.equal(url.searchParams.get('vertical'), 'estate-agent');
+  const markup = html.replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, '');
+  assert.deepEqual(hrefs, [], 'estate agents page still links to the trial request');
+  for (const phrase of ['free trial', 'Start free trial', 'Start a free trial', 'No card needed', 'Try it free']) {
+    assert.doesNotMatch(markup, new RegExp(phrase, 'i'), `estate agents page still says "${phrase}"`);
   }
+
+  const anchors = [];
+  for (const match of html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/gi)) {
+    const hrefMatch = match[1].match(/href\s*=\s*(["'])(.*?)\1/i);
+    if (!hrefMatch) continue;
+    const text = match[2].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    anchors.push({ href: decode(hrefMatch[2]), text });
+  }
+  // The only teardown on this page is the small lettings line under the price.
+  assert.equal((html.match(/teardown/gi) ?? []).length, 1, 'estate agents page says teardown outside the lettings line');
+  assert.match(html, /Need more than call answering\? We also build full lettings systems\./);
+  assert.deepEqual(
+    anchors.filter((anchor) => anchor.text === 'Book a 15-minute teardown').map((anchor) => anchor.href),
+    ['/contact/'],
+  );
+  assert.match(html, /<p class="plan"[^>]*>AI receptionist<\/p>/);
+  assert.match(html, /From £99 a month/);
+  assert.match(html, /150 minutes included/);
+  assert.match(html, /£149 one-off setup\. We build and test it for you\./);
+  assert.match(html, /Extra minutes 45p each\./);
+  assert.doesNotMatch(html, /£249|£299|Garage edition|Workshop mode/);
+  const signupAnchors = anchors.filter((anchor) => anchor.text === 'Get your AI receptionist');
+  assert.ok(signupAnchors.length >= 4, 'estate agents page is missing sign-up buttons');
+  assert.ok(
+    signupAnchors.every((anchor) => anchor.href.startsWith('/get-started/?industry=estate-agents')),
+    'an estate agents sign-up link does not point at /get-started/',
+  );
+  assert.doesNotMatch(html, /Hear it answer a call/, 'empty sample call still renders a link');
 });

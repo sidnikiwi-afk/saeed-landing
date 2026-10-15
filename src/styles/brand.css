@@ -17,6 +17,8 @@
 :root {
   --brand-purple: #6e48f0;
   --brand-mint: #00c896;
+  /* Darker mint for gradient text: 3.38:1 on --brand-bg, the large-text minimum is 3:1. */
+  --brand-mint-text: #009b76;
   --brand-ink: #0a0a0b;
   --brand-bg: #fafafb;
   --brand-line: #e8e8ee;

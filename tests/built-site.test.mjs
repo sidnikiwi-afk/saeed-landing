@@ -4,6 +4,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { SIGNUP_INDUSTRY_GROUPS } from '../src/lib/get-started.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(root, 'dist');
@@ -176,48 +177,37 @@ function anchorHref(html, label) {
   return found[0].href;
 }
 
-// Homepage hero contract: teardown goes to the contact page, and the trial
-// link carries homepage UTM tags plus a placement in utm_content.
+// Tracking and consent scripts may still know about the trial URL, so only
+// markup counts as a public link.
+function visibleMarkup(html) {
+  return html.replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, '');
+}
+
+// Homepage hero contract: the teardown button goes to the contact page, and
+// no public trial link is allowed anywhere on the page.
 export function heroLinkProblems(html) {
   const problems = [];
   let teardown = '';
-  let trialHref = '';
   try {
     teardown = anchorHref(html, 'Book a 15-minute teardown');
-  } catch (error) {
-    problems.push(error.message);
-  }
-  try {
-    trialHref = anchorHref(html, 'Start a free trial');
   } catch (error) {
     problems.push(error.message);
   }
   if (teardown && teardown !== '/contact/') {
     problems.push(`teardown button points at ${teardown}, expected /contact/`);
   }
-  if (trialHref) {
-    let trial;
-    try {
-      trial = new URL(trialHref);
-    } catch {
-      problems.push(`trial button is not an absolute URL: ${trialHref}`);
-      trial = null;
-    }
-    if (trial) {
-      const path = trial.pathname.replace(/\/$/, '') || '/';
-      if (trial.origin !== 'https://dashboard.brackstonedigital.co.uk' || path !== '/trial-request') {
-        problems.push(`trial button points at ${trial.origin}${path}, expected the dashboard trial request`);
-      }
-      if (trial.searchParams.get('utm_source') !== 'website') {
-        problems.push('trial link is missing utm_source=website');
-      }
-      if (trial.searchParams.get('utm_medium') !== 'homepage') {
-        problems.push('trial link is missing utm_medium=homepage');
-      }
-      const placement = trial.searchParams.get('utm_content');
-      if (!placement || !placement.trim()) {
-        problems.push('trial link is missing a placement utm_content');
-      }
+  if (/dashboard\.brackstonedigital\.co\.uk\/trial-request/.test(visibleMarkup(html))) {
+    problems.push('page still links to the trial request');
+  }
+  return problems;
+}
+
+export function trialCopyProblems(html, relPath = 'page') {
+  const text = visibleMarkup(html);
+  const problems = [];
+  for (const phrase of ['free trial', 'Start free trial', 'Start a free trial', 'No card needed', 'Try it free']) {
+    if (new RegExp(phrase, 'i').test(text)) {
+      problems.push(`${relPath} still says "${phrase}"`);
     }
   }
   return problems;
@@ -231,12 +221,11 @@ function isCopiedFromPublic(relPath) {
 }
 
 test('ads links and demo line follow the page settings', async () => {
-  const { trialHref, adsVisibility, applyLandingUtms } = await import('../src/lib/ads-page.mjs');
+  const { signupHref, adsVisibility, applySignupParams } = await import('../src/lib/ads-page.mjs');
   const { adsSettings } = await import('../src/data/ads/settings.mjs');
   const { garagesAd } = await import('../src/data/ads/garages.mjs');
 
   assert.equal(adsSettings.demoLine, '');
-  assert.equal(adsSettings.startingPrice, '');
   assert.equal(garagesAd.searchIntent, 'AI receptionist for garages');
   assert.equal(garagesAd.slug, 'garages');
   assert.equal(garagesAd.utmCampaign, 'garages');
@@ -247,55 +236,73 @@ test('ads links and demo line follow the page settings', async () => {
     assert.ok(garagesAd[key], `garages entry is missing ${key}`);
   }
 
-  assert.deepEqual(adsVisibility({ demoLine: '', startingPrice: '  ' }), {
+  assert.deepEqual(adsVisibility({ demoLine: '' }), {
     showCall: false,
     phone: '',
     callHref: '',
-    showPrice: false,
-    price: '',
   });
-  assert.deepEqual(adsVisibility({ demoLine: ' 0800 111 222 ', startingPrice: '149' }), {
+  assert.deepEqual(adsVisibility({ demoLine: ' 0800 111 222 ' }), {
     showCall: true,
     phone: '0800 111 222',
     callHref: 'tel:0800111222',
-    showPrice: true,
-    price: '149',
   });
-  assert.equal(adsVisibility({ demoLine: '+44 1274 000000', startingPrice: '90' }).callHref, 'tel:+441274000000');
+  assert.equal(adsVisibility({ demoLine: '+44 1274 000000' }).callHref, 'tel:+441274000000');
 
-  const hero = trialHref({ campaign: 'garages', placement: 'hero', vertical: 'garage' });
+  const hero = signupHref({ industry: 'garages', campaign: 'garages', placement: 'hero' });
   assert.equal(
     hero,
-    'https://dashboard.brackstonedigital.co.uk/trial-request?utm_source=google&utm_medium=cpc&utm_campaign=garages&utm_content=hero&vertical=garage',
+    '/get-started/?industry=garages&utm_source=google&utm_medium=cpc&utm_campaign=garages&utm_content=hero',
   );
 
-  const overridden = new URL(trialHref({
+  const overridden = new URL(signupHref({
+    industry: 'garages',
     campaign: 'garages',
     placement: 'hero',
-    vertical: 'garage',
     landing: 'https://brackstonedigital.co.uk/garages/?utm_source=newsletter&utm_campaign=spring&utm_content=ad-1&utm_term=mot&utm_medium=',
-  }));
+  }), 'https://brackstonedigital.co.uk');
   assert.equal(overridden.searchParams.get('utm_source'), 'newsletter');
   assert.equal(overridden.searchParams.get('utm_medium'), 'cpc');
   assert.equal(overridden.searchParams.get('utm_campaign'), 'spring');
   assert.equal(overridden.searchParams.get('utm_content'), 'ad-1');
   assert.equal(overridden.searchParams.get('utm_term'), 'mot');
-  assert.equal(overridden.searchParams.get('vertical'), 'garage');
+  assert.equal(overridden.searchParams.get('gclid'), null);
 
   const attrs = new Map([
     ['href', hero],
-    ['data-trial', 'hero'],
+    ['data-signup', ''],
+    ['data-industry', 'garages'],
     ['data-campaign', 'garages'],
-    ['data-vertical', 'garage'],
+    ['data-placement', 'hero'],
   ]);
   const node = {
     getAttribute: (name) => attrs.get(name) ?? null,
     setAttribute: (name, value) => attrs.set(name, value),
   };
-  applyLandingUtms({ querySelectorAll: () => [node] }, '?utm_campaign=spring');
-  assert.equal(new URL(attrs.get('href')).searchParams.get('utm_campaign'), 'spring');
-  assert.equal(new URL(attrs.get('href')).searchParams.get('utm_content'), 'hero');
+  applySignupParams({ querySelectorAll: () => [node] }, '?utm_campaign=spring');
+  assert.equal(new URL(attrs.get('href'), 'https://brackstonedigital.co.uk').searchParams.get('utm_campaign'), 'spring');
+  assert.equal(new URL(attrs.get('href'), 'https://brackstonedigital.co.uk').searchParams.get('utm_content'), 'hero');
+  assert.equal(new URL(attrs.get('href'), 'https://brackstonedigital.co.uk').searchParams.get('utm_source'), 'google');
 });
+
+function assertSignupDefaults(signups, industry, campaign) {
+  assert.ok(signups.length >= 4, `${campaign} is missing sign-up buttons`);
+  const placements = new Set();
+  for (const anchor of signups) {
+    assert.ok(
+      anchor.href.startsWith(`/get-started/?industry=${industry}`),
+      `${campaign} sign-up link does not point at /get-started/`,
+    );
+    const params = new URL(anchor.href, 'https://brackstonedigital.co.uk').searchParams;
+    assert.equal(params.get('utm_source'), 'google', `${campaign} sign-up is missing utm_source=google`);
+    assert.equal(params.get('utm_medium'), 'cpc', `${campaign} sign-up is missing utm_medium=cpc`);
+    assert.equal(params.get('utm_campaign'), campaign, `${campaign} sign-up is missing its campaign`);
+    assert.ok(params.get('utm_content'), `${campaign} sign-up is missing utm_content`);
+    placements.add(params.get('utm_content'));
+  }
+  for (const placement of ['header', 'hero', 'price', 'mobile-bar', 'final']) {
+    assert.ok(placements.has(placement), `${campaign} is missing the ${placement} sign-up link`);
+  }
+}
 
 function trialHrefs(html) {
   const hrefs = [];
@@ -319,28 +326,21 @@ test('copy scanner flags em dashes, emoji, and banned tool names', () => {
   assert.ok(copyProblems('We use Make here.').some((problem) => problem.includes('Make')));
 });
 
-test('hero link checker rejects a bad teardown or a trial link without UTM tags', () => {
-  const good = [
-    '<a href="/contact/">Book a 15-minute teardown</a>',
-    '<a href="https://dashboard.brackstonedigital.co.uk/trial-request?utm_source=website&amp;utm_medium=homepage&amp;utm_content=hero">Start a free trial</a>',
-  ].join('');
+test('hero link checker rejects a bad teardown link or a leftover trial link', () => {
+  const good = '<a href="/contact/">Book a 15-minute teardown</a>';
   assert.deepEqual(heroLinkProblems(good), []);
-  assert.deepEqual(heroLinkProblems(good.replaceAll('&amp;', '&#38;')), []);
 
   const wrongTeardown = good.replace('href="/contact/"', 'href="/book/"');
   assert.ok(heroLinkProblems(wrongTeardown).some((problem) => problem.includes('/contact/')));
 
-  const wrongTrial = good.replace('/trial-request', '/login');
-  assert.ok(heroLinkProblems(wrongTrial).some((problem) => problem.includes('trial request')));
+  const missingTeardown = '';
+  assert.ok(heroLinkProblems(missingTeardown).some((problem) => problem.includes('teardown')));
 
-  const missingPlacement = good.replace('&amp;utm_content=hero', '');
-  assert.ok(heroLinkProblems(missingPlacement).some((problem) => problem.includes('utm_content')));
-
-  const missingMedium = good.replace('utm_medium=homepage', 'utm_medium=email');
-  assert.ok(heroLinkProblems(missingMedium).some((problem) => problem.includes('utm_medium')));
-
-  const missingSource = good.replace('utm_source=website', 'utm_source=google');
-  assert.ok(heroLinkProblems(missingSource).some((problem) => problem.includes('utm_source')));
+  const withTrial = [
+    good,
+    '<a href="https://dashboard.brackstonedigital.co.uk/trial-request?utm_source=website">Start a free trial</a>',
+  ].join('');
+  assert.ok(heroLinkProblems(withTrial).some((problem) => problem.includes('trial request')));
 });
 
 test('built site hides the preview and keeps copy clean', () => {
@@ -410,6 +410,7 @@ test('built site hides the preview and keeps copy clean', () => {
   assert.match(homeHtml, /\/fonts\/GeistMono-Variable\.woff2/);
   assert.doesNotMatch(homeHtml, /fonts\.googleapis\.com/);
   assert.deepEqual(heroLinkProblems(homeHtml), []);
+  assert.deepEqual(trialCopyProblems(homeHtml, 'homepage'), []);
   assert.match(homeHtml, /Every enquiry handled/);
   assert.match(homeHtml, /Running on its own/);
   assert.match(homeHtml, /Calls, emails, web forms/);
@@ -485,23 +486,30 @@ test('built site hides the preview and keeps copy clean', () => {
   );
   assert.doesNotMatch(garagesHtml, /noindex/i, 'garages page must be indexed');
   assert.doesNotMatch(garagesHtml, /tel:/i, 'empty demo line still renders a call link');
-  assert.doesNotMatch(garagesHtml, /£/, 'empty starting price still renders a price');
+  assert.match(garagesHtml, /<p class="plan"[^>]*>Garage edition<\/p>/, 'garage plan name is missing');
+  assert.match(garagesHtml, /<p class="amount"[^>]*>£249 a month<\/p>/, 'garage price line is missing');
+  assert.match(garagesHtml, /400 minutes included/, 'garage minutes line is missing');
+  assert.match(garagesHtml, /<p class="lead"[^>]*>£299 one-off setup\. We build and test it for you\.<\/p>/, 'garage setup line is missing');
+  assert.match(garagesHtml, /Extra minutes 45p each\./, 'extra minutes line is missing');
+  assert.doesNotMatch(garagesHtml, /£99|£149|150 minutes/, 'garages page shows the general plan');
+  assert.match(garagesHtml, /<h3[^>]*>Workshop mode<\/h3>/, 'workshop mode card is missing');
+  for (const action of ['Call back', 'Quote', 'Booked', 'Complete', 'Follow up']) {
+    assert.match(garagesHtml, new RegExp(`<li[^>]*>${action}</li>`), `workshop mode is missing ${action}`);
+  }
+  assert.doesNotMatch(garagesHtml, /teardown/i, 'ads page still says teardown');
+  assert.doesNotMatch(garagesHtml, /Hear it answer a call/, 'empty sample call still renders a link');
   assert.doesNotMatch(garagesHtml, /fonts\.googleapis\.com/);
+  assert.match(garagesHtml, /garage caller/, 'garages feature heading is missing');
   assert.match(garagesHtml, /Illustrative/);
   assert.match(garagesHtml, /\/fonts\/Geist-Variable\.woff2/);
 
-  const hrefs = trialHrefs(garagesHtml);
-  assert.ok(hrefs.length > 0, 'garages page has no trial links');
-  const placements = hrefs.map((href) => new URL(href).searchParams.get('utm_content')).sort();
-  assert.deepEqual(placements, ['final', 'header', 'hero', 'mobile-bar']);
-  for (const href of hrefs) {
-    const url = new URL(href);
-    assert.equal(`${url.origin}${url.pathname}`, 'https://dashboard.brackstonedigital.co.uk/trial-request');
-    assert.equal(url.searchParams.get('utm_source'), 'google');
-    assert.equal(url.searchParams.get('utm_medium'), 'cpc');
-    assert.equal(url.searchParams.get('utm_campaign'), 'garages');
-    assert.equal(url.searchParams.get('vertical'), 'garage');
-  }
+  // The trial offer is gone: no trial links, no trial wording anywhere a
+  // visitor can read. Ads pages sign the visitor up instead of booking a teardown.
+  assert.deepEqual(trialHrefs(garagesHtml), [], 'garages page still links to the trial request');
+  assert.deepEqual(trialCopyProblems(garagesHtml, 'garages page'), []);
+  const garagesSignup = anchors(garagesHtml).filter((anchor) => anchor.text === 'Get your AI receptionist');
+  assert.ok(garagesSignup.length >= 4, 'garages page is missing sign-up buttons');
+  assertSignupDefaults(garagesSignup, 'garages', 'garages');
 
   const styles = [...garagesHtml.matchAll(/<(?:link[^>]+href="([^"]+\.css)"|style\b[^>]*>)/g)];
   const cssParts = [garagesHtml];
@@ -521,6 +529,78 @@ test('built site hides the preview and keeps copy clean', () => {
     assert.doesNotMatch(xml, /\/preview\/?/i, `${name} includes the preview URL`);
   }
   assert.match(sitemapText, /\/garages\/?/, 'sitemap is missing /garages/');
+  assert.doesNotMatch(sitemapText, /\/get-started\/?/i, 'sitemap includes /get-started/');
+
+  const signupHtml = readFileSync(join(dist, 'get-started', 'index.html'), 'utf8');
+  assert.match(signupHtml, /noindex/i, 'sign-up page must be noindex');
+  assert.match(signupHtml, /We will be in touch within one working day to get you set up\./);
+  // Without JavaScript the general plan shows with a garage note. Both plans
+  // are in the page so the script can show the garage one for ?industry=garages.
+  const visiblePlans = [...signupHtml.matchAll(/<div class="plan"[^>]*data-plan="(\w+)"[^>]*>/g)]
+    .filter((match) => !/\shidden\b/.test(match[0]))
+    .map((match) => match[1]);
+  assert.deepEqual(visiblePlans, ['receptionist']);
+  assert.match(signupHtml, /data-plan="garage"[^>]*hidden|hidden[^>]*data-plan="garage"/);
+  assert.match(signupHtml, /From £99 a month/);
+  assert.match(signupHtml, /150 minutes included/);
+  assert.match(signupHtml, /£149 one-off setup\. We build and test it for you\./);
+  assert.match(signupHtml, /£249 a month/);
+  assert.match(signupHtml, /400 minutes included/);
+  assert.match(signupHtml, />£299 one-off setup\. We build and test it for you\.</);
+  for (const [key, name] of [['receptionist', 'AI receptionist'], ['garage', 'Garage edition']]) {
+    assert.match(
+      signupHtml,
+      new RegExp(`data-plan="${key}"[^>]*>\\s*<p class="plan-name"[^>]*>${name}</p>\\s*<p class="price"`),
+      `sign-up ${key} plan is missing its name above the price`,
+    );
+  }
+  assert.match(signupHtml, /Extra minutes 45p each\./);
+  assert.match(signupHtml, /<p class="extra"[^>]*id="garage-note"[^>]*>Garage edition from £249<\/p>/);
+  for (const [slug, industry, campaign] of [
+    ['ai-receptionist', 'general', 'ai-receptionist'],
+    ['estate-agents', 'estate-agents', 'estate-agents'],
+  ]) {
+    const otherHtml = readFileSync(join(dist, slug, 'index.html'), 'utf8');
+    assert.doesNotMatch(otherHtml, /Workshop mode/, `${slug} shows the garage workshop mode`);
+    assertSignupDefaults(
+      anchors(otherHtml).filter((anchor) => anchor.text === 'Get your AI receptionist'),
+      industry,
+      campaign,
+    );
+  }
+  const generalHtml = readFileSync(join(dist, 'ai-receptionist', 'index.html'), 'utf8');
+  assert.match(generalHtml, /Illustrative role-play with AI voices, not a real customer call\./);
+  assert.doesNotMatch(garagesHtml, /Illustrative role-play with AI voices/);
+  assert.match(signupHtml, /premier-housing-demo\.pages\.dev\/api\/contact/);
+  for (const field of ['email', 'business', 'chosen_industry', 'phone', 'missed', 'website', 'industry', 'gclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'landing_page']) {
+    assert.match(
+      signupHtml,
+      new RegExp(`name=["']${field}["']`),
+      `sign-up form is missing the ${field} field`,
+    );
+  }
+  assert.match(signupHtml, /<label[^>]*for="email"[^>]*>Email<\/label>/);
+  assert.match(signupHtml, /<label[^>]*for="business"[^>]*>Business name<\/label>/);
+  assert.match(signupHtml, /<label[^>]*for="chosen-industry"[^>]*>Industry<\/label>/);
+  assert.match(signupHtml, /<label[^>]*for="phone"[^>]*>Phone<\/label>/);
+  assert.match(signupHtml, /<label[^>]*for="missed"[^>]*>What happens to calls you miss today\?<\/label>/);
+  // Every industry option sits in its group, after the empty "Choose one".
+  const select = signupHtml.match(/<select[^>]*id="chosen-industry"[^>]*>([\s\S]*?)<\/select>/)[1];
+  assert.match(select, /^\s*<option value=""[^>]*selected[^>]*>Choose one<\/option>/);
+  const builtGroups = [...select.matchAll(/<optgroup label="([^"]+)"[^>]*>([\s\S]*?)<\/optgroup>/g)].map((match) => ({
+    group: decodeAttr(match[1]),
+    options: [...match[2].matchAll(/<option value="([^"]+)"[^>]*>([^<]+)<\/option>/g)].map((option) => {
+      assert.equal(decodeAttr(option[1]), decodeAttr(option[2]));
+      return decodeAttr(option[2]);
+    }),
+  }));
+  assert.deepEqual(builtGroups, SIGNUP_INDUSTRY_GROUPS);
+  // Without JavaScript the Other field is always there.
+  assert.match(signupHtml, /<div class="field"[^>]*id="other-industry-field"[^>]*>/);
+  assert.doesNotMatch(signupHtml, /id="other-industry-field"[^>]*hidden/);
+  assert.match(signupHtml, /<label[^>]*for="other-industry"[^>]*>What kind of business\?<\/label>/);
+  assert.match(signupHtml, /<input[^>]*name="other_industry"/);
+  assert.match(signupHtml, /cf-turnstile-response|data-sitekey=/);
 
   const pages = walkHtml(dist).filter((path) => {
     const rel = relative(dist, path);

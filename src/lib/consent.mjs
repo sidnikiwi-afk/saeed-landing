@@ -21,9 +21,8 @@ const CONSENT_GRANTED = Object.freeze({
   analytics_storage: 'granted',
 });
 
-const TRIAL_EVENT = 'free_trial_tap';
+const TRIAL_EVENT = 'signup_tap';
 const DEMO_EVENT = 'demo_line_tap';
-const TRIAL_HOST = 'dashboard.brackstonedigital.co.uk/trial-request';
 
 export function onParentDomain(hostname) {
   const host = String(hostname || '').toLowerCase().replace(/\.$/, '');
@@ -58,7 +57,7 @@ export function measurementIds(settings = {}) {
   return {
     ga4: /^G-[A-Z0-9]+$/.test(ga4) ? ga4 : '',
     ads: /^AW-\d+$/.test(ads) ? ads : '',
-    trialLabel: validLabel(settings.trialConversionLabel),
+    signupTapLabel: validLabel(settings.signupTapConversionLabel),
     demoLabel: validLabel(settings.demoLineConversionLabel),
   };
 }
@@ -154,15 +153,12 @@ export function startConsent(doc, settings = {}, env = {}) {
 
   function placeBanner() {
     if (!banner || !banner.style) return;
-    let trialBar = null;
-    if (typeof doc.querySelectorAll === 'function') {
-      for (const node of doc.querySelectorAll('[role="region"]')) {
-        if (node.getAttribute && node.getAttribute('aria-label') === 'Free trial') trialBar = node;
-      }
-    }
-    const shown = trialBar && typeof view.getComputedStyle === 'function'
-      && view.getComputedStyle(trialBar).display !== 'none';
-    const height = shown ? trialBar.getBoundingClientRect().height : 0;
+    const bar = typeof doc.querySelector === 'function' ? doc.querySelector('[data-mobile-cta]') : null;
+    const shown = bar && typeof view.getComputedStyle === 'function'
+      && view.getComputedStyle(bar).display !== 'none';
+    const height = shown && typeof bar.getBoundingClientRect === 'function'
+      ? bar.getBoundingClientRect().height
+      : 0;
     banner.style.bottom = height > 0 ? `${Math.ceil(height) + 12}px` : '';
   }
 
@@ -186,8 +182,8 @@ export function startConsent(doc, settings = {}, env = {}) {
     if (!anchor) return;
     const href = hrefOf(anchor);
     const ids = measurementIds(settings);
-    if (href.includes(TRIAL_HOST)) {
-      report(TRIAL_EVENT, ids.trialLabel);
+    if (anchor.getAttribute('data-signup') !== null) {
+      report(TRIAL_EVENT, ids.signupTapLabel);
       return;
     }
     if (isPhoneHref(href)) report(DEMO_EVENT, ids.demoLabel);

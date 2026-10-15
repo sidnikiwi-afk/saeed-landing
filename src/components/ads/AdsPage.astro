@@ -1,24 +1,16 @@
 ---
 import IllustrativeCaption from '../brand/IllustrativeCaption.astro';
 import { adsSettings } from '../../data/ads/settings.mjs';
-import { adsVisibility, trialHref } from '../../lib/ads-page.mjs';
+import { adsVisibility, pagePlan, sampleCallUrl, signupHref, signupIndustry } from '../../lib/ads-page.mjs';
 
 const { content } = Astro.props;
 const visibility = adsVisibility(adsSettings);
+const plan = pagePlan(adsSettings, content.slug);
+const industry = signupIndustry(content.slug);
+const campaign = content.utmCampaign;
+const signupFor = (placement) => signupHref({ industry, campaign, placement });
+const sampleHref = sampleCallUrl(adsSettings.sampleCalls, content.slug);
 const year = 2026;
-
-function trialAttrs(placement) {
-  return {
-    href: trialHref({
-      campaign: content.utmCampaign,
-      placement,
-      vertical: content.vertical,
-    }),
-    'data-trial': placement,
-    'data-campaign': content.utmCampaign,
-    'data-vertical': content.vertical,
-  };
-}
 ---
 
 <div class="page">
@@ -37,7 +29,7 @@ function trialAttrs(placement) {
             <span>Call {visibility.phone}</span>
           </a>
         )}
-        <a class="btn solid header-trial" {...trialAttrs('header')}>Start free trial</a>
+        <a class="btn solid header-trial" href={signupFor('header')} data-signup data-industry={industry} data-campaign={campaign} data-placement="header">Get your AI receptionist</a>
       </div>
     </div>
   </header>
@@ -53,9 +45,18 @@ function trialAttrs(placement) {
             {content.trialPromise.map((point) => <li>{point}</li>)}
           </ul>
           <div class="ctas">
-            <a class="btn solid" {...trialAttrs('hero')}>Start a free trial</a>
+            <a class="btn solid" href={signupFor('hero')} data-signup data-industry={industry} data-campaign={campaign} data-placement="hero">Get your AI receptionist</a>
+            {sampleHref && (
+              <a class="btn line sample" href={sampleHref} target="_blank" rel="noopener noreferrer">
+                Hear it answer a call
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg>
+              </a>
+            )}
             <a class="btn line" href="#example">See an example call</a>
           </div>
+          {sampleHref && (
+            <IllustrativeCaption>Illustrative role-play with AI voices, not a real customer call.</IllustrativeCaption>
+          )}
           <ul class="micro">
             {content.micro.map((item) => <li>{item}</li>)}
           </ul>
@@ -82,12 +83,21 @@ function trialAttrs(placement) {
               </dl>
             </div>
           </div>
-          <IllustrativeCaption>Names in this call are made up.</IllustrativeCaption>
+          <IllustrativeCaption>{content.example.caption ?? 'Names in this call are made up.'}</IllustrativeCaption>
+          {content.example.audio && (
+            <section class="listen" aria-labelledby="listen-heading">
+              <h2 id="listen-heading">{content.example.audio.heading}</h2>
+              <audio controls preload="none" aria-labelledby="listen-heading" src={content.example.audio.src}>
+                <a href={content.example.audio.src}>Download the call recording</a>
+              </audio>
+              <IllustrativeCaption>{content.example.audio.caption}</IllustrativeCaption>
+            </section>
+          )}
         </div>
       </div>
     </section>
 
-    <section class="strip" aria-label="What the trial covers">
+    <section class="strip" aria-label="What it covers">
       <ul class="wrap strip-grid">
         {content.strip.map((item) => (
           <li>
@@ -140,8 +150,8 @@ function trialAttrs(placement) {
 
     <section class="block tight">
       <div class="wrap">
-        <p class="eyebrow">Built for garages</p>
-        <h2>It knows what a garage caller needs.</h2>
+        <p class="eyebrow">{content.featureEyebrow}</p>
+        <h2>{content.featureHeading}</h2>
         <ul class="features">
           {content.featureCards.map((card) => (
             <li>
@@ -150,6 +160,16 @@ function trialAttrs(placement) {
               <p>{card.text}</p>
             </li>
           ))}
+          {content.workshopMode && (
+            <li class="wide">
+              <span class="kicker">{content.workshopMode.kicker}</span>
+              <h3>{content.workshopMode.title}</h3>
+              <p>{content.workshopMode.text}</p>
+              <ul class="jobs" aria-label="Job buttons">
+                {content.workshopMode.actions.map((action) => <li>{action}</li>)}
+              </ul>
+            </li>
+          )}
         </ul>
         {content.setupOffer && (
           <p class="setup"><span>Setup offer.</span> {content.setupOffer}</p>
@@ -157,20 +177,28 @@ function trialAttrs(placement) {
       </div>
     </section>
 
-    {visibility.showPrice && (
+    {plan && (
       <section class="block tight">
         <div class="wrap">
           <div class="price">
             <div>
               <p class="eyebrow">Simple pricing</p>
-              <p class="amount">From £{visibility.price} <small>a month</small></p>
-              <p class="lead">Try it free first. No card needed, and we set it up for you.</p>
-              <a class="btn solid" {...trialAttrs('pricing')}>Start a free trial</a>
+              <p class="plan">{plan.name}</p>
+              <p class="amount">{plan.amount}</p>
+              <p class="lead">{plan.minutes}</p>
+              <p class="lead">{plan.setup}</p>
+              {plan.extraMinutes && <p class="extra">{plan.extraMinutes}</p>}
+              <a class="btn solid" href={signupFor('price')} data-signup data-industry={industry} data-campaign={campaign} data-placement="price">Get your AI receptionist</a>
             </div>
             <ul class="includes">
               {(content.priceIncludes ?? []).map((item) => <li>{item}</li>)}
             </ul>
           </div>
+          {content.priceAside && (
+            <p class="aside">
+              {content.priceAside.text} <a href={content.priceAside.href}>{content.priceAside.linkText}</a>
+            </p>
+          )}
         </div>
       </section>
     )}
@@ -178,7 +206,7 @@ function trialAttrs(placement) {
     <section class="block tight">
       <div class="wrap faq">
         <p class="eyebrow">Questions</p>
-        <h2>Before you try it.</h2>
+        <h2>Common questions.</h2>
         {content.faq.map((item, index) => (
           <details open={index === 0}>
             <summary>{item.question}</summary>
@@ -192,8 +220,8 @@ function trialAttrs(placement) {
       <div class="wrap">
         <h2>{content.final.heading}</h2>
         <p>{content.final.text}</p>
-        <a class="btn solid final-btn" {...trialAttrs('final')}>Start a free trial</a>
-        <p class="more">Want more than calls? <a href="/contact">Book a 15-minute teardown</a></p>
+        <a class="btn solid final-btn" href={signupFor('final')} data-signup data-industry={industry} data-campaign={campaign} data-placement="final">Get your AI receptionist</a>
+        <p class="more">Want more than calls? <a href={signupFor('final')} data-signup data-industry={industry} data-campaign={campaign} data-placement="final">Get your AI receptionist</a></p>
       </div>
     </section>
   </main>
@@ -203,23 +231,23 @@ function trialAttrs(placement) {
       <p>&copy; {year} Brackstone Digital Limited. Registered in England and Wales, company no. 17159711.</p>
       <p class="foot-links">
         <a href="/privacy">Privacy</a>
-        <a href="/contact">Book a teardown</a>
+        <a href={signupFor('final')} data-signup data-industry={industry} data-campaign={campaign} data-placement="final">Get your AI receptionist</a>
       </p>
     </div>
   </footer>
 
-  <div class:list={['mbar', visibility.showCall && 'has-call']} role="region" aria-label="Free trial">
+  <div class:list={['mbar', visibility.showCall && 'has-call']} role="region" aria-label="Get your AI receptionist" data-mobile-cta>
     {visibility.showCall && (
       <a class="btn line" href={visibility.callHref}>Call {visibility.phone}</a>
     )}
-    <a class="btn solid" {...trialAttrs('mobile-bar')}>Start a free trial, no card</a>
+    <a class="btn solid" href={signupFor('mobile-bar')} data-signup data-industry={industry} data-campaign={campaign} data-placement="mobile-bar">Get your AI receptionist</a>
   </div>
 </div>
 
 <script>
-  import { applyLandingUtms } from '../../lib/ads-page.mjs';
+  import { applySignupParams } from '../../lib/ads-page.mjs';
 
-  applyLandingUtms(document, window.location.search);
+  applySignupParams(document, window.location.search);
 </script>
 
 <style>
@@ -323,7 +351,8 @@ function trialAttrs(placement) {
   .logo:focus-visible,
   summary:focus-visible,
   .foot a:focus-visible,
-  .more a:focus-visible {
+  .more a:focus-visible,
+  .aside a:focus-visible {
     outline: 2px solid var(--brand-purple);
     outline-offset: 3px;
   }
@@ -342,6 +371,10 @@ function trialAttrs(placement) {
     background: #fff;
     border-color: var(--brand-line);
     color: var(--brand-ink);
+  }
+
+  .sample {
+    gap: 0.4rem;
   }
 
   .line:hover {
@@ -423,7 +456,7 @@ function trialAttrs(placement) {
 
   @supports ((-webkit-background-clip: text) or (background-clip: text)) {
     h1 span {
-      background: linear-gradient(100deg, var(--brand-purple), var(--brand-mint));
+      background: linear-gradient(100deg, var(--brand-purple), var(--brand-mint-text));
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -482,6 +515,10 @@ function trialAttrs(placement) {
     display: flex;
     flex-wrap: wrap;
     gap: 0.65rem;
+  }
+
+  .ctas + :global(.caption) {
+    margin-top: 0.75rem;
   }
 
   .micro {
@@ -622,6 +659,35 @@ function trialAttrs(placement) {
     text-align: center;
   }
 
+  .listen {
+    width: min(100%, 22.5rem);
+    margin: 1.5rem auto 0;
+    padding: 1rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 20px 40px -30px rgba(60, 30, 160, 0.45);
+  }
+
+  .listen h2 {
+    margin: 0 0 0.75rem;
+    color: var(--brand-ink);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-align: center;
+  }
+
+  .listen audio {
+    display: block;
+    width: 100%;
+  }
+
+  .listen :global(.caption) {
+    margin-top: 0.6rem;
+    font-size: 0.85rem;
+  }
+
   .strip {
     background: var(--brand-ink);
     color: #fff;
@@ -630,6 +696,8 @@ function trialAttrs(placement) {
 
   .strip-grid {
     display: grid;
+    margin: 0 auto;
+    padding: 0 1.25rem;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1.1rem;
   }
@@ -809,22 +877,69 @@ function trialAttrs(placement) {
   }
 
   .amount {
-    margin: 0.75rem 0;
-    font-size: 3.25rem;
+    margin: 0.35rem 0 0.75rem;
+    font-size: clamp(1.65rem, 3vw, 2.6rem);
     font-weight: 800;
-    letter-spacing: -0.04em;
-    line-height: 1;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
   }
 
-  .amount small {
+  .plan {
+    margin-top: 0.75rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .amount + .lead {
+    font-weight: 600;
+    color: var(--brand-ink);
+  }
+
+  .extra {
+    margin-top: 0.5rem;
     color: var(--brand-muted);
-    font-size: 1.05rem;
-    font-weight: 500;
-    letter-spacing: 0;
+    font-size: 0.85rem;
   }
 
   .price .btn {
     margin-top: 1.25rem;
+  }
+
+  .aside {
+    margin-top: 1rem;
+    color: var(--brand-muted);
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .aside a {
+    color: var(--brand-purple);
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  .features .wide {
+    grid-column: 1 / -1;
+  }
+
+  .jobs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .jobs li {
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 99px;
+    background: var(--brand-purple-soft);
+    color: var(--brand-purple-deep);
+    font-size: 0.82rem;
+    font-weight: 600;
   }
 
   .faq {
