@@ -4,48 +4,61 @@ export const aiReceptionistAd = {
   headline: 'AI receptionist',
   headlineAccent: 'Every call answered.',
   description:
-    'An AI receptionist for UK businesses. It answers the calls, emails and web forms a business already gets.',
+    'An AI receptionist for UK businesses. It answers every call, takes the details, and passes each one to the right person.',
   eyebrow: 'For UK businesses',
   intro:
-    'It picks up every call, reads the emails and web forms you already get, and passes the urgent ones to you straight away. It answers during the day, in the evening, and at the weekend.',
+    'It picks up every call, takes the caller\'s details, and texts you a summary. The caller gets a text too, so they know someone will be in touch. Urgent calls come to you straight away. It answers during the day, in the evening, and at the weekend.',
   trialPromise: [
     'Answers the calls a business already gets',
-    'Reads your emails and web form enquiries',
-    'Flags the urgent ones straight to you',
+    'Takes the details and texts you a summary',
+    'Passes each call to the right person',
   ],
   micro: ['Answers out of hours', 'UK phone number', 'Set up for you'],
   example: {
     status: 'Incoming call at 18:06',
     title: 'General enquiries line',
     lines: [
-      { from: 'ai', text: 'Good evening, how can I help?' },
-      { from: 'caller', text: 'Hi, I called earlier and got no answer. Are you open on Saturdays?' },
-      { from: 'ai', text: 'We are, from 9 until 1. I can take your name and number so someone can call you back.' },
-      { from: 'caller', text: 'Yes please. It is Priya Sharma.' },
-      { from: 'ai', text: 'Thanks Priya. Someone will call you back first thing tomorrow morning, and I will text you to confirm.' },
+      { from: 'ai', text: 'Good evening, thanks for calling. How can I help?' },
+      { from: 'caller', text: "Hi, I rang earlier and couldn't get through. Are you open on Saturdays?" },
+      {
+        from: 'ai',
+        text: 'We are, from nine until one. If you like, I can take your name and number and get someone to call you back.',
+      },
+      { from: 'caller', text: "Yes please. It's Ravi Sharma." },
+      { from: 'ai', text: 'Thanks, Ravi. Is this the best number to reach you on?' },
+      { from: 'caller', text: "Yeah, this one's fine." },
+      {
+        from: 'ai',
+        text: "Lovely. Someone will call you back first thing tomorrow morning, and I'll text you now to confirm.",
+      },
       { from: 'caller', text: 'Brilliant, thanks.' },
     ],
     booking: [
-      { label: 'Caller', value: 'Priya Sharma' },
+      { label: 'Caller', value: 'Ravi Sharma' },
       { label: 'Question', value: 'Saturday hours' },
-      { label: 'Next step', value: 'Callback booked' },
+      { label: 'Next step', value: 'Callback requested' },
       { label: 'When', value: 'Tomorrow morning' },
     ],
+    audio: {
+      heading: 'Hear it take an evening call',
+      src: '/audio/ai-receptionist-demo-call.mp3',
+      caption: 'AI voices. Names and details made up.',
+    },
   },
   strip: [
     { title: 'First ring', text: 'Every call picked up' },
     { title: 'Out of hours', text: 'Evenings and weekends' },
-    { title: 'Emails and forms', text: 'Read and passed on' },
+    { title: 'Texts the caller', text: 'So they know what happens next' },
     { title: 'Urgent ones', text: 'Straight to you, not voicemail' },
   ],
   problem: {
     heading: 'Every missed call is a customer for someone else.',
-    text: 'Most callers will not leave a voicemail. They ring the next business on Google, and the emails and web forms sit there until someone has a minute.',
+    text: 'Most callers will not leave a voicemail. They ring the next business on Google, and you never find out who it was.',
     missed: [
       { title: 'New enquiry', when: '08:40, before anyone was at the desk' },
       { title: 'Quote request', when: '12:15, when everyone was busy' },
       { title: 'Callback request', when: '17:55, as people were leaving' },
-      { title: 'Web form enquiry', when: '22:10, after hours' },
+      { title: 'Price question', when: '22:10, after hours' },
     ],
   },
   howItWorks: {
@@ -53,11 +66,11 @@ export const aiReceptionistAd = {
     steps: [
       {
         title: 'We set it up for you',
-        text: 'How you greet callers, your opening hours, and what to do with the messages, emails and forms that come in.',
+        text: 'How you greet callers, your opening hours, and who should get which messages.',
       },
       {
         title: 'It answers',
-        text: 'Calls are answered on the first ring. Emails and web form enquiries are read too, so nothing sits in voicemail or an untouched inbox.',
+        text: 'Calls are answered on the first ring. You get a text summary, the caller gets a text, and the details go to the right person instead of sitting in voicemail.',
       },
       {
         title: 'You see everything',
@@ -74,14 +87,14 @@ export const aiReceptionistAd = {
       text: 'Picked up on the first ring, during the day, in the evening, and at the weekend.',
     },
     {
-      kicker: 'Mail',
-      title: 'Emails read and passed on',
-      text: 'Enquiries in the inbox are read and sent to the right person, not left overnight.',
+      kicker: 'Text',
+      title: 'A text after every call',
+      text: 'You get a text summary of every call. The caller gets a text too, so they know someone has it.',
     },
     {
-      kicker: 'Forms',
-      title: 'Web forms handled',
-      text: 'Submissions from your website are read and passed on, not left sitting in a form inbox.',
+      kicker: 'Route',
+      title: 'Passed to the right person',
+      text: 'Each message goes to whoever should deal with it, with the detail attached.',
     },
     {
       kicker: 'Urgent',
@@ -96,14 +109,15 @@ export const aiReceptionistAd = {
     {
       kicker: 'Pass',
       title: 'Hands over when it should',
-      text: 'If a caller needs a person, it takes the detail and books a callback.',
+      text: 'If a caller needs a person, it takes the detail and gets someone to call back.',
     },
   ],
-  setupOffer: '',
+  setupOffer:
+    'Handling email and web form enquiries is a paid setup: we can have them picked up and passed on to you the same way as your calls.',
   priceIncludes: [
     'Your own UK phone number, or divert your existing one',
     'AI receptionist set up for your business',
-    'Calls answered, plus emails and web forms read',
+    'Every call answered, with a text summary to you and a text to the caller',
     'Dashboard with recordings and transcripts',
     'Set up and tuned for you',
     'Your data stays yours',
@@ -117,7 +131,7 @@ export const aiReceptionistAd = {
     {
       question: 'Will it sound robotic?',
       answer:
-        'It is tuned for UK callers. The call on this page is illustrative, so you can judge the shape of it before you book.',
+        'It is tuned for UK callers. The call on this page is illustrative, so you can judge the shape of it before you try it.',
     },
     {
       question: 'What if it gets something wrong?',
@@ -125,9 +139,9 @@ export const aiReceptionistAd = {
         'We test it against awkward calls before it goes live. When it is not sure, it takes the detail and passes it on instead of guessing.',
     },
     {
-      question: 'Does it do more than answer calls?',
+      question: 'What happens after a call?',
       answer:
-        'Yes. It also reads the emails and web form enquiries a business already gets, and passes them on with the detail.',
+        'You get a text summary, the caller gets a text, and the details go to the right person. You can see the recording, transcript and summary of every call in the Dashboard.',
     },
   ],
   final: {

@@ -43,7 +43,7 @@ test('estate agents ads data follows the page contract', async () => {
   );
 });
 
-test('estate agents page builds with the right headline and no trial links', () => {
+test('estate agents page builds with the right headline and the site trial', () => {
   // Build to a separate outDir so this file and built-site.test.mjs can run
   // their builds in parallel without clobbering each other's dist.
   const outDir = join(root, 'dist-estate-agents');
@@ -65,7 +65,7 @@ test('estate agents page builds with the right headline and no trial links', () 
   );
   assert.match(html, /lettings and sales caller/, 'estate agents feature heading is missing');
   assert.doesNotMatch(html, /garage caller/, 'estate agents page still shows the garage feature heading');
-  assert.match(html, /ring you first thing tomorrow morning/, 'estate agents example callback timing is missing');
+  assert.match(html, /ring you first thing tomorrow to fix the exact time/, 'estate agents example callback timing is missing');
   assert.doesNotMatch(html, /this afternoon/i, 'estate agents example promises an afternoon callback after hours');
   assert.doesNotMatch(html, /noindex/i, 'estate agents page must be indexed');
 
@@ -80,10 +80,8 @@ test('estate agents page builds with the right headline and no trial links', () 
       .replace(/&amp;/g, '&');
   for (const match of html.matchAll(re)) hrefs.push(decode(match[1]));
   const markup = html.replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, '');
-  assert.deepEqual(hrefs, [], 'estate agents page still links to the trial request');
-  for (const phrase of ['free trial', 'Start free trial', 'Start a free trial', 'No card needed', 'Try it free']) {
-    assert.doesNotMatch(markup, new RegExp(phrase, 'i'), `estate agents page still says "${phrase}"`);
-  }
+  assert.deepEqual(hrefs, [], 'estate agents page still links to the dashboard trial request');
+  assert.match(markup, /No card needed\. 50 minutes of calls\. Then from £99 a month\./);
 
   const anchors = [];
   for (const match of html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/gi)) {
@@ -105,7 +103,7 @@ test('estate agents page builds with the right headline and no trial links', () 
   assert.match(html, /£149 one-off setup\. We build and test it for you\./);
   assert.match(html, /Extra minutes 45p each\./);
   assert.doesNotMatch(html, /£249|£299|Garage edition|Workshop mode/);
-  const signupAnchors = anchors.filter((anchor) => anchor.text === 'Get your AI receptionist');
+  const signupAnchors = anchors.filter((anchor) => anchor.text === 'Start your 7-day free trial');
   assert.ok(signupAnchors.length >= 4, 'estate agents page is missing sign-up buttons');
   assert.ok(
     signupAnchors.every((anchor) => anchor.href.startsWith('/get-started/?industry=estate-agents')),

@@ -14,7 +14,11 @@ test('the general headline repeats a search that names no trade', () => {
   assert.equal(aiReceptionistAd.slug, 'ai-receptionist');
   assert.equal(aiReceptionistAd.headline, 'AI receptionist');
   assert.ok(aiReceptionistAd.headlineAccent.trim(), 'headline accent is missing');
-  assert.equal(aiReceptionistAd.setupOffer, '', 'the general page has no setup offer');
+  assert.match(
+    aiReceptionistAd.setupOffer,
+    /^Handling email and web form enquiries is a paid setup:/,
+    'the general page offers email and web form handling as a paid setup',
+  );
 
   const text = JSON.stringify(aiReceptionistAd).toLowerCase();
   for (const trade of [
@@ -36,11 +40,16 @@ test('the general headline repeats a search that names no trade', () => {
   }
 });
 
-test('the trial promise covers calls, emails and web forms only', () => {
+test('the trial promise covers calls only, not emails or web forms', () => {
   const promises = aiReceptionistAd.trialPromise.join(' ').toLowerCase();
   assert.match(promises, /\bcalls?\b/, 'trial promise must mention calls');
-  assert.match(promises, /\bemails?\b/, 'trial promise must mention emails');
-  assert.match(promises, /\bforms?\b/, 'trial promise must mention web forms');
+  assert.match(promises, /\btexts? you a summary\b/, 'trial promise must say the business gets a text summary');
+  assert.match(promises, /right person/, 'trial promise must say the call is passed on');
+
+  // Email and web form handling are not part of the trial. They appear only
+  // in the separately labelled setup offer.
+  const copy = JSON.stringify({ ...aiReceptionistAd, example: undefined, setupOffer: undefined }).toLowerCase();
+  assert.doesNotMatch(copy, /\bemails?\b|web forms?|\bbooks?\b|\bdiary\b/, 'general page promises more than the trial gives');
 
   const example = JSON.stringify(aiReceptionistAd.example).toLowerCase();
   assert.doesNotMatch(example, /\bmot\b|\bviewing\b|\bvaluation\b/, 'example call must stay trade free');
@@ -108,6 +117,11 @@ test('the built ai receptionist page keeps the general feature heading', () => {
   assert.match(html, /150 minutes included/);
   assert.match(html, /£149 one-off setup\. We build and test it for you\./);
   assert.match(html, /Extra minutes 45p each\./);
+  assert.match(
+    html,
+    /<p class="setup"[^>]*><span[^>]*>Setup offer\.<\/span> Handling email and web form enquiries is a paid setup:/,
+    'general page lost its labelled setup offer',
+  );
   assert.doesNotMatch(html, /£249|£299|Garage edition|Workshop mode|lettings systems/);
   assert.match(html, /\/get-started\/\?industry=general/);
   assert.match(html, /utm_source=google/);

@@ -1,7 +1,7 @@
 import { readConsentChoice, CONSENT_ACCEPTED } from './consent.mjs';
 
-export const SIGNUP_HIDDEN_FIELDS = [
-  'industry',
+// Tracking the page fills from the address bar before it sends a request.
+export const TRACKING_FIELDS = [
   'gclid',
   'utm_source',
   'utm_medium',
@@ -16,7 +16,7 @@ function clean(value) {
 }
 
 // The Industry select, in the order the form shows it. Each label is also the
-// option value, so the message carries the label as chosen.
+// option value, so the request carries the label as chosen.
 export const SIGNUP_INDUSTRY_GROUPS = [
   { group: 'Motor', options: ['Garage or MOT centre', 'Car dealership', 'Body shop', 'Tyre and exhaust centre'] },
   { group: 'Property', options: ['Estate or letting agent', 'Property management'] },
@@ -76,73 +76,85 @@ export function fireSignupConversion(view, settings, cookieString) {
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Names the fields that block a sign-up, in the order the form shows them.
-export function signupErrors({ email = '', business = '', industry = '', phone = '' } = {}) {
+// Names the fields that block a trial request, in the order the form shows
+// them. Other needs a description, as the endpoint requires.
+export function signupErrors({ email = '', business = '', industry = '', phone = '', otherIndustry = '' } = {}) {
   const errors = [];
-  if (!EMAIL_PATTERN.test(clean(email))) errors.push('email');
   if (clean(business).length < 2) errors.push('business');
-  if (!clean(industry)) errors.push('industry');
+  if (!EMAIL_PATTERN.test(clean(email))) errors.push('email');
   if (!clean(phone)) errors.push('phone');
+  if (!clean(industry)) errors.push('industry');
+  else if (clean(industry) === OTHER_INDUSTRY && !clean(otherIndustry)) errors.push('other');
   return errors;
 }
 
-// Posts the sign-up and reports the conversion once the endpoint accepts it.
-// A failed request throws before anything reaches Google. The conversion
-// carries only send_to, never the form contents.
-export async function sendSignup({ fetchImpl, endpoint, body, view, settings, cookieString }) {
-  const res = await fetchImpl(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error(`Endpoint returned ${res.status}`);
-  fireSignupConversion(view, settings, cookieString);
-  return res;
+// The dashboard route that checks and records every trial request
+// (docs/trial-request-endpoint.md in brackstone-dashboard).
+export const TRIAL_REQUEST_ENDPOINT = 'https://dashboard.brackstonedigital.co.uk/api/trial-requests';
+
+// Posts the trial request and reports the conversion only once the dashboard
+// has stored it. The conversion carries only send_to, never the form contents.
+export const TRIAL_NETWORK_ERROR = {
+  accepted: false,
+  reason: 'network_error',
+  message: 'That did not send. Please check your connection and try again.',
+};
+
+// Used when the endpoint answers without a message the visitor can act on.
+const TRIAL_UNKNOWN_REFUSAL = 'Something went wrong sending your trial request. Please try again.';
+
+// Never throws: a dropped connection or a reply that is not the endpoint's
+// JSON comes back as TRIAL_NETWORK_ERROR. Only a 201 with accepted true
+// counts as accepted.
+export async function sendTrialRequest({ fetchImpl, endpoint = TRIAL_REQUEST_ENDPOINT, body, view, settings, cookieString }) {
+  let res;
+  let data;
+  try {
+    res = await fetchImpl(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'omit',
+      body: JSON.stringify(body),
+    });
+    data = await res.json();
+  } catch (_err) {
+    return { ...TRIAL_NETWORK_ERROR };
+  }
+  if (!data || typeof data !== 'object') return { ...TRIAL_NETWORK_ERROR };
+
+  const accepted = res.status === 201 && data.accepted === true;
+  const message = clean(data.message);
+  const result = accepted
+    ? { accepted: true, reason: 'accepted', message }
+    : { accepted: false, reason: clean(data.reason) || 'unknown', message: message || TRIAL_UNKNOWN_REFUSAL };
+  if (accepted) fireSignupConversion(view, settings, cookieString);
+  return result;
 }
 
-export function signupBody({
+// The fields the endpoint reads, named as its contract names them.
+export function trialRequestBody({
   businessName = '',
   email = '',
-  chosenIndustry = '',
-  otherIndustry = '',
   phone = '',
-  missedCalls = '',
+  industry = '',
+  otherIndustry = '',
+  website = '',
+  notes = '',
   hidden = {},
   turnstileToken = '',
-  submittedAt = '',
 } = {}) {
-  const carried = {};
-  for (const field of SIGNUP_HIDDEN_FIELDS) {
-    carried[field] = clean(hidden[field]);
-  }
-
-  const industry = clean(chosenIndustry);
-  const other = clean(otherIndustry);
-  const lines = [
-    `gclid: ${carried.gclid || '(not given)'}`,
-    `Landing page: ${carried.landing_page || '(not given)'}`,
-    `Phone: ${clean(phone) || '(not given)'}`,
-    `Industry: ${industry || '(not given)'}`,
-    ...(industry === OTHER_INDUSTRY || other
-      ? [`What kind of business: ${other || '(not given)'}`]
-      : []),
-    `What happens to calls you miss today: ${clean(missedCalls) || '(not given)'}`,
-    `Ads industry: ${carried.industry || '(not given)'}`,
-    `utm_source: ${carried.utm_source || '(not given)'}`,
-    `utm_medium: ${carried.utm_medium || '(not given)'}`,
-    `utm_campaign: ${carried.utm_campaign || '(not given)'}`,
-    `utm_term: ${carried.utm_term || '(not given)'}`,
-    `utm_content: ${carried.utm_content || '(not given)'}`,
-  ];
-
-  return {
-    name: clean(businessName),
+  const body = {
+    business_name: clean(businessName),
     email: clean(email),
-    business: clean(businessName),
-    message: ['AI receptionist sign-up from /get-started/', ...lines].join('\n'),
-    source: 'brackstonedigital.co.uk/get-started',
-    submitted_at: submittedAt,
-    'cf-turnstile-response': turnstileToken || '',
-    ...carried,
+    phone: clean(phone),
+    industry: clean(industry),
+    website: clean(website),
+    notes: clean(notes),
+    captcha_token: clean(turnstileToken),
   };
+  if (body.industry.toLowerCase() === OTHER_INDUSTRY.toLowerCase()) {
+    body.other_industry = clean(otherIndustry);
+  }
+  for (const field of TRACKING_FIELDS) body[field] = clean(hidden[field]);
+  return body;
 }
