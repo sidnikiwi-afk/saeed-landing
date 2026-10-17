@@ -112,7 +112,8 @@ export const aiReceptionistAd = {
       text: 'If a caller needs a person, it takes the detail and gets someone to call back.',
     },
   ],
-  setupOffer: '',
+  setupOffer:
+    'Handling email and web form enquiries is a paid setup: we can have them picked up and passed on to you the same way as your calls.',
   priceIncludes: [
     'Your own UK phone number, or divert your existing one',
     'AI receptionist set up for your business',
