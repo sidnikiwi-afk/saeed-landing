@@ -56,7 +56,7 @@ Every ads page and the get-started page offer a free trial: card-free, 7 days fr
 33. As a business owner, I want my trial to pause at 7 days from go-live or 50 trial minutes, whichever comes first, so that the trial has a clear end.
 34. As a business owner, I want callers to reach a simple voicemail after my trial pauses, with each message emailed to me, so that I never lose a customer's call.
 35. As a business owner, I want a "Your trial has paused" email explaining the voicemail, how to upgrade, the setup waiver (no setup fee if I upgrade within 48 hours of the trial ending), and how to turn forwarding off, so that I know my options.
-36. As a business owner, I want an upgrade link that takes me to a Stripe checkout with my plan already chosen (AI receptionist plan, or Garage edition for garages, mechanics and MOT centres), so that upgrading takes a minute.
+36. As a business owner, I want an upgrade link that takes me to a Stripe checkout with my plan already chosen (AI receptionist plan, or Garage edition for garages and MOT centres, not bodyshops or car dealers), so that upgrading takes a minute.
 37. As a business owner who upgrades during my trial or within 48 hours of it ending, I want no setup fee, so that deciding quickly is rewarded.
 38. As a business owner who upgrades after 48 hours but within 14 days, I want my receptionist, number and settings still there and the setup fee charged as normal, so that switching back on is instant.
 39. As a business owner who upgrades, I want my receptionist answering again straight away, so that there is no gap.

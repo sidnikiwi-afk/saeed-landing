@@ -77,7 +77,7 @@ The paid plan for any business: from £99 a month with 150 minutes and a £149 o
 _Avoid_: Starter, basic plan
 
 **Garage edition**:
-The paid plan for garages, mechanics and MOT centres (not car dealers, which are dealership mode): £249 a month with 500 minutes, extra minutes 45p, and a £299 one-off setup, including workshop mode and vehicle lookup from the registration.
+The paid plan for garages and MOT centres (including mechanics), not car dealers (dealership mode) and not bodyshops: £249 a month with 500 minutes, extra minutes 45p, and a £299 one-off setup, including workshop mode and vehicle lookup from the registration. At a mixed garage, bodywork calls are handled like any other message: the receptionist takes the details and passes them on. A separate bodyshop edition may come later (Saeed, 17 October 2026).
 _Avoid_: Growth, garage plan, pro
 
 **Demo line**:
