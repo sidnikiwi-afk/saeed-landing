@@ -118,6 +118,8 @@ test('without JavaScript the trial form renders but has no native path to the en
   const submits = buttons.filter((attrs) => !/type="(button|reset)"/.test(attrs));
   assert.equal(submits.length, 1, 'the form must have exactly one submit control');
   assert.match(submits[0], /\bdisabled\b/, 'the submit button must start disabled');
+  // Firefox restores a dynamically enabled button on reload unless it opts out.
+  assert.match(submits[0], /\bautocomplete="off"/, 'the submit button must opt out of form state restoration');
   assert.doesNotMatch(body, /<input\b[^>]*type="(submit|image)"/, 'no other submit control is allowed');
 
   // The email route shows without the script, and also when the script fails
