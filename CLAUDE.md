@@ -31,3 +31,9 @@ Wiki at Saeed's Drive `Work/wikis/domains/`. Check before making changes:
 - Only name tools actually built with. Do not name clients. Label made-up examples as illustrative. The approved tools and past-work lists are in the redesign handoff (local, untracked: `~/Projects/brackstone-dashboard/demos/cloudflare-demo-pages/site-redesign/HANDOFF.md`).
 - Respect `prefers-reduced-motion`. Content must be visible without JavaScript.
 - Agents must not touch Google Ads, spend money, provision phone numbers, or change live Retell or Twilio config.
+
+## Agent workflow
+
+For feature, bug, small-change and documentation routes, load the installed
+`/ask-matt` skill. It owns the stage map, evidence advisories and workflow-change
+approval gates. Record the chosen route and artifact links in the PR.
