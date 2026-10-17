@@ -7,6 +7,6 @@ On 12 October 2026 the public free trial was removed from the ads pages in favou
 
 ## Consequences
 
-- The primary conversion is still a trial request submitted on the dashboard (ADR 0003), so ads pages link to the dashboard's trial request page and the site's get-started form stops being the trial path.
+- Where trial requests are taken was later decided by ADR 0005: the site's get-started form is the trial request form and sends each request to the dashboard, and the primary conversion fires once the dashboard accepts it. The dashboard's own trial request page is retired.
 - The dashboard needs a 7-day, 50-minute trial shape alongside its existing 14-day managed trials and the garage founding offer.
 - Nurture sequence emails must be chosen by trial events (forwarding confirmed, calls answered, minutes used), which the dashboard has to record.
