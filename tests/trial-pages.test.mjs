@@ -85,14 +85,18 @@ test('the trial is the primary call to action on every ads page', () => {
   }
 });
 
-test('without JavaScript the trial form renders and posts to the trial request endpoint', () => {
+test('without JavaScript the trial form renders but has no native path to the endpoint', () => {
   const html = page('get-started');
   const form = html.match(/<form\b([^>]*)>([\s\S]*?)<\/form>/);
   assert.ok(form, 'get-started has no form');
   const [, attrs, body] = form;
-  assert.match(attrs, /method="post"/);
-  assert.equal(decode(attrs.match(/action="([^"]+)"/)?.[1] ?? ''), ENDPOINT);
-  assert.doesNotMatch(attrs, /novalidate/, 'the browser must check required fields when the script is off');
+  // The endpoint wants JSON with a captcha token, which only the script sends.
+  // A native post would send form fields and leave the visitor on raw JSON.
+  assert.doesNotMatch(attrs, /\baction=/, 'the form must not post natively');
+  assert.doesNotMatch(attrs, /\bmethod=/, 'the form must not post natively');
+  assert.doesNotMatch(body, /\bformaction=/, 'no control may post natively');
+  const markup = html.replace(/<script\b[\s\S]*?<\/script>/gi, '');
+  assert.ok(!decode(markup).includes(ENDPOINT), 'the endpoint is reachable from markup without the script');
   assert.doesNotMatch(html, /premier-housing-demo\.pages\.dev\/api\/contact/, 'get-started still posts to the contact endpoint');
 
   for (const name of ['business_name', 'email', 'phone', 'industry']) {
@@ -108,11 +112,30 @@ test('without JavaScript the trial form renders and posts to the trial request e
   assert.match(body, /<button type="submit"[^>]*>[\s\S]*?Start your 7-day free trial[\s\S]*?<\/button>/);
   assert.match(body, /class="cf-turnstile"[^>]*data-sitekey=/, 'the existing security check widget is missing');
 
-  // The security check needs JavaScript, so the page offers an email route
-  // rather than a dead end.
-  const fallback = body.match(/<noscript>([\s\S]*?)<\/noscript>/);
-  assert.ok(fallback, 'no fallback for visitors without JavaScript');
-  assert.match(fallback[1], /href="mailto:saeed@brackstonedigital\.co\.uk/);
+  // The only submit control ships disabled, which also blocks submitting with
+  // Enter, so without the script nothing can be sent.
+  const buttons = [...body.matchAll(/<button\b([^>]*)>/g)].map((match) => match[1]);
+  const submits = buttons.filter((attrs) => !/type="(button|reset)"/.test(attrs));
+  assert.equal(submits.length, 1, 'the form must have exactly one submit control');
+  assert.match(submits[0], /\bdisabled\b/, 'the submit button must start disabled');
+  assert.doesNotMatch(body, /<input\b[^>]*type="(submit|image)"/, 'no other submit control is allowed');
+
+  // The email route shows without the script, and also when the script fails
+  // to load, so it is plain markup rather than a noscript block.
+  const note = body.match(/<p\b([^>]*)id="noscript-note"([^>]*)>([\s\S]*?)<\/p>/);
+  assert.ok(note, 'no fallback for visitors without JavaScript');
+  assert.doesNotMatch(note[1] + note[2], /\bhidden\b/, 'the email note must be visible without the script');
+  assert.match(note[3], /href="mailto:saeed@brackstonedigital\.co\.uk/);
+  assert.match(visibleText(note[3]), /needs JavaScript/);
+});
+
+test('with JavaScript the script enables the button, hides the note and still posts JSON', () => {
+  const source = readFileSync(join(root, 'src/pages/get-started.astro'), 'utf8');
+  const script = source.slice(source.indexOf('<script>\n  import'));
+  assert.match(script, /if \(btn\) btn\.disabled = false;/);
+  assert.match(script, /noScriptNote\.hidden = true/);
+  assert.match(script, /event\.preventDefault\(\)/);
+  assert.match(script, /await sendTrialRequest\(\{[\s\S]*?body: trialRequestBody\(\{/);
 });
 
 // The trial answers calls, takes the details, texts the caller and passes the
