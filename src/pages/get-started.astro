@@ -2,7 +2,7 @@
 import AdsLayout from '../layouts/AdsLayout.astro';
 import { adsSettings } from '../data/ads/settings.mjs';
 import { planFor } from '../lib/ads-page.mjs';
-import { SIGNUP_INDUSTRY_GROUPS, TRIAL_REQUEST_ENDPOINT } from '../lib/get-started.mjs';
+import { SIGNUP_INDUSTRY_GROUPS } from '../lib/get-started.mjs';
 
 const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
 const conversion = adsSettings.googleAdsConversion;
@@ -13,8 +13,9 @@ const plans = [
   { key: 'receptionist', plan: planFor(adsSettings, 'receptionist') },
   { key: 'garage', plan: planFor(adsSettings, 'garage') },
 ];
-// The security check needs JavaScript, so a visitor without it can email
-// the request instead of meeting a refusal.
+// The form only sends through the script, which adds the security check
+// token. Without the script the button stays disabled and the visitor sees
+// an email route instead of posting to the endpoint and landing on JSON.
 const NO_SCRIPT_EMAIL = 'saeed@brackstonedigital.co.uk';
 const noScriptHref = `mailto:${NO_SCRIPT_EMAIL}?subject=${encodeURIComponent('7-day free trial request')}`;
 ---
@@ -56,8 +57,6 @@ const noScriptHref = `mailto:${NO_SCRIPT_EMAIL}?subject=${encodeURIComponent('7-
       <form
         class="form"
         id="signup-form"
-        method="post"
-        action={TRIAL_REQUEST_ENDPOINT}
         data-turnstile-key={TURNSTILE_SITE_KEY}
         data-conversion-id={conversion.id}
         data-conversion-label={conversion.label}
@@ -128,15 +127,13 @@ const noScriptHref = `mailto:${NO_SCRIPT_EMAIL}?subject=${encodeURIComponent('7-
           </div>
         )}
 
-        <noscript>
-          <p class="noscript">
-            Our security check needs JavaScript. If the button below does not work, email
-            <a href={noScriptHref}>{NO_SCRIPT_EMAIL}</a> with your business name and phone number
-            and we will start your trial from there.
-          </p>
-        </noscript>
+        <p class="noscript" id="noscript-note">
+          This form needs JavaScript. If the button stays greyed out, email
+          <a href={noScriptHref}>{NO_SCRIPT_EMAIL}</a> with your business name and phone number,
+          and we'll start your trial from there.
+        </p>
 
-        <button type="submit" class="submit" id="submit-btn">
+        <button type="submit" class="submit" id="submit-btn" disabled autocomplete="off">
           <span id="submit-label">{trial.button}</span>
         </button>
 
@@ -203,6 +200,11 @@ const noScriptHref = `mailto:${NO_SCRIPT_EMAIL}?subject=${encodeURIComponent('7-
 
   // The script checks the fields itself and shows its own messages.
   if (form) form.noValidate = true;
+
+  // The button ships disabled so the form cannot post without this script.
+  if (btn) btn.disabled = false;
+  const noScriptNote = document.getElementById('noscript-note');
+  if (noScriptNote) noScriptNote.hidden = true;
 
   // Shows the plan for the chosen industry and the Other field when it applies.
   const showChoice = () => {
@@ -521,6 +523,7 @@ const noScriptHref = `mailto:${NO_SCRIPT_EMAIL}?subject=${encodeURIComponent('7-
   .field[hidden],
   .error[hidden],
   .success[hidden],
+  .noscript[hidden],
   .field-error[hidden] {
     display: none;
   }

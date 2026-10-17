@@ -572,7 +572,9 @@ test('built site hides the preview and keeps copy clean', () => {
   const generalHtml = readFileSync(join(dist, 'ai-receptionist', 'index.html'), 'utf8');
   assert.match(generalHtml, /Illustrative role-play with AI voices, not a real customer call\./);
   assert.doesNotMatch(garagesHtml, /Illustrative role-play with AI voices/);
-  assert.match(signupHtml, /action="https:\/\/dashboard\.brackstonedigital\.co\.uk\/api\/trial-requests"/);
+  // Only the script posts to the endpoint; the form itself has no native path.
+  assert.doesNotMatch(signupHtml, /<form\b[^>]*\baction=/, 'sign-up form must not post natively');
+  assert.match(signupHtml, /<button type="submit"[^>]*id="submit-btn"[^>]*disabled/, 'sign-up button must start disabled');
   for (const field of ['email', 'business_name', 'industry', 'other_industry', 'phone', 'notes', 'website', 'gclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'landing_page']) {
     assert.match(
       signupHtml,
