@@ -69,7 +69,7 @@ The point at which a business's calls are proven to reach its receptionist, show
 _Avoid_: Connected, set up, installed
 
 **Setup waiver**:
-The setup fee is not charged when a business moves from a free trial to a paid plan within 48 hours of the trial ending.
+The setup fee is not charged when a business moves from a free trial to a paid plan during the trial or within 48 hours of it ending.
 _Avoid_: Discount, free setup, promo
 
 **AI receptionist plan**:
@@ -77,7 +77,7 @@ The paid plan for any business: from £99 a month with 150 minutes and a £149 o
 _Avoid_: Starter, basic plan
 
 **Garage edition**:
-The paid plan for garages: £249 a month with 400 minutes and a £299 one-off setup, including workshop mode and vehicle lookup from the registration.
+The paid plan for garages, mechanics and MOT centres (not car dealers, which are dealership mode): £249 a month with 500 minutes, extra minutes 45p, and a £299 one-off setup, including workshop mode and vehicle lookup from the registration.
 _Avoid_: Growth, garage plan, pro
 
 **Demo line**:
