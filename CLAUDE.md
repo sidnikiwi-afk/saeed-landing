@@ -5,9 +5,9 @@ brackstonedigital.co.uk. The public site for Brackstone Digital: small UK busine
 Read `CONTEXT.md` for the domain language and `docs/adr/` for decisions before changing anything.
 
 ## Knowledge Base
-Research wiki at `../wikis/`. Check before making changes:
-- `../wikis/domains/cold-email/pages/` for campaign strategy, lead sourcing, personalisation
-- `../wikis/domains/data-infrastructure/pages/` for webhook security, n8n patterns, Postgres
+Wiki at Saeed's Drive `Work/wikis/domains/`. Check before making changes:
+- `cold-email/pages/` for campaign strategy, lead sourcing, personalisation
+- `data-infrastructure/pages/` for webhook security, n8n patterns, Postgres
 
 ## Stack and deploy
 
@@ -21,13 +21,13 @@ Research wiki at `../wikis/`. Check before making changes:
 ## Layout
 
 - `src/pages/`: `index`, `contact`, `privacy`, and the `premier-housing-demo` pages.
-- `src/components/home/`: homepage sections. `src/components/direction-2/` is unused.
-- `src/styles/theme.css`: design tokens. `src/layouts/Layout.astro`: shared head and SEO.
+- `src/components/ads/`, `src/components/brand/`, `src/components/consent/`, `src/components/premier-housing/`: page sections.
+- `src/styles/theme.css`: design tokens. `src/styles/global.css`: global styles. `src/layouts/AdsLayout.astro`, `src/layouts/BrandLayout.astro`, `src/layouts/PremierHousingLayout.astro`: shared head and SEO.
 - Do not touch the `premier-housing-demo` pages, `functions/api/enquire*`, or `scripts/build-premier-housing-pages.mjs`.
 
 ## Conventions
 
 - UK English. No em dashes in user-facing copy. No emojis in code or copy.
-- Only name tools actually built with. Do not name clients. Label made-up examples as illustrative. The approved lists are in the redesign handoff (`brackstone-dashboard` repo, `demos/cloudflare-demo-pages/site-redesign/HANDOFF.md`).
+- Only name tools actually built with. Do not name clients. Label made-up examples as illustrative. The approved tools and past-work lists are in the redesign handoff (local, untracked: `~/Projects/brackstone-dashboard/demos/cloudflare-demo-pages/site-redesign/HANDOFF.md`).
 - Respect `prefers-reduced-motion`. Content must be visible without JavaScript.
 - Agents must not touch Google Ads, spend money, provision phone numbers, or change live Retell or Twilio config.
