@@ -1,5 +1,10 @@
 # Brackstone Digital marketing site
 
+## Agent workflow
+
+Follow the stage-to-skill map, PR evidence check, and `/retro` approval rule in
+[AGENTS.md](./AGENTS.md#agent-workflow).
+
 brackstonedigital.co.uk. The public site for Brackstone Digital: small UK businesses, three pillars (enquiries on every channel, admin automation, custom dashboards and integrations).
 
 Read `CONTEXT.md` for the domain language and `docs/adr/` for decisions before changing anything.
