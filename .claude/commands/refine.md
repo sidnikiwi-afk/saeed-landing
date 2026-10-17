@@ -14,7 +14,7 @@ The student has chosen a direction to refine. They may also reference elements t
 
 Read all source files for this direction:
 - The page file in src/pages/ for this direction
-- ALL components in src/components/direction-[N]/
+- ALL components the page imports from src/components/
 
 If the student referenced elements from other directions, also read those components to understand what to pull in.
 
@@ -46,7 +46,7 @@ Before auditing individual sections, evaluate the foundational design choices th
 - Is the accent color actually being used for its job — drawing attention to CTAs and key moments — or is it sprinkled randomly?
 - Check contrast ratios on text. Can you comfortably read body copy? Do light-text-on-dark sections have enough contrast?
 
-If fonts or colors need adjustment, update global.css and/or the Layout component. These are page-level changes that affect everything, so do them BEFORE refining individual sections.
+If fonts or colors need adjustment, edit the stylesheet the page's layout imports (trace the imports in `src/layouts/AdsLayout.astro`, `BrandLayout.astro`, or `PremierHousingLayout.astro`; Brand and Ads layouts import `src/styles/brand.css`). Never edit Premier Housing styles. These are page-level changes that affect everything, so do them BEFORE refining individual sections.
 
 ### Audit each section
 
