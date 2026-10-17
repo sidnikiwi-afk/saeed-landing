@@ -22,7 +22,7 @@ Wiki at Saeed's Drive `Work/wikis/domains/`. Check before making changes:
 
 - `src/pages/`: `index`, `contact`, `privacy`, and the `premier-housing-demo` pages.
 - `src/components/ads/`, `src/components/brand/`, `src/components/consent/`, `src/components/premier-housing/`: page sections.
-- `src/styles/theme.css`: design tokens. `src/styles/global.css`: global styles. `src/layouts/AdsLayout.astro`, `src/layouts/BrandLayout.astro`, `src/layouts/PremierHousingLayout.astro`: shared head and SEO.
+- `src/styles/brand.css`: styles for the main site (imported by `AdsLayout.astro` and `BrandLayout.astro`). `src/styles/global.css` (imports `theme.css`) is used only by `PremierHousingLayout.astro`. The three layouts in `src/layouts/` hold the shared head and SEO.
 - Do not touch the `premier-housing-demo` pages, `functions/api/enquire*`, or `scripts/build-premier-housing-pages.mjs`.
 
 ## Conventions
